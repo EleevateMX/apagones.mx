@@ -1,0 +1,35 @@
+{
+  "name": "Apagones MX — Mérida",
+  "short_name": "Apagones MX",
+  "description": "Tu reporte, nuestra solución. Reporta apagones y fugas de agua en Mérida.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#65081F",
+  "background_color": "#0C0608",
+  "lang": "es",
+  "categories": ["utilities", "social"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.svg",     "sizes": "any",     "type": "image/svg+xml" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Reportar Apagón",
+      "short_name": "Apagón",
+      "description": "Reportar un apagón en tu zona",
+      "url": "./?action=apagon",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Reportar Fuga",
+      "short_name": "Fuga",
+      "description": "Reportar una fuga de agua",
+      "url": "./?action=agua",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    }
+  ]
+}

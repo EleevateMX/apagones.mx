@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Distritos locales</name>
+    <NetworkLink>
+      <name>Copia de DISTRITOS LOCALES Y FEDERALES</name>
+      <Link>
+        <href><![CDATA[https://www.google.com/maps/d/kml?forcekml=1&mid=1Ufh66TquAPG2SgIejPlzQABoZyhX4CI&lid=cCLZA5ZUPu0]]></href>
+      </Link>
+    </NetworkLink>
+  </Document>
+</kml>

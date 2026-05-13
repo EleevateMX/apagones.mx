@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+  <title>Apagones MX — Mérida</title>
+  <meta name="description" content="Tu reporte, nuestra solución. Reporta apagones y fugas de agua en Mérida, Yucatán."/>
+  <meta name="theme-color" content="#65081F"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Apagones MX"/>
+  <link rel="manifest" href="./manifest.json"/>
+  <link rel="apple-touch-icon" href="./icon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="./icon.svg"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --brand:#65081F;--brand-lt:#8B0E2A;--brand-dk:#3E0513;--brand-gl:rgba(101,8,31,.45);--brand-sub:rgba(101,8,31,.12);
+  --elec:#F5B731;--elec-gl:rgba(245,183,49,.4);--elec-zone:#FF4B1F;
+  --agua:#22D0F0;--agua-dk:#0AAAC4;--agua-gl:rgba(34,208,240,.38);
+  --bg:#0C0608;--surf:#130910;--card:#1A0E14;--card2:#22131A;
+  --bdr:#2A1520;--bdr2:#3B1D2A;--mut:#6B3D4F;--tx:#F0E8EC;--dim:#9E7080;
+  --grn:#1FD18A;--f:'Plus Jakarta Sans',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--f)}
+#map{position:fixed;inset:0;z-index:1}
+.leaflet-control-zoom{display:none}
+
+/* ── ONBOARDING ─────────────────────────────── */
+#onboarding{
+  position:fixed;inset:0;z-index:8000;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+}
+#onboarding.hide{animation:obOut .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes obOut{to{transform:translateY(-100%);opacity:0}}
+
+.ob-screen{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px 20px 32px;
+  opacity:0;transform:translateX(40px);
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;position:absolute;inset:0;
+}
+.ob-screen.active{opacity:1;transform:translateX(0);pointer-events:all}
+.ob-screen.exit{opacity:0;transform:translateX(-40px)}
+
+.ob-brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;margin-bottom:28px}
+.ob-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--brand-lt),var(--brand-dk));display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 14px var(--brand-gl)}
+.ob-mx{color:var(--dim);font-weight:500}
+
+.ob-illo{width:100%;max-width:320px;height:220px;margin-bottom:24px}
+/* SVG character animations */
+.arm-left-1  { transform-origin:136px 130px; animation:waveL1 1.8s ease-in-out infinite; }
+.arm-right-1 { transform-origin:180px 130px; animation:waveR1 1.8s ease-in-out infinite; }
+@keyframes waveL1 {
+  0%,100%{ transform:rotate(0deg) }
+  30%    { transform:rotate(-18deg) }
+  60%    { transform:rotate(10deg) }
+}
+@keyframes waveR1 {
+  0%,100%{ transform:rotate(0deg) }
+  30%    { transform:rotate(18deg) }
+  60%    { transform:rotate(-10deg) }
+}
+.sparks-1 { animation:sparksFade 1.8s ease-in-out infinite; }
+@keyframes sparksFade { 0%,100%{opacity:.8} 50%{opacity:.2} }
+
+.arm-left-2  { transform-origin:138px 135px; animation:pointL 2.2s ease-in-out infinite; }
+.arm-right-2 { transform-origin:178px 135px; animation:pointR 2.2s ease-in-out infinite; }
+@keyframes pointL {
+  0%,100%{ transform:rotate(0deg) }
+  40%    { transform:rotate(8deg) }
+  70%    { transform:rotate(-5deg) }
+}
+@keyframes pointR {
+  0%,100%{ transform:rotate(0deg) }
+  40%    { transform:rotate(-8deg) }
+  70%    { transform:rotate(5deg) }
+}
+.elec-bounce { animation:elecB 1.4s ease-in-out infinite alternate; transform-origin:68px 88px; }
+@keyframes elecB { from{transform:scale(1) translateY(0)} to{transform:scale(1.08) translateY(-4px)} }
+.water-bounce { animation:waterB 1.6s ease-in-out infinite alternate; transform-origin:262px 90px; }
+@keyframes waterB { from{transform:scale(1) translateY(0)} to{transform:scale(1.06) translateY(-5px)} }
+.bulb-flicker { animation:flicker 2.4s ease-in-out infinite; }
+@keyframes flicker { 0%,100%{opacity:.4} 20%{opacity:.7} 40%{opacity:.3} 60%{opacity:.6} 80%{opacity:.2} }
+.candle-flame { animation:candleFlame 0.8s ease-in-out infinite alternate; transform-origin:265px 153px; }
+@keyframes candleFlame { from{transform:scaleX(1) rotate(-3deg)} to{transform:scaleX(.85) rotate(3deg)} }
+
+.ob-headline{font-size:24px;font-weight:800;text-align:center;line-height:1.2;letter-spacing:-.5px;margin-bottom:10px;max-width:320px}
+.ob-sub{font-size:14px;color:var(--dim);text-align:center;line-height:1.6;max-width:300px;margin-bottom:28px}
+
+.ob-cta{
+  width:100%;max-width:280px;padding:16px;
+  background:linear-gradient(135deg,var(--brand-lt),var(--brand));
+  color:#FFE0E6;font-family:var(--f);font-size:16px;font-weight:800;
+  border:none;border-radius:14px;cursor:pointer;letter-spacing:.2px;
+  box-shadow:0 4px 20px var(--brand-gl);transition:transform .2s,box-shadow .2s;
+}
+.ob-cta:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(101,8,31,.65)}
+
+/* Screen 2 — type cards */
+.ob-headline-s2{font-size:22px;font-weight:800;text-align:center;line-height:1.2;letter-spacing:-.4px;margin-bottom:8px}
+.ob-sub-s2{font-size:13px;color:var(--dim);text-align:center;margin-bottom:20px}
+.ob-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:340px}
+.ob-card{
+  background:var(--card);border:2px solid var(--bdr);
+  border-radius:18px;padding:22px 14px 18px;
+  cursor:pointer;text-align:center;transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.ob-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+.ob-card.el::before{background:radial-gradient(circle at 50% 0%,rgba(245,183,49,.2),transparent 70%)}
+.ob-card.ag::before{background:radial-gradient(circle at 50% 0%,rgba(34,208,240,.2),transparent 70%)}
+.ob-card:hover{transform:translateY(-3px)}
+.ob-card.el:hover{border-color:var(--elec);box-shadow:0 6px 24px rgba(245,183,49,.25)}
+.ob-card.ag:hover{border-color:var(--agua);box-shadow:0 6px 24px rgba(34,208,240,.25)}
+.ob-card:hover::before{opacity:1}
+.ob-card-icon{font-size:42px;margin-bottom:10px;line-height:1}
+.ob-card-name{font-size:15px;font-weight:800;letter-spacing:.3px}
+.ob-card.el .ob-card-name{color:var(--elec)}
+.ob-card.ag .ob-card-name{color:var(--agua)}
+.ob-card-desc{font-size:11px;color:var(--dim);margin-top:5px;line-height:1.4}
+.ob-skip{margin-top:16px;font-size:12px;color:var(--mut);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.ob-skip:hover{color:var(--dim)}
+
+/* Slogan */
+.ob-slogan{
+  font-size:15px;font-weight:700;font-style:italic;
+  color:var(--brand-lt);letter-spacing:.2px;
+  margin-bottom:10px;text-align:center;
+  position:relative;display:inline-block;
+}
+.ob-slogan::before,.ob-slogan::after{
+  content:'"';font-size:28px;font-style:normal;
+  color:var(--brand);opacity:.5;line-height:0;vertical-align:-.2em;
+}
+/* Slogan in topbar (mini version) */
+.topbar-slogan{
+  font-size:10px;font-weight:600;font-style:italic;
+  color:var(--mut);letter-spacing:.1px;display:none;
+}
+@media(min-width:760px){.topbar-slogan{display:block}}
+
+/* ── TOPBAR ────────────────────────────────── */
+#topbar{position:fixed;top:0;left:0;right:0;height:62px;background:rgba(12,6,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;padding:0 16px;z-index:900}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.4px;white-space:nowrap;cursor:pointer;user-select:none}
+.logo-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--brand-lt),var(--brand-dk));border:1px solid var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 2px 16px var(--brand-gl);animation:lglow 3s ease-in-out infinite}
+@keyframes lglow{0%,100%{box-shadow:0 2px 16px var(--brand-gl)}50%{box-shadow:0 2px 26px rgba(101,8,31,.75)}}
+.logo-mx{color:var(--dim);font-weight:500}
+.vd{width:1px;height:26px;background:var(--bdr);flex-shrink:0}
+.chips{display:flex;gap:7px}
+.chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--bdr);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.chip-n{font-size:15px;font-weight:800;line-height:1}
+.chip.el .chip-dot{background:var(--elec);box-shadow:0 0 6px var(--elec)}.chip.el .chip-n{color:var(--elec)}
+.chip.ag .chip-dot{background:var(--agua);box-shadow:0 0 6px var(--agua)}.chip.ag .chip-n{color:var(--agua)}
+.sp{flex:1}
+.topbar-btns{display:flex;gap:6px}
+.tbar-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--bdr);background:var(--card);font-size:12px;font-weight:700;cursor:pointer;color:var(--dim);transition:all .2s;letter-spacing:.2px}
+.tbar-btn:hover{color:var(--tx)}
+.tbar-btn.on{border-color:var(--brand-lt);color:#FFD0D8;background:var(--brand-sub)}
+
+/* ── LEFT SIDEBAR — LAYERS ─────────────────── */
+#layer-panel{
+  position:fixed;left:0;top:62px;bottom:34px;
+  width:220px;z-index:850;
+  background:rgba(12,6,8,.95);backdrop-filter:blur(24px);
+  border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;
+  transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+}
+#layer-panel.open{transform:translateX(0)}
+#layer-toggle-btn{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);
+  z-index:851;background:var(--card);border:1px solid var(--bdr);
+  border-left:none;border-radius:0 8px 8px 0;
+  padding:12px 7px;cursor:pointer;color:var(--mut);font-size:14px;transition:all .2s;
+}
+#layer-toggle-btn:hover{color:var(--tx)}
+#layer-panel.open+#layer-toggle-btn{left:220px}
+.lp-head{padding:16px 16px 12px;border-bottom:1px solid var(--bdr);font-size:12px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+.lp-body{padding:14px;flex:1}
+.layer-card{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:12px;padding:14px;margin-bottom:10px;
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.layer-card:hover{border-color:var(--bdr2)}
+.layer-card.on.el{border-color:rgba(245,183,49,.4);background:rgba(245,183,49,.06)}
+.layer-card.on.ag{border-color:rgba(34,208,240,.4);background:rgba(34,208,240,.06)}
+.lc-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.lc-icon{font-size:24px;line-height:1}
+.lc-label{font-size:14px;font-weight:800;letter-spacing:.2px;flex:1}
+.layer-card.on.el .lc-label{color:var(--elec)}
+.layer-card.on.ag .lc-label{color:var(--agua)}
+.layer-card:not(.on) .lc-label{color:var(--mut)}
+.lc-toggle{width:36px;height:20px;border-radius:10px;background:var(--bdr2);position:relative;transition:background .2s;flex-shrink:0}
+.lc-toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--mut);top:3px;left:3px;transition:all .2s}
+.layer-card.on.el .lc-toggle{background:rgba(245,183,49,.3)}.layer-card.on.el .lc-toggle::after{background:var(--elec);left:19px}
+.layer-card.on.ag .lc-toggle{background:rgba(34,208,240,.3)}.layer-card.on.ag .lc-toggle::after{background:var(--agua);left:19px}
+.lc-count{font-size:11px;color:var(--dim);font-weight:600}
+.lc-count span{font-weight:800}
+.lc-count.el span{color:var(--elec)}.lc-count.ag span{color:var(--agua)}
+.lp-info{padding:14px;border-top:1px solid var(--bdr);font-size:11px;color:var(--mut);line-height:1.5}
+.lp-info strong{color:var(--dim)}
+
+/* ── FAB ───────────────────────────────────── */
+#fab{position:fixed;bottom:50px;right:22px;z-index:900;width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:var(--tx);font-size:30px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 28px var(--brand-gl);transition:transform .2s,box-shadow .2s}
+#fab:hover{transform:scale(1.07);box-shadow:0 6px 36px rgba(101,8,31,.7)}
+#fab.cancel{background:linear-gradient(135deg,#FF3D3D,#BB0000);box-shadow:0 4px 24px rgba(255,61,61,.4)}
+
+/* ── PLACING BANNER ────────────────────────── */
+#pbanner{position:fixed;top:74px;left:50%;transform:translateX(-50%);z-index:950;display:none;align-items:center;gap:10px;background:rgba(101,8,31,.96);backdrop-filter:blur(10px);border:1px solid var(--brand-lt);border-radius:24px;padding:10px 22px;font-size:13px;font-weight:700;color:#FFD0D8;white-space:nowrap;box-shadow:0 4px 20px var(--brand-gl)}
+#pbanner.show{display:flex}
+
+/* ── TICKER ────────────────────────────────── */
+#ticker{position:fixed;bottom:0;left:0;right:0;height:34px;background:rgba(12,6,8,.9);border-top:1px solid var(--bdr);z-index:800;display:flex;align-items:center;overflow:hidden}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tmove 40s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+.tick-item{padding:0 24px;font-size:11px;font-weight:600;color:var(--dim);display:flex;align-items:center;gap:6px;border-right:1px solid var(--bdr)}
+.tick-item.el{color:var(--elec)}.tick-item.ag{color:var(--agua)}
+@keyframes tmove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── MODAL ─────────────────────────────────── */
+#modal-bg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
+#modal-bg.open{display:flex}
+.sheet{width:100%;max-width:540px;max-height:92vh;background:var(--surf);border:1px solid var(--bdr);border-bottom:none;border-radius:20px 20px 0 0;display:flex;flex-direction:column;animation:shup .3s cubic-bezier(.4,0,.2,1)}
+@keyframes shup{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.s-handle{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0}
+.s-head{padding:16px 22px 0}.s-title{font-size:20px;font-weight:800;letter-spacing:-.4px}.s-sub{font-size:13px;color:var(--dim);margin-top:3px}
+.s-body{padding:18px 22px 32px;overflow-y:auto;flex:1}
+.steps{display:flex;gap:6px;margin-bottom:18px}
+.step{flex:1;height:3px;border-radius:2px;background:var(--bdr);transition:background .3s}
+.step.done{background:var(--brand-lt)}.step.active{background:var(--brand-lt);opacity:.5}
+
+.type-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.tcard{background:var(--card);border:2px solid var(--bdr);border-radius:14px;padding:20px 12px 16px;cursor:pointer;text-align:center;transition:all .18s;position:relative;overflow:hidden}
+.tcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+.tcard.el::before{background:radial-gradient(circle at 50% 0%,rgba(245,183,49,.18),transparent 70%)}
+.tcard.ag::before{background:radial-gradient(circle at 50% 0%,rgba(34,208,240,.18),transparent 70%)}
+.tcard.sel.el{border-color:var(--elec)}.tcard.sel.ag{border-color:var(--agua)}.tcard.sel::before{opacity:1}
+.tcard-icon{font-size:38px;margin-bottom:8px;line-height:1}.tcard-name{font-size:14px;font-weight:800;letter-spacing:.3px}
+.tcard.el .tcard-name{color:var(--elec)}.tcard.ag .tcard-name{color:var(--agua)}
+.tcard-desc{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.4}
+
+.loc-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.loc-btn{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:13px 14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--dim);transition:all .18s}
+.loc-btn:hover{border-color:var(--bdr2);color:var(--tx)}
+.loc-btn.active{border-color:var(--brand-lt);color:#FFD0D8;background:var(--brand-sub)}
+.loc-btn .lic{font-size:22px}
+.loc-st{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:11px 14px;font-size:12px;color:var(--dim);margin-bottom:12px;display:flex;align-items:center;gap:8px;transition:all .2s}
+.loc-st.ok{border-color:var(--grn);color:var(--grn)}
+.nbr-banner{background:rgba(245,183,49,.08);border:1px solid rgba(245,183,49,.25);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:600;color:var(--elec);display:none;align-items:center;gap:8px;margin-bottom:12px;line-height:1.4}
+.nbr-banner.show{display:flex}
+
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:11px;font-weight:700;color:var(--dim);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase}
+.fld input{width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;color:var(--tx);font-family:var(--f);font-size:14px;outline:none;transition:border-color .18s}
+.fld input:focus{border-color:var(--brand-lt)}.fld input::placeholder{color:var(--mut)}
+.privacy{background:rgba(34,208,240,.06);border:1px solid rgba(34,208,240,.18);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--dim);line-height:1.6;display:flex;gap:9px;margin-bottom:14px}
+.privacy .pi{font-size:16px;flex-shrink:0;margin-top:1px}
+
+.photo-wrap{margin-bottom:14px}.photo-wrap>label{display:block;font-size:11px;font-weight:700;color:var(--dim);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase}
+.photo-drop{background:var(--card);border:2px dashed var(--bdr);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
+.photo-drop:hover{border-color:var(--agua)}
+.photo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ph-icon{font-size:32px;margin-bottom:6px}.ph-txt{font-size:13px;font-weight:600;color:var(--dim)}.ph-sub{font-size:11px;color:var(--mut);margin-top:3px}
+#photo-prev{width:100%;height:140px;border-radius:10px;object-fit:cover;border:1px solid var(--bdr);display:none}
+
+.btn-row{display:grid;grid-template-columns:auto 1fr;gap:8px;margin-top:4px}
+.btn{padding:14px 20px;border-radius:12px;border:none;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-back{background:var(--card);border:1px solid var(--bdr);color:var(--dim)}.btn-back:hover{border-color:var(--bdr2);color:var(--tx)}
+.btn-brand{background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;box-shadow:0 3px 16px var(--brand-gl)}
+.btn-brand:hover{transform:translateY(-1px);box-shadow:0 5px 22px rgba(101,8,31,.65)}
+.btn-brand:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-agua{background:linear-gradient(135deg,var(--agua),var(--agua-dk));color:#fff;box-shadow:0 3px 16px var(--agua-gl)}
+.btn-agua:hover{transform:translateY(-1px)}.btn-agua:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+/* ── POPUPS ────────────────────────────────── */
+.leaflet-popup-content-wrapper{background:var(--surf)!important;border:1px solid var(--bdr)!important;border-radius:14px!important;box-shadow:0 8px 40px rgba(0,0,0,.7)!important;padding:0!important;overflow:hidden}
+.leaflet-popup-tip-container{display:none}.leaflet-popup-content{margin:0!important}
+.leaflet-popup-close-button{color:var(--dim)!important;top:8px!important;right:10px!important;font-size:18px!important;z-index:10}
+.popup{min-width:230px;max-width:290px;font-family:var(--f)}
+.pp-photo{width:100%;height:140px;object-fit:cover;display:block}
+.pp-body{padding:14px 16px 16px}
+.pp-type{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:800;margin-bottom:8px;letter-spacing:-.2px}
+.pp-type.el{color:var(--elec)}.pp-type.ag{color:var(--agua)}
+.pp-badge{background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.3);color:var(--grn);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:auto}
+.pp-row{font-size:12px;color:var(--dim);margin-bottom:3px}.pp-row strong{color:var(--tx)}
+.pp-zone{background:rgba(255,75,31,.1);border:1px solid rgba(255,75,31,.25);border-radius:8px;padding:9px 12px;margin:8px 0 10px;font-size:12px;font-weight:700;color:#FF8A6E;display:flex;align-items:center;gap:7px;line-height:1.4}
+.vote-bar{margin-top:8px;background:var(--card);border-radius:6px;overflow:hidden;height:5px}
+.vote-fill{height:100%;background:linear-gradient(90deg,var(--elec),var(--elec-zone));border-radius:6px;transition:width .4s}
+.pp-acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.pp-acts.single{grid-template-columns:1fr}
+.pbtn{padding:8px 6px;border-radius:9px;border:1px solid var(--bdr);background:var(--card);color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;transition:all .18s;text-align:center}
+.pbtn.conf:hover{border-color:rgba(245,183,49,.5);color:var(--elec);background:rgba(245,183,49,.08)}
+.pbtn.res:hover{border-color:rgba(31,209,138,.5);color:var(--grn);background:rgba(31,209,138,.08)}
+.pbtn.rep{border-color:rgba(34,208,240,.3);color:var(--agua)}.pbtn.rep:hover{background:rgba(34,208,240,.08)}
+.pbtn.adm{border-color:rgba(101,8,31,.5);color:#FFD0D8;background:var(--brand-sub)}.pbtn.adm:hover{background:rgba(101,8,31,.2)}
+
+/* ── RIGHT SIDEBAR ─────────────────────────── */
+#sidebar{position:fixed;top:62px;right:0;bottom:34px;width:290px;background:rgba(12,6,8,.94);backdrop-filter:blur(24px);border-left:1px solid var(--bdr);z-index:850;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+#sidebar.open{transform:translateX(0)}
+#stoggle{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:851;background:var(--card);border:1px solid var(--bdr);border-right:none;border-radius:8px 0 0 8px;padding:12px 7px;cursor:pointer;color:var(--mut);font-size:14px;transition:all .2s}
+#stoggle:hover{color:var(--tx)}
+#sidebar.open+#stoggle{right:290px}
+.sb-head{padding:14px 14px 10px;border-bottom:1px solid var(--bdr);font-size:12px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:7px}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--brand-lt);box-shadow:0 0 6px var(--brand-gl);animation:sbp 1.8s ease-in-out infinite}
+@keyframes sbp{0%,100%{opacity:1}50%{opacity:.3}}
+#sb-list{flex:1;overflow-y:auto;padding:8px;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent}
+.sb-item{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:border-color .18s}
+.sb-item.el:hover{border-color:rgba(245,183,49,.4)}.sb-item.ag:hover{border-color:rgba(34,208,240,.4)}
+.sb-h{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;margin-bottom:2px}
+.sb-h.el{color:var(--elec)}.sb-h.ag{color:var(--agua)}
+.sb-m{font-size:11px;color:var(--dim);line-height:1.5}
+.sb-empty{padding:36px 14px;text-align:center;color:var(--mut);font-size:12px;line-height:1.7}
+.sb-ei{font-size:34px;display:block;margin-bottom:8px}
+
+/* ── ADMIN ─────────────────────────────────── */
+#admin-panel{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px}
+#admin-panel.open{display:flex}
+.admin-sheet{background:var(--surf);border:1px solid var(--brand-lt);border-radius:18px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 60px rgba(101,8,31,.5)}
+.admin-head{padding:18px 22px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
+.admin-head-title{font-size:18px;font-weight:800;letter-spacing:-.3px;flex:1}
+.admin-badge{background:var(--brand-sub);border:1px solid var(--brand-lt);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#FFD0D8}
+.admin-close{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--dim);font-size:13px;font-weight:700;transition:all .2s}
+.admin-close:hover{color:var(--tx)}
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--bdr);padding:0 16px}
+.admin-tab{padding:12px 16px;font-size:13px;font-weight:700;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.2px}
+.admin-tab.active{color:var(--tx);border-color:var(--brand-lt)}
+.admin-body{flex:1;overflow-y:auto;padding:12px 16px 20px;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent}
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.a-stat{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center}
+.a-stat-n{font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.a-stat-n.el{color:var(--elec)}.a-stat-n.ag{color:var(--agua)}.a-stat-n.all{color:#FFD0D8}
+.a-stat-l{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.a-report{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
+.a-report-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.a-report-info{flex:1;min-width:0}
+.a-report-head{font-size:13px;font-weight:800;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.a-report-head.el{color:var(--elec)}.a-report-head.ag{color:var(--agua)}
+.a-report-meta{font-size:11px;color:var(--dim);line-height:1.5}
+.a-report-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;flex-shrink:0}
+.a-report-badge.urgent{background:rgba(255,61,61,.15);border:1px solid rgba(255,61,61,.3);color:#FF7A7A}
+.a-report-badge.repair{background:rgba(34,208,240,.15);border:1px solid rgba(34,208,240,.3);color:var(--agua)}
+.a-report-acts{display:flex;gap:6px;margin-top:9px}
+.a-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--bdr);background:var(--card2);color:var(--dim);font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap}
+.a-btn.resolve{border-color:rgba(31,209,138,.4);color:var(--grn)}.a-btn.resolve:hover{background:rgba(31,209,138,.1)}
+.a-btn.danger{border-color:rgba(255,61,61,.4);color:#FF7A7A}.a-btn.danger:hover{background:rgba(255,61,61,.1)}
+.a-btn.fly{border-color:var(--bdr2)}.a-btn.fly:hover{color:var(--tx)}
+.a-photo-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--bdr);display:none}
+.admin-section{margin-bottom:8px}
+.admin-section-title{font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.admin-empty{padding:30px 0;text-align:center;color:var(--mut);font-size:13px;line-height:1.7}
+.admin-empty span{font-size:32px;display:block;margin-bottom:8px}
+
+/* ADMIN LOGIN */
+#admin-login{position:fixed;inset:0;z-index:2001;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:16px}
+#admin-login.open{display:flex}
+.login-sheet{background:var(--surf);border:1px solid var(--brand-lt);border-radius:18px;padding:28px 24px;width:100%;max-width:320px;box-shadow:0 8px 60px rgba(101,8,31,.5);text-align:center}
+.login-icon{font-size:40px;margin-bottom:12px}.login-title{font-size:20px;font-weight:800;margin-bottom:4px}.login-sub{font-size:13px;color:var(--dim);margin-bottom:20px}
+.login-input{width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;color:var(--tx);font-family:var(--f);font-size:15px;text-align:center;letter-spacing:4px;outline:none;margin-bottom:12px;transition:border-color .18s}
+.login-input:focus{border-color:var(--brand-lt)}
+.login-input.err{border-color:#FF4B4B;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.login-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* TOASTS */
+#toasts{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--bdr);border-radius:22px;padding:10px 18px;font-size:13px;font-weight:600;white-space:nowrap;animation:ti .22s ease}
+.toast.s{border-color:var(--grn);color:var(--grn)}.toast.i{border-color:var(--agua);color:var(--agua)}
+.toast.w{border-color:var(--elec);color:var(--elec)}.toast.e{border-color:#FF4B4B;color:#FF4B4B}
+.toast.b{border-color:var(--brand-lt);color:#FFD0D8}
+@keyframes ti{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOADING (under onboarding) */
+#loading{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
+#loading.out{opacity:0;pointer-events:none}
+.ld-bar{width:120px;height:2px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:8px}
+.ld-inner{height:100%;background:linear-gradient(90deg,var(--brand-lt),var(--agua));border-radius:2px;animation:lb 1.4s ease-in-out infinite}
+@keyframes lb{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+
+body.placing #map,body.placing #map *{cursor:crosshair!important}
+
+/* ── LIVE BADGE ── */
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,61,61,.12);border:1px solid rgba(255,61,61,.3);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:800;color:#FF7A7A;letter-spacing:.5px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#FF3D3D;box-shadow:0 0 6px #FF3D3D;animation:livePulse 1.2s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.updated-txt{font-size:10px;color:var(--mut);white-space:nowrap;display:none}
+@media(min-width:640px){.updated-txt{display:block}}
+
+/* ── CITY LABEL ── */
+#map-city-label{
+  position:fixed;bottom:42px;left:50%;transform:translateX(-50%);
+  z-index:500;pointer-events:none;
+  display:flex;align-items:center;gap:7px;
+  background:rgba(12,6,8,.78);backdrop-filter:blur(12px);
+  border:1px solid var(--bdr);border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:700;color:var(--dim);
+  letter-spacing:.3px;white-space:nowrap;
+}
+.mcl-dot{width:6px;height:6px;border-radius:50%;background:var(--brand-lt);box-shadow:0 0 6px var(--brand-gl)}
+
+/* ── HEAT LEGEND ── */
+#heat-legend{
+  position:fixed;bottom:50px;left:16px;z-index:500;
+  background:rgba(12,6,8,.84);backdrop-filter:blur(14px);
+  border:1px solid var(--bdr);border-radius:12px;
+  padding:10px 12px;min-width:110px;
+}
+.hl-title{font-size:9px;font-weight:800;color:var(--mut);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px}
+.hl-bar{margin-bottom:2px}
+.hl-grad-el{height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(255,75,31,.15),rgba(255,75,31,.9));margin-bottom:3px}
+.hl-grad-ag{height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(34,208,240,.1),rgba(34,208,240,.7));margin-bottom:3px}
+.hl-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--mut);font-weight:600}
+
+/* ── ZOOM CONTROLS ── */
+#zoom-btns{position:fixed;bottom:96px;right:22px;z-index:500;display:flex;flex-direction:column;gap:4px}
+.zoom-btn{width:36px;height:36px;border-radius:9px;background:rgba(12,6,8,.84);backdrop-filter:blur(14px);border:1px solid var(--bdr);color:var(--dim);font-size:20px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;font-weight:300}
+.zoom-btn:hover{color:var(--tx);border-color:var(--bdr2)}
+
+@media(max-width:520px){.chip-lbl{display:none}#sidebar{width:100vw;bottom:34px}#sidebar.open+#stoggle{right:100vw}#layer-panel{width:200px}#layer-panel.open+#layer-toggle-btn{left:200px}.ob-cards{max-width:100%}#map-city-label{font-size:10px;padding:4px 10px}#heat-legend{display:none}}
+</style>
+</head>
+<body>
+
+<!-- MAP LOADING INDICATOR (underneath onboarding) -->
+<div id="loading">
+  <div style="font-size:28px">⚡</div>
+  <div style="font-size:13px;color:var(--dim)">Cargando mapa…</div>
+  <div class="ld-bar"><div class="ld-inner"></div></div>
+</div>
+
+<!-- ══ ONBOARDING ══════════════════════════════════════════ -->
+<div id="onboarding">
+
+  <!-- SCREEN 1: WELCOME -->
+  <div class="ob-screen active" id="ob-s1">
+    <div class="ob-brand">
+      <div class="ob-mark">⚡</div>
+      <span>Apagones <span class="ob-mx">MX</span></span>
+    </div>
+
+    <!-- SVG: Frustrated person, no light -->
+    <svg class="ob-illo" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="roomGrad" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#1A0E14"/>
+          <stop offset="100%" stop-color="#0C0608"/>
+        </radialGradient>
+        <radialGradient id="candleGlow" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#F5B731" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#F5B731" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Room background -->
+      <rect width="320" height="220" fill="url(#roomGrad)" rx="16"/>
+      <!-- Floor line -->
+      <line x1="0" y1="185" x2="320" y2="185" stroke="#2A1520" stroke-width="1.5"/>
+      <!-- Window (night) -->
+      <rect x="18" y="18" width="75" height="60" rx="6" fill="#0A0F2E" stroke="#2A1520" stroke-width="1.5"/>
+      <line x1="55" y1="18" x2="55" y2="78" stroke="#2A1520" stroke-width="1.2"/>
+      <line x1="18" y1="48" x2="93" y2="48" stroke="#2A1520" stroke-width="1.2"/>
+      <!-- Stars -->
+      <circle cx="32" cy="32" r="1.5" fill="white" opacity=".9"/>
+      <circle cx="48" cy="26" r="1" fill="white" opacity=".7"/>
+      <circle cx="65" cy="34" r="1.5" fill="white" opacity=".8"/>
+      <circle cx="38" cy="60" r="1" fill="white" opacity=".6"/>
+      <circle cx="75" cy="55" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="82" cy="28" r="1" fill="white" opacity=".5"/>
+      <!-- Moon (crescent) -->
+      <path d="M60 28 A8 8 0 1 1 68 42 A6 6 0 1 0 60 28" fill="#E8E4C0" opacity=".85"/>
+
+      <!-- Dead lightbulb (ceiling) -->
+      <line x1="160" y1="0" x2="160" y2="22" stroke="#2A1520" stroke-width="2"/>
+      <ellipse cx="160" cy="32" rx="18" ry="16" fill="#1A0E14" stroke="#3B1D2A" stroke-width="1.5"/>
+      <path d="M152 42 L168 42 L166 50 L154 50Z" fill="#2A1520" stroke="#3B1D2A" stroke-width="1"/>
+      <rect x="155" y="50" width="10" height="4" rx="1.5" fill="#2A1520"/>
+      <!-- X on bulb -->
+      <path d="M153 24 L167 40 M167 24 L153 40" stroke="#FF4B4B" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+
+      <!-- Candle on table -->
+      <rect x="258" y="155" width="14" height="30" rx="4" fill="#F5E6A3"/>
+      <g class="candle-flame">
+      <path d="M265 153 Q268 144 265 141 Q262 144 265 153Z" fill="#F5B731"/>
+      <circle cx="265" cy="148" r="10" fill="url(#candleGlow)"/>
+      </g>
+      <!-- Table -->
+      <rect x="240" y="185" width="50" height="8" rx="3" fill="#2A1520"/>
+      <rect x="244" y="193" width="6" height="22" rx="2" fill="#2A1520"/>
+      <rect x="280" y="193" width="6" height="22" rx="2" fill="#2A1520"/>
+
+      <!-- Person shadow on floor -->
+      <ellipse cx="158" cy="187" rx="34" ry="6" fill="black" opacity=".3"/>
+
+      <!-- Legs (dark pants) -->
+      <rect x="140" y="162" width="16" height="28" rx="7" fill="#1A0E14"/>
+      <rect x="162" y="162" width="16" height="28" rx="7" fill="#1A0E14"/>
+      <!-- Shoes -->
+      <ellipse cx="148" cy="191" rx="13" ry="5" fill="#0C0608"/>
+      <ellipse cx="170" cy="191" rx="13" ry="5" fill="#0C0608"/>
+
+      <!-- Body (brand color shirt) -->
+      <path d="M133 120 Q130 158 133 168 Q158 175 185 168 Q188 158 185 120 Q170 112 158 112 Q146 112 133 120Z" fill="#65081F"/>
+      <!-- Shirt collar -->
+      <path d="M152 112 L158 125 L164 112" fill="#8B0E2A"/>
+
+      <!-- Neck -->
+      <rect x="151" y="104" width="14" height="15" rx="6" fill="#A0715E"/>
+
+      <!-- Head -->
+      <ellipse cx="158" cy="93" rx="26" ry="24" fill="#A0715E"/>
+
+      <!-- Hair -->
+      <path d="M132 90 Q135 68 158 70 Q181 68 184 90 Q182 72 158 70 Q134 72 132 90Z" fill="#180A06"/>
+      <path d="M132 90 Q129 82 132 78 Q134 86 135 90Z" fill="#180A06"/>
+      <path d="M184 90 Q187 82 184 78 Q182 86 181 90Z" fill="#180A06"/>
+
+      <!-- Eyebrows (angry) -->
+      <path d="M142 80 Q146 76 152 79" stroke="#180A06" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M164 79 Q170 76 174 80" stroke="#180A06" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+      <!-- Eyes (frustrated, squinting) -->
+      <path d="M141 86 Q145 82 149 86 Q145 90 141 86Z" fill="#180A06"/>
+      <path d="M167 86 Q171 82 175 86 Q171 90 167 86Z" fill="#180A06"/>
+      <!-- Eye shine -->
+      <circle cx="143" cy="84" r="1.5" fill="white" opacity=".6"/>
+      <circle cx="169" cy="84" r="1.5" fill="white" opacity=".6"/>
+
+      <!-- Mouth (annoyed open) -->
+      <path d="M149 103 Q158 97 167 103" stroke="#6B2E1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+      <!-- Cheek blush (stress) -->
+      <ellipse cx="140" cy="95" rx="7" ry="4" fill="#C04040" opacity=".25"/>
+      <ellipse cx="176" cy="95" rx="7" ry="4" fill="#C04040" opacity=".25"/>
+
+      <!-- Left arm (raised up in frustration) -->
+      <g class="arm-left-1">
+      <path d="M136 130 Q110 118 96 98" stroke="#8B5E52" stroke-width="13" fill="none" stroke-linecap="round"/>
+      <path d="M136 130 Q110 118 96 98" stroke="#A0715E" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <!-- Left hand -->
+      <circle cx="93" cy="95" r="10" fill="#A0715E"/>
+      <!-- Fingers up -->
+      <rect x="87" y="82" width="5" height="12" rx="2.5" fill="#B07A68"/>
+      <rect x="93" y="80" width="5" height="14" rx="2.5" fill="#B07A68"/>
+      <rect x="99" y="83" width="5" height="11" rx="2.5" fill="#B07A68"/>
+      </g>
+
+      <!-- Right arm (raised) -->
+      <g class="arm-right-1">
+      <path d="M180 130 Q206 118 220 98" stroke="#8B5E52" stroke-width="13" fill="none" stroke-linecap="round"/>
+      <path d="M180 130 Q206 118 220 98" stroke="#A0715E" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <!-- Right hand -->
+      <circle cx="223" cy="95" r="10" fill="#A0715E"/>
+      <rect x="218" y="82" width="5" height="12" rx="2.5" fill="#B07A68"/>
+      <rect x="224" y="80" width="5" height="14" rx="2.5" fill="#B07A68"/>
+      <rect x="230" y="83" width="5" height="11" rx="2.5" fill="#B07A68"/>
+      </g>
+
+      <!-- Frustration sparks -->
+      <g class="sparks-1">
+      <path d="M88 80 L82 68 L89 74 L86 60" stroke="#F5B731" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".8"/>
+      <path d="M228 78 L234 65 L227 72 L230 58" stroke="#F5B731" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".8"/>
+      <!-- Sweat drops -->
+      <path d="M178 72 Q181 65 178 62 Q175 65 178 72Z" fill="#22D0F0" opacity=".7"/>
+      <path d="M186 62 Q188 56 186 53 Q184 56 186 62Z" fill="#22D0F0" opacity=".5"/>
+      </g>
+
+      <!-- Question marks (confused) -->
+      <text x="115" y="50" font-size="22" font-weight="800" fill="#65081F" opacity=".7" font-family="'Plus Jakarta Sans',sans-serif">?</text>
+      <text x="192" y="48" font-size="16" font-weight="800" fill="#65081F" opacity=".5" font-family="'Plus Jakarta Sans',sans-serif">?</text>
+    </svg>
+
+    <div class="ob-headline">¡Hola Vecino! 👋<br/>¿Otra vez se fue la luz?</div>
+    <div class="ob-slogan">"Tu reporte, nuestra solución"</div>
+    <div class="ob-sub">¿O sigue esa fuga por tu cuadra?<br/>Lo lamento — pero juntos podemos reportarlo y hacer algo al respecto.</div>
+    <button class="ob-cta" onclick="goObScreen(2)">Cuéntanos qué pasó →</button>
+  </div>
+
+  <!-- SCREEN 2: CHOOSE TYPE -->
+  <div class="ob-screen" id="ob-s2">
+    <div class="ob-brand">
+      <div class="ob-mark">⚡</div>
+      <span>Apagones <span class="ob-mx">MX</span></span>
+    </div>
+
+    <!-- SVG: Person pointing to both options -->
+    <svg class="ob-illo" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bgGrad2" cx="50%" cy="80%">
+          <stop offset="0%" stop-color="#1A0E14"/>
+          <stop offset="100%" stop-color="#0C0608"/>
+        </radialGradient>
+        <radialGradient id="elecGlow" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#F5B731" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#F5B731" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="waterGlow" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#22D0F0" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#22D0F0" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="320" height="220" fill="url(#bgGrad2)" rx="16"/>
+
+      <!-- LEFT: ELECTRICITY SIDE -->
+      <g class="elec-bounce">
+      <!-- Glow circle -->
+      <circle cx="58" cy="90" r="45" fill="url(#elecGlow)"/>
+      <!-- Lightning bolt (large) -->
+      <path d="M68 48 L52 88 L62 88 L46 130 L74 80 L62 80 L78 48Z" fill="#F5B731" filter="drop-shadow(0 0 8px #F5B731)"/>
+      <!-- Electricity sparks -->
+      <circle cx="35" cy="70" r="3" fill="#F5B731" opacity=".6"/>
+      <circle cx="82" cy="58" r="2" fill="#F5B731" opacity=".5"/>
+      <circle cx="28" cy="105" r="2.5" fill="#F5B731" opacity=".4"/>
+      </g>
+      <!-- Label -->
+      <text x="58" y="150" text-anchor="middle" font-size="11" font-weight="800" fill="#F5B731" opacity=".9" font-family="'Plus Jakarta Sans',sans-serif">APAGÓN</text>
+
+      <!-- RIGHT: WATER SIDE -->
+      <g class="water-bounce">
+      <!-- Glow circle -->
+      <circle cx="262" cy="90" r="45" fill="url(#waterGlow)"/>
+      <!-- Water drop (large) -->
+      <path d="M262 45 Q242 72 242 90 A20 20 0 0 0 282 90 Q282 72 262 45Z" fill="#22D0F0" filter="drop-shadow(0 0 8px #22D0F0)"/>
+      <!-- Shine on drop -->
+      <path d="M256 60 Q252 68 252 76" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+      <!-- Water drips -->
+      <path d="M248 118 Q246 125 248 128 Q250 125 248 118Z" fill="#22D0F0" opacity=".6"/>
+      <path d="M258 125 Q256 130 258 133 Q260 130 258 125Z" fill="#22D0F0" opacity=".5"/>
+      <path d="M270 120 Q268 126 270 129 Q272 126 270 120Z" fill="#22D0F0" opacity=".4"/>
+      </g>
+      <!-- Label -->
+      <text x="262" y="150" text-anchor="middle" font-size="11" font-weight="800" fill="#22D0F0" opacity=".9" font-family="'Plus Jakarta Sans',sans-serif">FUGA DE AGUA</text>
+
+      <!-- FLOOR -->
+      <line x1="0" y1="185" x2="320" y2="185" stroke="#2A1520" stroke-width="1.5"/>
+      <!-- Person shadow -->
+      <ellipse cx="160" cy="188" rx="30" ry="5" fill="black" opacity=".3"/>
+
+      <!-- PERSON (center, pointing) -->
+      <!-- Legs -->
+      <rect x="145" y="165" width="14" height="24" rx="6" fill="#1A0E14"/>
+      <rect x="163" y="165" width="14" height="24" rx="6" fill="#1A0E14"/>
+      <ellipse cx="152" cy="190" rx="11" ry="4" fill="#0C0608"/>
+      <ellipse cx="170" cy="190" rx="11" ry="4" fill="#0C0608"/>
+      <!-- Body -->
+      <path d="M137 122 Q134 160 137 170 Q158 176 181 170 Q184 160 181 122 Q168 115 158 115 Q148 115 137 122Z" fill="#65081F"/>
+      <path d="M154 115 L158 127 L162 115" fill="#8B0E2A"/>
+      <!-- Neck -->
+      <rect x="152" y="107" width="12" height="13" rx="5" fill="#A0715E"/>
+      <!-- Head -->
+      <ellipse cx="158" cy="97" rx="23" ry="21" fill="#A0715E"/>
+      <!-- Hair -->
+      <path d="M135 93 Q138 74 158 76 Q178 74 181 93 Q179 77 158 76 Q137 77 135 93Z" fill="#180A06"/>
+      <!-- Eyebrows (neutral/helpful) -->
+      <path d="M147 85 Q151 82 155 85" stroke="#180A06" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M161 85 Q165 82 169 85" stroke="#180A06" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Eyes (open, friendly) -->
+      <ellipse cx="151" cy="89" rx="5" ry="5.5" fill="white"/>
+      <ellipse cx="165" cy="89" rx="5" ry="5.5" fill="white"/>
+      <circle cx="152" cy="90" r="3.5" fill="#180A06"/>
+      <circle cx="166" cy="90" r="3.5" fill="#180A06"/>
+      <circle cx="153" cy="88" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="167" cy="88" r="1.5" fill="white" opacity=".7"/>
+      <!-- Smile -->
+      <path d="M150 104 Q158 110 166 104" stroke="#6B2E1A" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+      <!-- LEFT ARM pointing to electricity -->
+      <g class="arm-left-2">
+      <path d="M138 135 Q108 120 80 105" stroke="#8B5E52" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M138 135 Q108 120 80 105" stroke="#A0715E" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <!-- Left hand pointing -->
+      <circle cx="76" cy="103" r="9" fill="#A0715E"/>
+      <path d="M68 99 Q76 94 84 99" fill="#B07A68"/>
+      <!-- Pointing finger -->
+      <rect x="62" y="96" width="14" height="6" rx="3" fill="#B07A68"/>
+      </g>
+
+      <!-- RIGHT ARM pointing to water -->
+      <g class="arm-right-2">
+      <path d="M178 135 Q208 120 236 105" stroke="#8B5E52" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M178 135 Q208 120 236 105" stroke="#A0715E" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <!-- Right hand pointing -->
+      <circle cx="240" cy="103" r="9" fill="#A0715E"/>
+      <path d="M232 99 Q240 94 248 99" fill="#B07A68"/>
+      <rect x="240" y="96" width="14" height="6" rx="3" fill="#B07A68"/>
+      </g>
+
+      <!-- Speech bubble -->
+      <rect x="120" y="55" width="76" height="28" rx="10" fill="#1A0E14" stroke="#2A1520" stroke-width="1.5"/>
+      <path d="M155 83 L158 90 L161 83" fill="#1A0E14" stroke="#2A1520" stroke-width="1.5" stroke-linejoin="round"/>
+      <text x="158" y="73" text-anchor="middle" font-size="11" font-weight="700" fill="#9E7080" font-family="'Plus Jakarta Sans',sans-serif">¿Qué reportamos?</text>
+    </svg>
+
+    <div class="ob-headline-s2">¿Qué está pasando?</div>
+    <div class="ob-sub-s2">Selecciona el tipo de incidencia para comenzar</div>
+
+    <div class="ob-cards">
+      <div class="ob-card el" onclick="obChoose('apagon')">
+        <div class="ob-card-icon">⚡</div>
+        <div class="ob-card-name">APAGÓN</div>
+        <div class="ob-card-desc">Sin electricidad en la zona</div>
+      </div>
+      <div class="ob-card ag" onclick="obChoose('agua')">
+        <div class="ob-card-icon">💧</div>
+        <div class="ob-card-name">FUGA DE AGUA</div>
+        <div class="ob-card-desc">Tubería rota o fuga visible</div>
+      </div>
+    </div>
+
+    <div class="ob-skip" onclick="enterMap(null)">Solo quiero ver el mapa</div>
+  </div>
+</div>
+<!-- ══ END ONBOARDING ══════════════════════════════════════ -->
+
+<header id="topbar">
+  <div class="logo" id="logo-btn" onclick="logoClick()">
+    <div class="logo-mark">⚡</div>
+    <span>Apagones <span class="logo-mx">MX</span></span>
+  </div>
+  <div class="topbar-slogan">Tu reporte, nuestra solución</div>
+  <div class="vd"></div>
+  <div class="chips">
+    <div class="chip el"><span class="chip-dot"></span><span class="chip-n" id="cnt-el">0</span><span class="chip-lbl" style="color:var(--dim);font-size:11px;font-weight:500;margin-left:2px">Apagones</span></div>
+    <div class="chip ag"><span class="chip-dot"></span><span class="chip-n" id="cnt-ag">0</span><span class="chip-lbl" style="color:var(--dim);font-size:11px;font-weight:500;margin-left:2px">Fugas</span></div>
+  </div>
+  <div class="sp"></div>
+  <div class="topbar-btns">
+    <div class="live-badge" id="live-badge">
+      <span class="live-dot"></span> EN VIVO
+    </div>
+    <div class="updated-txt" id="updated-txt">—</div>
+    <button class="tbar-btn" onclick="openStats()" title="Estadísticas">📊</button>
+    <button class="tbar-btn" id="install-btn" onclick="installPWA()" title="Instalar app" style="display:none">📲</button>
+    <button class="tbar-btn" id="notif-btn" onclick="requestNotifications()" title="Activar notificaciones">🔔</button>
+    <button class="tbar-btn" id="admin-btn" onclick="openAdminLogin()" title="Panel Admin">🔐 Admin</button>
+  </div>
+</header>
+
+<div id="map"></div>
+
+<!-- City label on map -->
+<div id="map-city-label">
+  <span class="mcl-dot"></span>
+  Mérida, Yucatán
+</div>
+
+<!-- Heat legend -->
+<div id="heat-legend">
+  <div class="hl-title">INTENSIDAD</div>
+  <div class="hl-bar">
+    <div class="hl-grad-el"></div>
+    <div class="hl-labels"><span>Bajo</span><span>Alto</span></div>
+  </div>
+  <div class="hl-bar" style="margin-top:6px">
+    <div class="hl-grad-ag"></div>
+    <div class="hl-labels"><span style="color:var(--agua)">💧 Agua</span></div>
+  </div>
+</div>
+
+<!-- Zoom controls -->
+<div id="zoom-btns">
+  <button onclick="map.zoomIn()" class="zoom-btn">＋</button>
+  <button onclick="map.zoomOut()" class="zoom-btn">−</button>
+</div>
+<div id="pbanner">📍 Toca el mapa para ubicar — ESC para cancelar</div>
+<button id="fab" onclick="startFlow()">＋</button>
+<div id="toasts"></div>
+<div id="ticker"><div class="ticker-inner" id="ticker-inner"></div></div>
+
+<!-- LEFT SIDEBAR: LAYER PANEL -->
+<div id="layer-panel">
+  <div class="lp-head">🗺️ Capas del mapa</div>
+  <div class="lp-body">
+    <div class="layer-card on el" id="lcard-el" onclick="toggleLayer('apagon')">
+      <div class="lc-top">
+        <span class="lc-icon">⚡</span>
+        <span class="lc-label">Apagones</span>
+        <span class="lc-toggle"></span>
+      </div>
+      <div class="lc-count el">Activos: <span id="lp-cnt-el">0</span></div>
+    </div>
+    <div class="layer-card on ag" id="lcard-ag" onclick="toggleLayer('agua')">
+      <div class="lc-top">
+        <span class="lc-icon">💧</span>
+        <span class="lc-label">Fugas de Agua</span>
+        <span class="lc-toggle"></span>
+      </div>
+      <div class="lc-count ag">Activas: <span id="lp-cnt-ag">0</span></div>
+    </div>
+    <div class="layer-card" id="lcard-hist" onclick="toggleHistory()" style="margin-top:6px">
+      <div class="lc-top">
+        <span class="lc-icon">🕐</span>
+        <span class="lc-label" style="color:var(--dim)">Historial 7 días</span>
+        <span class="lc-toggle"></span>
+      </div>
+      <div class="lc-count" style="color:var(--mut)">Reportes resueltos: <span id="lp-cnt-hist">—</span></div>
+    </div>
+  </div>
+  <div class="lp-info">
+    <strong>⚡ Apagones</strong> expiran en 3h o cuando vecinos reporten que volvió la luz.<br/><br/>
+    <strong>💧 Fugas</strong> permanecen hasta que el equipo técnico confirme la reparación.
+  </div>
+</div>
+<button id="layer-toggle-btn" onclick="toggleLayerPanel()">☰</button>
+
+<!-- RIGHT SIDEBAR: REPORTS LIST -->
+<button id="stoggle" onclick="toggleSidebar()">◀</button>
+<div id="sidebar">
+  <div class="sb-head"><span class="sb-dot"></span>Reportes Activos</div>
+  <div id="sb-list"></div>
+</div>
+
+<!-- REPORT MODAL -->
+<div id="modal-bg" onclick="bgClick(event)">
+  <div class="sheet">
+    <div class="s-handle"></div>
+    <div class="s-head"><div class="s-title" id="s-title">Nuevo Reporte</div><div class="s-sub" id="s-sub">¿Qué está pasando?</div></div>
+    <div class="s-body">
+      <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
+      <div id="step-1">
+        <div class="type-row">
+          <div class="tcard el" id="tc-el" onclick="selType('apagon')"><div class="tcard-icon">⚡</div><div class="tcard-name">APAGÓN</div><div class="tcard-desc">Sin electricidad en la zona</div></div>
+          <div class="tcard ag" id="tc-ag" onclick="selType('agua')"><div class="tcard-icon">💧</div><div class="tcard-name">FUGA DE AGUA</div><div class="tcard-desc">Tubería rota o fuga visible</div></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-back" onclick="closeModal()">Cancelar</button><button class="btn btn-brand" id="btn-s1" onclick="goStep(2)" disabled>Continuar →</button></div>
+      </div>
+      <div id="step-2" style="display:none">
+        <div class="loc-row">
+          <button class="loc-btn" id="btn-gps" onclick="useGPS()"><span class="lic">🛰️</span><span><div style="font-size:13px;font-weight:700;color:var(--tx)">Mi ubicación</div><div style="font-size:10px;color:var(--dim)">GPS automático</div></span></button>
+          <button class="loc-btn" id="btn-map" onclick="useMapClick()"><span class="lic">🗺️</span><span><div style="font-size:13px;font-weight:700;color:var(--tx)">Marcar en mapa</div><div style="font-size:10px;color:var(--dim)">Toca la ubicación</div></span></button>
+        </div>
+        <div class="loc-st" id="loc-st"><span>📍</span><span id="loc-txt">Elige cómo ubicar tu reporte</span></div>
+        <div class="nbr-banner" id="nbr-banner"><span>🏘️</span><span id="nbr-txt"></span></div>
+        <div class="btn-row"><button class="btn btn-back" onclick="goStep(1)">← Atrás</button><button class="btn btn-brand" id="btn-s2" onclick="goStep(3)" disabled>Continuar →</button></div>
+      </div>
+      <div id="step-3" style="display:none">
+        <div class="fld"><label>Tu nombre</label><input type="text" id="f-nombre" placeholder="Ej. María González" maxlength="60" oninput="chkForm()"/></div>
+        <div class="fld"><label>Teléfono (WhatsApp)</label><input type="tel" id="f-tel" placeholder="+52 999 123 4567" maxlength="20" oninput="chkForm()"/></div>
+        <div class="photo-wrap" id="photo-wrap" style="display:none">
+          <label>Foto de la fuga (opcional)</label>
+          <div class="photo-drop"><input type="file" id="f-photo" accept="image/*" capture="environment" onchange="previewPhoto(event)"/>
+            <div id="ph-ph"><div class="ph-icon">📷</div><div class="ph-txt">Tomar foto o subir imagen</div><div class="ph-sub">Visible al tocar el pin</div></div>
+            <img id="photo-prev" alt=""/>
+          </div>
+        </div>
+        <div class="privacy"><span class="pi">🔒</span><span>Tu nombre y teléfono son <strong>estrictamente privados</strong>. Solo se usan para verificación anti-bots. Nunca aparecen en el mapa.</span></div>
+        <div class="btn-row"><button class="btn btn-back" onclick="goStep(2)">← Atrás</button><button class="btn btn-brand" id="btn-s3" onclick="submitReport()" disabled>Reportar ⚡</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS MODAL -->
+<div id="stats-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:18px;width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 60px rgba(0,0,0,.6)">
+    <div style="padding:18px 22px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px">📊</span>
+      <span style="font-size:18px;font-weight:800;flex:1">Estadísticas — Mérida</span>
+      <button onclick="document.getElementById('stats-modal').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--dim);font-family:var(--f);font-size:13px;font-weight:700">✕</button>
+    </div>
+    <div id="stats-body" style="flex:1;overflow-y:auto;padding:16px 20px 24px;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent"></div>
+  </div>
+</div>
+
+<!-- INSTALL PROMPT -->
+<div id="install-banner" style="position:fixed;bottom:42px;left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--brand-lt);border-radius:14px;padding:12px 16px;box-shadow:0 4px 24px rgba(101,8,31,.4);max-width:340px;width:calc(100% - 32px)">
+  <div class="logo-mark" style="width:36px;height:36px;font-size:18px;flex-shrink:0">⚡</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:13px;font-weight:800;margin-bottom:2px">Instalar Apagones MX</div>
+    <div style="font-size:11px;color:var(--dim)">Acceso rápido desde tu pantalla de inicio</div>
+  </div>
+  <button onclick="installPWA()" style="background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;border-radius:9px;padding:8px 14px;font-family:var(--f);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Instalar</button>
+  <button onclick="document.getElementById('install-banner').style.display='none'" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:18px;padding:2px;line-height:1">✕</button>
+</div>
+
+<!-- VERIFIED NEIGHBOR BADGE (shows on FAB) -->
+<div id="vecino-badge" style="position:fixed;bottom:82px;right:16px;z-index:901;display:none;align-items:center;gap:5px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.4);border-radius:12px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--grn)">
+  ⭐ Vecino Activo
+</div>
+
+<!-- NOTIFICATION TOAST (persistent) -->
+<div id="notif-prompt" style="position:fixed;top:74px;right:16px;z-index:950;display:none;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:280px">
+  <span style="font-size:22px">🔔</span>
+  <div style="flex:1">
+    <div style="font-size:12px;font-weight:700;margin-bottom:2px">¿Alertas de apagones?</div>
+    <div style="font-size:11px;color:var(--dim)">Recibe notificaciones cuando hay incidencias en tu zona</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:5px">
+    <button onclick="grantNotifications()" style="background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;border-radius:7px;padding:6px 10px;font-family:var(--f);font-size:11px;font-weight:800;cursor:pointer">Sí</button>
+    <button onclick="document.getElementById('notif-prompt').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:7px;padding:6px 10px;font-family:var(--f);font-size:11px;color:var(--dim);cursor:pointer">No</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-login">
+  <div class="login-sheet">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">Panel Admin</div>
+    <div class="login-sub">Contraseña de administrador</div>
+    <input type="password" class="login-input" id="pw-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()"/>
+    <div class="login-btns">
+      <button class="btn btn-back" onclick="document.getElementById('admin-login').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-brand" onclick="checkPw()">Entrar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-sheet">
+    <div class="admin-head">
+      <div style="font-size:20px">🔐</div>
+      <div class="admin-head-title">Panel de Administración</div>
+      <span class="admin-badge">ADMIN</span>
+      <button class="admin-close" onclick="closeAdmin()">Cerrar ✕</button>
+    </div>
+    <div class="admin-tabs">
+      <div class="admin-tab active" id="atab-overview" onclick="switchAdminTab('overview')">📊 Resumen</div>
+      <div class="admin-tab" id="atab-apagones" onclick="switchAdminTab('apagones')">⚡ Apagones</div>
+      <div class="admin-tab" id="atab-agua" onclick="switchAdminTab('agua')">💧 Fugas</div>
+    </div>
+    <div class="admin-body" id="admin-body"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+// KML Sources — tries local file first (no CORS), then proxied remote
+const KML_LOCAL  = './data/distritos.kml';
+const KML_TARGET = 'https://www.google.com/maps/d/kml?forcekml=1&mid=1Ufh66TquAPG2SgIejPlzQABoZyhX4CI&lid=cCLZA5ZUPu0';
+const KML_PROXIES = [
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'https://thingproxy.freeboard.io/fetch/'
+];
+const MERIDA  = [20.9674, -89.6237];
+const TTL_EL  = 3 * 60 * 60 * 1000;
+const RESOLVE_THRESHOLD = 3;
+const ADMIN_PASSWORD = 'apagones2025';
+const SB_URL = 'https://rwvnulxlygdjxvovxind.supabase.co';
+const SB_KEY = 'sb_publishable_ytmFRe5AcyNey2Q9h6-7bw_ap-tYaKh';
+const { createClient } = window.supabase;
+const db = createClient(SB_URL, SB_KEY);
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let map, glowPane;
+let districtLayers={}, glowLayers={}, aguaMarkers={};
+let layersOn={apagon:true,agua:true};
+let cachedReports=[], sidebarOpen=false, layerPanelOpen=false;
+let flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
+let adminMode=false, adminTab='overview';
+let logoClicks=0, logoTimer=null;
+
+// ══════════════════════════════════════════════
+//  ONBOARDING
+// ══════════════════════════════════════════════
+function goObScreen(n) {
+  const s1 = document.getElementById('ob-s1');
+  const s2 = document.getElementById('ob-s2');
+  s1.classList.remove('active'); s1.classList.add('exit');
+  setTimeout(() => { s1.style.display='none'; s2.classList.add('active'); }, 380);
+}
+
+function obChoose(type) {
+  enterMap(type);
+}
+
+function enterMap(preType) {
+  const ob = document.getElementById('onboarding');
+  ob.classList.add('hide');
+  setTimeout(() => { ob.remove(); }, 650);
+  if (preType) {
+    setTimeout(() => { startFlowWithType(preType); }, 700);
+  }
+}
+
+function startFlowWithType(type) {
+  // Reset state
+  flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
+  ['tc-el','tc-ag'].forEach(id=>document.getElementById(id)?.classList.remove('sel'));
+  document.getElementById('btn-s2').disabled=true;
+  document.getElementById('f-nombre').value='';
+  document.getElementById('f-tel').value='';
+  if(document.getElementById('photo-prev')) document.getElementById('photo-prev').style.display='none';
+  if(document.getElementById('ph-ph')) document.getElementById('ph-ph').style.display='block';
+  document.getElementById('nbr-banner').classList.remove('show');
+  document.getElementById('btn-gps').classList.remove('active');
+  document.getElementById('btn-map').classList.remove('active');
+  setLocStatus('Elige cómo ubicar tu reporte',false);
+  // Pre-select the type chosen in onboarding, skip step 1
+  selType(type);
+  goStep(2); // Jump directly to location step
+  openModal();
+}
+
+// ══════════════════════════════════════════════
+//  SUPABASE
+// ══════════════════════════════════════════════
+async function loadReports() {
+  try {
+    const res = await Promise.race([
+      db.from('reports').select('*').eq('resolved',false),
+      new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),7000))
+    ]);
+    if (res.error) throw res.error;
+    cachedReports = (res.data||[]).filter(r=>r.type==='agua'||(Date.now()-r.timestamp)<TTL_EL);
+  } catch(e){console.warn('loadReports:',e.message);}
+  return cachedReports;
+}
+async function saveReport(r){const{data,error}=await db.from('reports').insert([r]).select().single();if(error){console.error(error);return null;}return data;}
+async function resolveReport(id){await db.from('reports').update({resolved:true,resolved_at:Date.now()}).eq('id',id);}
+async function voteResolve(id){const{data}=await db.from('reports').select('resolve_votes').eq('id',id).single();if(!data)return false;const v=(data.resolve_votes||0)+1;await db.from('reports').update({resolve_votes:v}).eq('id',id);if(v>=RESOLVE_THRESHOLD){await resolveReport(id);return true;}return false;}
+async function requestRepair(id){const{data}=await db.from('reports').select('repair_requests').eq('id',id).single();if(data)await db.from('reports').update({repair_requests:(data.repair_requests||0)+1}).eq('id',id);}
+async function confirmReport(id){const{data}=await db.from('reports').select('confirmations').eq('id',id).single();if(data)await db.from('reports').update({confirmations:(data.confirmations||0)+1}).eq('id',id);}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+// ══════════════════════════════════════════════
+//  MAP
+// ══════════════════════════════════════════════
+function initMap(){
+  map=L.map('map',{center:MERIDA,zoom:13,zoomControl:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+  glowPane=map.createPane('glow');
+  glowPane.style.zIndex=399;
+  glowPane.style.filter='blur(14px)';
+  glowPane.style.opacity='0.7';
+  map.on('click',e=>{
+    if(!flow.placing)return;
+    flow.lat=e.latlng.lat;flow.lng=e.latlng.lng;flow.seccion=findSeccion(flow.lat,flow.lng);
+    stopPlacing();setLocOk(`✅ Ubicación marcada en el mapa`);
+    document.getElementById('btn-s2').disabled=false;checkNeighbors();openModal();
+  });
+  loadKML();
+  setInterval(animateGlow,60);
+}
+
+async function tryFetchKML() {
+  // 1. Try local file first (same origin = no CORS, fastest)
+  try {
+    const r = await fetch(KML_LOCAL);
+    if (r.ok) { const txt = await r.text(); if (txt.includes('<kml') || txt.includes('NetworkLink')) {
+      // If local file is a NetworkLink, extract and fetch the real URL
+      const hrefMatch = txt.match(/href><!\[CDATA\[([^\]]+)\]\]>/);
+      if (hrefMatch) return tryFetchRemote(hrefMatch[1]);
+      return txt;
+    }}
+  } catch(e) {}
+  // 2. Try remote with proxies
+  return tryFetchRemote(KML_TARGET);
+}
+
+async function tryFetchRemote(url) {
+  // Try direct (might work from GitHub Pages)
+  try {
+    const r = await fetch(url, {mode:'cors'});
+    if (r.ok) { const txt = await r.text(); if (txt.includes('Placemark')) return txt; }
+  } catch(e) {}
+  // Try proxies in sequence
+  for (const proxy of KML_PROXIES) {
+    try {
+      const r = await fetch(proxy + encodeURIComponent(url));
+      if (r.ok) { const txt = await r.text(); if (txt.includes('Placemark')) return txt; }
+    } catch(e) { console.warn('Proxy failed:', proxy); }
+  }
+  throw new Error('All KML sources failed');
+}
+
+function loadKML(){
+  tryFetchKML().then(txt=>{
+    const doc=new DOMParser().parseFromString(txt,'text/xml');
+    doc.querySelectorAll('Placemark').forEach(pm=>{
+      const name=pm.querySelector('name')?.textContent?.trim()||'';
+      const desc=pm.querySelector('description')?.textContent||'';
+      const co=pm.querySelector('coordinates');
+      if(!co)return;
+      const dl=(desc.match(/DISTRITO LOCAL\s+(\S+)/)||[])[1]||'';
+      const lls=[];
+      co.textContent.trim().split(/\s+/).forEach(pt=>{const[lng,lat]=pt.split(',').map(parseFloat);if(!isNaN(lat))lls.push([lat,lng]);});
+      if(lls.length<3)return;
+      const poly=L.polygon(lls,bStyle());
+      poly._sec=name;poly._dl=dl;poly._state='none';poly._intensity=0;
+      // No tooltip — no section/district labels shown to user
+      poly.on('click',e=>mapPlaceOrShow(e,name,dl));
+      districtLayers[name]=poly;poly.addTo(map);
+      const glow=L.polygon(lls,{pane:'glow',fillColor:'transparent',color:'none',weight:0,fillOpacity:0});
+      glow.addTo(map);glowLayers[name]=glow;
+    });
+    toast('Mapa cargado ✓','i');
+  }).catch(e=>{console.warn('KML:',e.message);toast('Mapa base listo','i');});
+}
+function bStyle(){return{color:'#2A1520',weight:1,opacity:.8,fillColor:'#130910',fillOpacity:.1};}
+
+let _pt=0;
+function animateGlow(){
+  _pt+=0.04;const pulse=0.5+0.5*Math.sin(_pt);
+  Object.entries(districtLayers).forEach(([sec,poly])=>{
+    if(poly._state!=='apagon')return;
+    poly.setStyle({fillOpacity:poly._intensity*pulse*0.65});
+    const g=glowLayers[sec];
+    if(g)g.setStyle({fillOpacity:poly._intensity*pulse,fillColor:'#FF4B1F',color:'#FF4B1F',weight:10});
+  });
+}
+
+function updateZones(reports){
+  const bySec={};
+  reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r);});
+  Object.entries(districtLayers).forEach(([sec,poly])=>{
+    const d=bySec[sec],els=d?.apagon||[],ags=d?.agua||[];const g=glowLayers[sec];
+    if(els.length>0&&layersOn.apagon){
+      const intensity=Math.min(0.18+els.length*0.18,0.85);poly._state='apagon';poly._intensity=intensity;
+      poly.setStyle({fillColor:'#FF4B1F',color:'#FF6B3F',weight:1.5,opacity:1});poly.bringToFront();
+    } else if(ags.length>0&&layersOn.agua){
+      poly._state='agua';poly._intensity=0;
+      poly.setStyle({fillColor:'#22D0F0',fillOpacity:.15,color:'#22D0F0',weight:1.5,opacity:.8});
+      if(g)g.setStyle({fillOpacity:0});
+    } else {
+      poly._state='none';poly._intensity=0;poly.setStyle(bStyle());if(g)g.setStyle({fillOpacity:0});
+    }
+  });
+}
+
+function mapPlaceOrShow(e,sec,dl){
+  if(flow.placing){flow.lat=e.latlng.lat;flow.lng=e.latlng.lng;flow.seccion=sec;stopPlacing();setLocOk(`✅ Zona seleccionada`);document.getElementById('btn-s2').disabled=false;checkNeighbors();openModal();L.DomEvent.stopPropagation(e);return;}
+  const poly=districtLayers[sec];
+  if(!poly||poly._state!=='apagon')return;
+  const els=cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon');
+  if(!els.length)return;
+  const cnt=els.length,ttl=fmtRemain(Math.min(...els.map(r=>r.timestamp))),votes=Math.max(...els.map(r=>r.resolve_votes||0)),pct=Math.round((votes/RESOLVE_THRESHOLD)*100);
+  const html=`<div class="popup"><div class="pp-body">
+    <div class="pp-type el">⚡ Apagón Activo ${cnt>=5?'<span class="pp-badge" style="background:rgba(255,61,61,.15);border-color:rgba(255,61,61,.3);color:#FF7A7A">🔥 CRÍTICO</span>':''}</div>
+    <div class="pp-zone">🔴 <span><strong>${cnt} vecino${cnt>1?'s':''}</strong> sin luz en esta zona<br/>Expira: <strong>${ttl}</strong></span></div>
+    <div class="pp-row">🗳️ Votos para resolver: <strong>${votes}/${RESOLVE_THRESHOLD}</strong></div>
+    <div class="vote-bar"><div class="vote-fill" style="width:${Math.min(pct,100)}%"></div></div>
+    <div class="pp-acts" style="margin-top:12px">
+      <button class="pbtn conf" onclick="doElConf('${sec}')">+ Yo también sin luz</button>
+      <button class="pbtn res" onclick="doElVoteResolve('${sec}')">✅ Ya volvió mi luz</button>
+    </div>
+  </div></div>`;
+  L.popup({maxWidth:290,className:''}).setLatLng(e.latlng).setContent(html).openOn(map);
+  L.DomEvent.stopPropagation(e);
+}
+
+function waterIcon(r){
+  const cnt=r.confirmations||0,urgent=(r.repair_requests||0)>0;
+  return L.divIcon({
+    html:`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">
+      <ellipse cx="22" cy="51" rx="11" ry="3" fill="rgba(34,208,240,.18)"/>
+      <path d="M22 2C12 2 4 10 4 20C4 33 22 52 22 52C22 52 40 33 40 20C40 10 32 2 22 2Z" fill="#22D0F0" opacity=".92"/>
+      <path d="M22 2C12 2 4 10 4 20L40 20C40 10 32 2 22 2Z" fill="#65081F" opacity=".65"/>
+      <circle cx="22" cy="22" r="11" fill="rgba(8,11,20,.5)"/>
+      <text x="22" y="22" text-anchor="middle" font-size="13" dy=".35em">💧</text>
+      ${cnt>0?`<circle cx="34" cy="7" r="7" fill="#1FD18A"/><text x="34" y="7" text-anchor="middle" font-size="8" dy=".35em" fill="#fff" font-weight="800">${cnt}</text>`:''}
+      ${urgent?`<circle cx="10" cy="7" r="7" fill="#F5B731"/><text x="10" y="7" text-anchor="middle" font-size="10" dy=".35em">🔧</text>`:''}
+    </svg>`,
+    iconSize:[44,54],iconAnchor:[22,52],popupAnchor:[0,-52],className:''
+  });
+}
+
+function renderAguaMarkers(reports){
+  const agua=reports.filter(r=>r.type==='agua'),ids=new Set(agua.map(r=>r.id));
+  Object.keys(aguaMarkers).forEach(id=>{if(!ids.has(id)){aguaMarkers[id].remove();delete aguaMarkers[id];}});
+  agua.forEach(r=>{
+    if(!r.lat||!r.lng)return;
+    if(!layersOn.agua){aguaMarkers[r.id]?.setOpacity(.05);return;}
+    const icon=waterIcon(r);
+    if(!aguaMarkers[r.id]){const m=L.marker([r.lat,r.lng],{icon});m.bindPopup(buildAguaPopup(r),{maxWidth:300,className:''});m.addTo(map);aguaMarkers[r.id]=m;}
+    else{aguaMarkers[r.id].setIcon(icon).setOpacity(1);aguaMarkers[r.id].setPopupContent(buildAguaPopup(r));}
+  });
+}
+
+function buildAguaPopup(r){
+  const hasPhoto=r.photo_data&&r.photo_data.length>10,repairs=r.repair_requests||0,isAdm=adminMode;
+  return`<div class="popup">${hasPhoto?`<img class="pp-photo" src="${r.photo_data}"/>`:''}
+    <div class="pp-body">
+      <div class="pp-type ag">💧 Fuga de Agua ${r.confirmations>0?`<span class="pp-badge">✓ ${r.confirmations}</span>`:''}</div>
+      ${r.seccion?`<div class="pp-row">📍 <strong>Mérida, Yucatán</strong></div>`:'<div class="pp-row">📍 <strong>Mérida, Yucatán</strong></div>'}
+      <div class="pp-row">🕐 <strong>${fmtTime(r.timestamp)}</strong></div>
+      <div class="pp-row" style="color:var(--agua)">⏳ Activa hasta reparación</div>
+      ${repairs>0?`<div class="pp-row" style="margin-top:4px">🔧 <strong>${repairs}</strong> solicitud${repairs>1?'es':''} de reparación</div>`:''}
+      <div class="pp-acts${isAdm?' single':''}" style="margin-top:10px">
+        ${isAdm?`<button class="pbtn adm" onclick="adminResolveWater('${r.id}')">🔐 Marcar como reparada</button>`:`
+          <button class="pbtn conf" onclick="doAguaConf('${r.id}')">✓ Confirmar</button>
+          <button class="pbtn rep" onclick="doRepairReq('${r.id}')">🔧 Pedir reparación</button>`}
+      </div>
+    </div></div>`;
+}
+
+async function renderAll(){
+  const reports=await loadReports();
+  renderAguaMarkers(reports);updateZones(reports);
+  // Animated counters
+  const el=reports.filter(r=>r.type==='apagon').length;
+  const ag=reports.filter(r=>r.type==='agua').length;
+  animCount('cnt-el', el); animCount('cnt-ag', ag);
+  animCount('lp-cnt-el', el); animCount('lp-cnt-ag', ag);
+  // Last updated
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const upd = document.getElementById('updated-txt');
+  if (upd) upd.textContent = `Actualizado ${hh}:${mm}`;
+  renderSidebar(reports);renderTicker(reports);
+}
+
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const current = parseInt(el.textContent) || 0;
+  if (current === target) return;
+  const step = target > current ? 1 : -1;
+  let val = current;
+  const t = setInterval(() => {
+    val += step; el.textContent = val;
+    if (val === target) clearInterval(t);
+  }, 60);
+}
+
+async function doAguaConf(id){await confirmReport(id);map.closePopup();await renderAll();toast('✓ Confirmado — gracias','s');}
+async function doRepairReq(id){await requestRepair(id);map.closePopup();await renderAll();toast('🔧 Solicitud de reparación enviada','i');}
+async function adminResolveWater(id){await resolveReport(id);map.closePopup();aguaMarkers[id]?.remove();delete aguaMarkers[id];await renderAll();renderAdminPanel();toast('✅ Fuga marcada como reparada','s');}
+async function doElConf(sec){for(const r of cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon'))await confirmReport(r.id);map.closePopup();await renderAll();toast('+ Reporte confirmado','s');}
+async function doElVoteResolve(sec){
+  const reps=cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon');let autoRes=false;
+  for(const r of reps)if(await voteResolve(r.id))autoRes=true;
+  map.closePopup();await renderAll();toast(autoRes?'✅ Zona restaurada por consenso vecinal':'✓ Voto registrado — necesitamos '+RESOLVE_THRESHOLD+' votos','s');
+}
+async function adminForceResolve(id){await resolveReport(id);aguaMarkers[id]?.remove();delete aguaMarkers[id];await renderAll();renderAdminPanel();toast('✅ Resuelto (Admin)','s');}
+
+// LAYER TOGGLE
+function toggleLayer(type){
+  layersOn[type]=!layersOn[type];
+  const card=document.getElementById(type==='apagon'?'lcard-el':'lcard-ag');
+  card.classList.toggle('on',layersOn[type]);
+  renderAll();
+}
+function toggleLayerPanel(){
+  layerPanelOpen=!layerPanelOpen;
+  document.getElementById('layer-panel').classList.toggle('open',layerPanelOpen);
+  document.getElementById('layer-toggle-btn').textContent=layerPanelOpen?'✕':'☰';
+}
+
+// SIDEBAR
+function toggleSidebar(){sidebarOpen=!sidebarOpen;document.getElementById('sidebar').classList.toggle('open',sidebarOpen);document.getElementById('stoggle').textContent=sidebarOpen?'▶':'◀';}
+function renderSidebar(reports){
+  const el=document.getElementById('sb-list');
+  const active=reports.filter(r=>layersOn[r.type]).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!active.length){el.innerHTML=`<div class="sb-empty"><span class="sb-ei">🌙</span>Sin reportes activos<br/>¡Todo tranquilo!</div>`;return;}
+  el.innerHTML=active.map(r=>`
+    <div class="sb-item ${r.type==='apagon'?'el':'ag'}" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','${r.type}','${r.seccion||''}')">
+      <div class="sb-h ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡ Apagón':'💧 Fuga'}${r.confirmations>0?`<span style="color:var(--grn);font-size:10px;margin-left:auto">✓${r.confirmations}</span>`:''}${(r.repair_requests||0)>0?`<span style="color:var(--agua);font-size:10px;margin-left:auto">🔧${r.repair_requests}</span>`:''}</div>
+      <div class="sb-m">${fmtTime(r.timestamp)}<br/>${r.type==='apagon'?fmtRemain(r.timestamp):'⏳ Hasta reparación'}${r.type==='apagon'&&(r.resolve_votes||0)>0?` · 🗳️${r.resolve_votes}/${RESOLVE_THRESHOLD}`:''}</div>
+    </div>`).join('');
+}
+function flyTo(id,lat,lng,type,sec){
+  if(!lat)return;
+  map.flyTo([+lat,+lng],15,{duration:.8});
+  if(type==='agua')setTimeout(()=>aguaMarkers[id]?.openPopup(),900);
+  else{setTimeout(()=>{const els=cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon');if(els.length)mapPlaceOrShow({latlng:{lat:+lat,lng:+lng},stopPropagation:()=>{}},sec,'');},900);}
+}
+
+// TICKER
+function renderTicker(reports){
+  if(!reports.length){document.getElementById('ticker-inner').innerHTML='<span class="tick-item">🌙 Sin incidencias activas en Mérida</span>';return;}
+  const items=reports.slice(0,20).map(r=>`<span class="tick-item ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡':'💧'} ${r.type==='apagon'?'Apagón':'Fuga'} ${r.seccion?'· Sec.'+r.seccion:''} · ${fmtTime(r.timestamp)}</span>`).join('');
+  document.getElementById('ticker-inner').innerHTML=items+items;
+}
+
+// ADMIN
+function openAdminLogin(){if(adminMode){openAdminPanel();return;}document.getElementById('pw-input').value='';document.getElementById('pw-input').classList.remove('err');document.getElementById('admin-login').classList.add('open');setTimeout(()=>document.getElementById('pw-input').focus(),300);}
+function checkPw(){const pw=document.getElementById('pw-input').value;if(pw===ADMIN_PASSWORD){adminMode=true;document.getElementById('admin-login').classList.remove('open');document.getElementById('admin-btn').classList.add('on');openAdminPanel();toast('🔐 Modo Admin activado','b');}else{document.getElementById('pw-input').classList.add('err');setTimeout(()=>document.getElementById('pw-input').classList.remove('err'),500);toast('Contraseña incorrecta','e');}}
+function openAdminPanel(){renderAdminPanel();document.getElementById('admin-panel').classList.add('open');}
+function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');}
+function switchAdminTab(tab){adminTab=tab;['overview','apagones','agua'].forEach(t=>document.getElementById('atab-'+t).classList.toggle('active',t===tab));renderAdminPanel();}
+function logoClick(){logoClicks++;clearTimeout(logoTimer);logoTimer=setTimeout(()=>{logoClicks=0;},2000);if(logoClicks>=5){logoClicks=0;openAdminLogin();}}
+function renderAdminPanel(){
+  const body=document.getElementById('admin-body'),all=cachedReports,apagones=all.filter(r=>r.type==='apagon'),agua=all.filter(r=>r.type==='agua'),urgentWater=agua.filter(r=>(r.repair_requests||0)>0);
+  if(adminTab==='overview'){body.innerHTML=`<div class="admin-stats"><div class="a-stat"><div class="a-stat-n all">${all.length}</div><div class="a-stat-l">Total activos</div></div><div class="a-stat"><div class="a-stat-n el">${apagones.length}</div><div class="a-stat-l">Apagones</div></div><div class="a-stat"><div class="a-stat-n ag">${agua.length}</div><div class="a-stat-l">Fugas</div></div></div>${urgentWater.length>0?`<div class="admin-section"><div class="admin-section-title">🔧 Reparaciones pendientes</div>${urgentWater.map(r=>`<div class="a-report"><div class="a-report-icon">💧</div><div class="a-report-info"><div class="a-report-head ag">Fuga — Sección ${r.seccion||'?'}<span class="a-report-badge repair" style="margin-left:auto">🔧 ${r.repair_requests}</span></div><div class="a-report-meta">${r.nombre||'Anónimo'} · ${fmtTime(r.timestamp)}</div><div class="a-report-acts"><button class="a-btn fly" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','agua','');closeAdmin()">Ver</button><button class="a-btn resolve" onclick="adminResolveWater('${r.id}')">✅ Reparada</button></div></div>${r.photo_data&&r.photo_data.length>10?`<img class="a-photo-thumb" src="${r.photo_data}" style="display:block"/>`:''}
+</div>`).join('')}</div>`:''}
+<div class="admin-section"><div class="admin-section-title">📋 Recientes</div>${all.length===0?'<div class="admin-empty"><span>🌙</span>Sin reportes</div>':all.slice(0,5).map(r=>`<div class="a-report"><div class="a-report-icon">${r.type==='apagon'?'⚡':'💧'}</div><div class="a-report-info"><div class="a-report-head ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'Apagón':'Fuga'} — Sec.${r.seccion||'?'}</div><div class="a-report-meta">${r.nombre||'Anónimo'} · ${fmtTime(r.timestamp)}</div><div class="a-report-acts"><button class="a-btn resolve" onclick="adminForceResolve('${r.id}')">✅ Resolver</button></div></div></div>`).join('')}</div>`;}
+  else if(adminTab==='apagones'){body.innerHTML=apagones.length===0?`<div class="admin-empty"><span>⚡</span>Sin apagones</div>`:`<div class="admin-section"><div class="admin-section-title">⚡ Apagones (${apagones.length})</div>${apagones.map(r=>`<div class="a-report"><div class="a-report-icon">⚡</div><div class="a-report-info"><div class="a-report-head el">Sec.${r.seccion||'?'}${(r.confirmations||0)>=5?'<span class="a-report-badge urgent" style="margin-left:auto">🔥 CRÍTICO</span>':''}</div><div class="a-report-meta">${r.nombre||'Anónimo'} · ${fmtTime(r.timestamp)}<br/>Votos: ${r.resolve_votes||0}/${RESOLVE_THRESHOLD} · Exp: ${fmtRemain(r.timestamp)}</div><div class="a-report-acts"><button class="a-btn fly" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','apagon','${r.seccion||''}');closeAdmin()">Ver</button><button class="a-btn resolve" onclick="adminForceResolve('${r.id}')">✅ Resolver</button></div></div></div>`).join('')}</div>`;}
+  else if(adminTab==='agua'){body.innerHTML=agua.length===0?`<div class="admin-empty"><span>💧</span>Sin fugas</div>`:`<div style="background:rgba(34,208,240,.06);border:1px solid rgba(34,208,240,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">💡 Las fugas no expiran automáticamente. Solo el admin puede marcarlas como reparadas.</div><div class="admin-section"><div class="admin-section-title">💧 Fugas (${agua.length})</div>${agua.map(r=>`<div class="a-report"><div class="a-report-icon">💧</div><div class="a-report-info"><div class="a-report-head ag">Sec.${r.seccion||'?'}${(r.repair_requests||0)>0?`<span class="a-report-badge repair" style="margin-left:auto">🔧 ${r.repair_requests}</span>`:''}</div><div class="a-report-meta">${r.nombre||'Anónimo'} · ${fmtTime(r.timestamp)}<br/>Confirmaciones: ${r.confirmations||0}</div><div class="a-report-acts"><button class="a-btn fly" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','agua','');closeAdmin()">Ver</button><button class="a-btn resolve" onclick="adminResolveWater('${r.id}')">✅ Reparada</button></div></div>${r.photo_data&&r.photo_data.length>10?`<img class="a-photo-thumb" src="${r.photo_data}" style="display:block"/>`:''}
+</div>`).join('')}</div>`;}
+}
+
+// FLOW
+function startFlow(){flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};['tc-el','tc-ag'].forEach(id=>document.getElementById(id).classList.remove('sel'));document.getElementById('btn-s1').disabled=true;document.getElementById('btn-s2').disabled=true;document.getElementById('f-nombre').value='';document.getElementById('f-tel').value='';document.getElementById('photo-prev').style.display='none';document.getElementById('ph-ph').style.display='block';document.getElementById('nbr-banner').classList.remove('show');document.getElementById('btn-gps').classList.remove('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('Elige cómo ubicar tu reporte',false);goStep(1);openModal();}
+function goStep(n){[1,2,3].forEach(i=>{document.getElementById('step-'+i).style.display=i===n?'':'none';document.getElementById('st'+i).className='step '+(i<n?'done':i===n?'active':'');});flow.step=n;const T=['','¿Qué está pasando?','¿Dónde ocurre?','Tus datos de contacto'],S=['','Selecciona el tipo de incidencia','Ubica el problema en el mapa','Privados — verificación anti-bots'];document.getElementById('s-title').textContent=T[n];document.getElementById('s-sub').textContent=S[n];if(n===3){document.getElementById('photo-wrap').style.display=flow.type==='agua'?'':'none';const b=document.getElementById('btn-s3');b.className='btn '+(flow.type==='agua'?'btn-agua':'btn-brand');b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';chkForm();}}
+function selType(t){flow.type=t;document.getElementById('tc-el').classList.toggle('sel',t==='apagon');document.getElementById('tc-ag').classList.toggle('sel',t==='agua');document.getElementById('btn-s1').disabled=false;}
+function useGPS(){document.getElementById('btn-gps').classList.add('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('🛰️ Obteniendo GPS…',false);if(!navigator.geolocation){setLocStatus('❌ GPS no disponible',false);return;}navigator.geolocation.getCurrentPosition(pos=>{flow.lat=pos.coords.latitude;flow.lng=pos.coords.longitude;flow.seccion=findSeccion(flow.lat,flow.lng);setLocOk('✅ Ubicación GPS detectada');document.getElementById('btn-s2').disabled=false;map.flyTo([flow.lat,flow.lng],15,{duration:1});checkNeighbors();},()=>{setLocStatus('❌ GPS fallido — usa "Marcar en mapa"',false);document.getElementById('btn-gps').classList.remove('active');},{enableHighAccuracy:true,timeout:8000});}
+function useMapClick(){document.getElementById('btn-map').classList.add('active');document.getElementById('btn-gps').classList.remove('active');closeModal();startPlacing();}
+function startPlacing(){flow.placing=true;document.body.classList.add('placing');document.getElementById('pbanner').classList.add('show');document.getElementById('fab').classList.add('cancel');document.getElementById('fab').textContent='✕';document.getElementById('fab').onclick=cancelPlace;document.addEventListener('keydown',escKey);}
+function stopPlacing(){flow.placing=false;document.body.classList.remove('placing');document.getElementById('pbanner').classList.remove('show');document.getElementById('fab').classList.remove('cancel');document.getElementById('fab').textContent='＋';document.getElementById('fab').onclick=startFlow;document.removeEventListener('keydown',escKey);}
+function cancelPlace(){stopPlacing();closeModal();}
+function escKey(e){if(e.key==='Escape')cancelPlace();}
+function setLocStatus(txt,ok){document.getElementById('loc-txt').textContent=txt;document.getElementById('loc-st').className='loc-st'+(ok?' ok':'');}
+function setLocOk(txt){setLocStatus(txt,true);}
+function checkNeighbors(){if(!flow.seccion||!flow.type)return;const n=cachedReports.filter(r=>r.seccion===flow.seccion&&r.type===flow.type).length;const b=document.getElementById('nbr-banner');if(n>0){document.getElementById('nbr-txt').textContent=`${n} vecino${n>1?'s ya reportaron':'ya reportó'} en tu colonia — tu reporte intensificará la zona`;b.classList.add('show');}else b.classList.remove('show');}
+function previewPhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');const m=900;let w=i.width,h=i.height;if(w>m||h>m){if(w>h){h=Math.round(h*m/w);w=m;}else{w=Math.round(w*m/h);h=m;}}c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);const d=c.toDataURL('image/jpeg',.72);const p=document.getElementById('photo-prev');p.src=d;p.style.display='block';document.getElementById('ph-ph').style.display='none';flow.photoData=d;};i.src=ev.target.result;};r.readAsDataURL(f);}
+function chkForm(){const n=document.getElementById('f-nombre').value.trim();const t=document.getElementById('f-tel').value.trim();document.getElementById('btn-s3').disabled=!(n.length>=2&&t.length>=7);}
+async function submitReport(){
+  const nombre=document.getElementById('f-nombre').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  if(!nombre||!tel){toast('Completa nombre y teléfono','e');return;}
+  if(!flow.lat){toast('Falta ubicación','e');return;}
+  const b=document.getElementById('btn-s3');b.disabled=true;b.textContent='Enviando…';
+  // Only include base columns — new columns (resolve_votes, repair_requests) use DB defaults
+  const rep={
+    id:uid(),type:flow.type,lat:flow.lat,lng:flow.lng,seccion:flow.seccion,
+    timestamp:Date.now(),resolved:false,resolved_at:null,confirmations:0,
+    nombre,telefono:tel,photo_data:flow.photoData||''
+  };
+  const saved=await saveReport(rep);
+  closeModal();
+  if(saved){
+    toast(flow.type==='apagon'?'⚡ Apagón reportado — zona activada':'💧 Fuga reportada en el mapa','b');
+    await renderAll();map.flyTo([flow.lat,flow.lng],15,{duration:1});
+  } else {
+    toast('Error al enviar — verifica que ejecutaste setup.sql en Supabase','e');
+    b.disabled=false;b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';
+  }
+  flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
+}
+function openModal(){document.getElementById('modal-bg').classList.add('open');}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');if(!flow.placing){document.getElementById('fab').classList.remove('cancel');document.getElementById('fab').textContent='＋';document.getElementById('fab').onclick=startFlow;}}
+function bgClick(e){if(e.target===document.getElementById('modal-bg')){stopPlacing();closeModal();}}
+
+// UTILS
+function findSeccion(lat,lng){for(const[s,p]of Object.entries(districtLayers))if(ptInPoly(lat,lng,p.getLatLngs()[0]))return s;return'';}
+function ptInPoly(lat,lng,lls){let ins=false;const n=lls.length;let j=n-1;for(let i=0;i<n;j=i++){const[xi,yi]=[lls[i].lat,lls[i].lng],[xj,yj]=[lls[j].lat,lls[j].lng];if(((yi>lng)!==(yj>lng))&&(lat<(xj-xi)*(lng-yi)/(yj-yi)+xi))ins=!ins;}return ins;}
+function fmtTime(ts){const m=Math.floor((Date.now()-ts)/60000);if(m<1)return'Justo ahora';if(m<60)return`Hace ${m} min`;return`Hace ${Math.floor(m/60)}h ${m%60}m`;}
+function fmtRemain(ts){const m=Math.floor((TTL_EL-(Date.now()-ts))/60000);if(m<=0)return'Expirando…';return m>=60?`${Math.floor(m/60)}h ${m%60}m restantes`:`${m}m restantes`;}
+function toast(msg,type='i'){const c=document.getElementById('toasts');const t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;c.appendChild(t);setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},2800);setTimeout(()=>t.remove(),3200);}
+
+function initRealtime(){
+  db.channel('rpts').on('postgres_changes',{event:'*',schema:'public',table:'reports'},payload=>{
+    renderAll(); if(adminMode)renderAdminPanel();
+    if(payload.eventType==='INSERT'&&payload.new) maybeNotify(payload.new);
+  }).subscribe();
+}
+setInterval(renderAll,60000);
+
+// PWA
+let deferredInstall=null;
+function initPWA(){
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('install-btn').style.display='block';setTimeout(()=>{document.getElementById('install-banner').style.display='flex';},5000);});
+  window.addEventListener('appinstalled',()=>{document.getElementById('install-btn').style.display='none';document.getElementById('install-banner').style.display='none';toast('App instalada ✓','s');});
+  const a=new URLSearchParams(location.search).get('action');
+  if(a==='apagon'||a==='agua')setTimeout(()=>startFlowWithType(a),1200);
+}
+function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('install-banner').style.display='none';});}
+
+// Notifications
+let notifGranted=typeof Notification!=='undefined'&&Notification.permission==='granted';
+function requestNotifications(){if(!('Notification'in window)){toast('Tu navegador no soporta notificaciones','e');return;}if(Notification.permission==='granted'){notifGranted=true;toast('Notificaciones ya activas','s');return;}if(Notification.permission==='denied'){toast('Notificaciones bloqueadas en tu navegador','e');return;}document.getElementById('notif-prompt').style.display='flex';}
+async function grantNotifications(){document.getElementById('notif-prompt').style.display='none';if(!('Notification'in window))return;const p=await Notification.requestPermission();if(p==='granted'){notifGranted=true;document.getElementById('notif-btn').textContent='🔔✓';toast('Notificaciones activadas','s');}else toast('Notificaciones no permitidas','e');}
+function maybeNotify(r){if(!notifGranted)return;const title=r.type==='apagon'?'Nuevo apagón reportado':'Nueva fuga de agua';const body='Mérida, Yucatán — toca para ver';if('serviceWorker'in navigator){navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,icon:'./icon.svg',badge:'./icon.svg',tag:r.id,vibrate:[200,100,200]}));}else new Notification(title,{body});}
+
+// Vecino Activo
+const VTH=3;
+function getVecinoScore(){const c=parseInt(localStorage.getItem('apx_confirmations')||'0');const r=parseInt(localStorage.getItem('apx_reports')||'0');return{c,r,total:c+r,ok:(c+r)>=VTH};}
+function addVecinoActivity(t){const k=t==='confirm'?'apx_confirmations':'apx_reports';localStorage.setItem(k,(parseInt(localStorage.getItem(k)||'0')+1)+'');updateVecinoBadge();}
+function updateVecinoBadge(){const v=getVecinoScore(),b=document.getElementById('vecino-badge');if(!b)return;if(v.ok){b.style.display='flex';b.innerHTML=v.total>=10?'🏆 Vecino Destacado':v.total>=6?'⭐⭐ Vecino Confiable':'⭐ Vecino Activo';}else b.style.display='none';}
+
+// Patch confirm actions to track activity
+const _oc1=doAguaConf,_oc2=doElConf,_oc3=doElVoteResolve;
+async function doAguaConf(id){await _oc1(id);addVecinoActivity('confirm');}
+async function doElConf(sec){await _oc2(sec);addVecinoActivity('confirm');}
+async function doElVoteResolve(sec){await _oc3(sec);addVecinoActivity('confirm');}
+
+// 7-day history
+let historyOn=false,historyLayers={};
+async function toggleHistory(){historyOn=!historyOn;const card=document.getElementById('lcard-hist');card?.classList.toggle('on',historyOn);if(card)card.querySelector('.lc-label').style.color=historyOn?'var(--tx)':'var(--dim)';if(!historyOn){Object.values(historyLayers).forEach(l=>l.remove());historyLayers={};document.getElementById('lp-cnt-hist').textContent='—';return;}toast('Cargando historial…','i');try{const since=Date.now()-7*24*60*60*1000;const{data}=await db.from('reports').select('id,type,lat,lng,timestamp,resolved_at').eq('resolved',true).gt('resolved_at',since).limit(300);const hist=data||[];document.getElementById('lp-cnt-hist').textContent=hist.length;hist.forEach(r=>{if(!r.lat||!r.lng||historyLayers[r.id])return;const color=r.type==='apagon'?'#FF4B1F':'#22D0F0';const m=L.circleMarker([r.lat,r.lng],{radius:5,fillColor:color,color:color,weight:1,opacity:.35,fillOpacity:.18});m.addTo(map);historyLayers[r.id]=m;});toast(hist.length+' reportes resueltos (7d)','s');}catch(e){toast('Error cargando historial','e');}}
+
+// Statistics
+async function openStats(){document.getElementById('stats-modal').style.display='flex';document.getElementById('stats-body').innerHTML='<div style="text-align:center;padding:36px;color:var(--dim)"><div style="font-size:28px;margin-bottom:8px">⏳</div>Cargando…</div>';try{const since7=Date.now()-7*24*60*60*1000,since1=Date.now()-24*60*60*1000;const active=cachedReports;const{data:hist}=await db.from('reports').select('*').eq('resolved',true).gt('resolved_at',since7);const history=hist||[];const all=[...active,...history];const elT=all.filter(r=>r.type==='apagon').length,agT=all.filter(r=>r.type==='agua').length,grand=elT+agT||1;const todayCount=all.filter(r=>r.timestamp>since1).length;const resolvable=history.filter(r=>r.resolved_at&&r.timestamp);const avgHr=resolvable.length?(resolvable.reduce((s,r)=>s+(r.resolved_at-r.timestamp),0)/resolvable.length/3600000).toFixed(1):null;const zones={};all.forEach(r=>{if(!r.seccion)return;if(!zones[r.seccion])zones[r.seccion]={el:0,ag:0};zones[r.seccion][r.type==='apagon'?'el':'ag']++;});const topZ=Object.entries(zones).map(([z,d])=>({z,total:d.el+d.ag,...d})).sort((a,b)=>b.total-a.total).slice(0,5);const v=getVecinoScore();document.getElementById('stats-body').innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">${sCard(active.length,'Activos ahora','#FFD0D8')}${sCard(todayCount,'Reportes hoy','var(--elec)')}${sCard(all.length,'Esta semana','var(--agua)')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">${sCard(elT,'⚡ Apagones (7d)','var(--elec)')}${sCard(agT,'💧 Fugas (7d)','var(--agua)')}</div>${avgHr?`<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><span style="font-size:26px">⏱️</span><div><div style="font-size:22px;font-weight:800;color:var(--grn)">${avgHr}h</div><div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Tiempo promedio de resolución</div></div></div>`:''}<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Distribución</div><div style="height:9px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:7px"><div style="width:${Math.round(elT/grand*100)}%;background:var(--elec-zone)"></div><div style="flex:1;background:var(--agua);opacity:.8"></div></div><div style="display:flex;gap:14px;font-size:11px;font-weight:600"><span style="color:var(--elec)">⚡ ${Math.round(elT/grand*100)}%</span><span style="color:var(--agua)">💧 ${Math.round(agT/grand*100)}%</span></div></div>${topZ.length?`<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">🔥 Zonas más afectadas</div>${topZ.map((d,i)=>`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Zona ${i+1}</span><span style="font-size:12px;font-weight:800;color:${d.el>d.ag?'var(--elec)':'var(--agua)'}">${d.total} reporte${d.total>1?'s':''}</span></div><div style="height:5px;background:var(--bdr);border-radius:3px;overflow:hidden"><div style="width:${Math.round(d.total/topZ[0].total*100)}%;height:100%;background:${d.el>d.ag?'var(--elec-zone)':'var(--agua)'};border-radius:3px"></div></div><div style="font-size:10px;color:var(--mut);margin-top:2px">${d.el?`⚡${d.el} `:''}${d.ag?`💧${d.ag}`:''}</div></div>`).join('')}</div>`:''}${v.total>0?`<div style="background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.25);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px"><span style="font-size:28px">${v.ok?'⭐':'🌱'}</span><div><div style="font-size:14px;font-weight:800;color:var(--grn)">Tu contribución</div><div style="font-size:12px;color:var(--dim)">${v.r} reporte${v.r!==1?'s':''} · ${v.c} confirmaciones anónimas</div></div></div>`:''}`;} catch(e){document.getElementById('stats-body').innerHTML='<div style="text-align:center;padding:30px;color:var(--mut)">Error cargando</div>';}}
+function sCard(n,l,c){return`<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center"><div style="font-size:26px;font-weight:800;color:${c};line-height:1;margin-bottom:4px">${n}</div><div style="font-size:10px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.4px">${l}</div></div>`;}
+
+// Also patch submitReport to track reports
+const _origSubmit=submitReport;
+async function submitReport(){await _origSubmit();addVecinoActivity('report');}
+
+// INIT
+window.addEventListener('DOMContentLoaded',async()=>{
+  initPWA(); initMap(); updateVecinoBadge();
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){notifGranted=true;document.getElementById('notif-btn').textContent='🔔✓';}
+  const hide=()=>{const l=document.getElementById('loading');if(l){l.classList.add('out');setTimeout(()=>l.remove(),600);}};
+  const t=setTimeout(hide,4000);
+  try{await renderAll();}catch(e){console.warn(e);}
+  clearTimeout(t); hide();
+  try{initRealtime();}catch(e){console.warn(e);}
+  setTimeout(()=>{if(typeof Notification!=='undefined'&&Notification.permission==='default')document.getElementById('notif-prompt').style.display='flex';},35000);
+});
+
+</script>
+</body>
+</html>
