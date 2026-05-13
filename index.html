@@ -478,6 +478,25 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 .search-item-name{font-size:13px;font-weight:600;color:var(--tx);line-height:1.3}
 .search-item-type{font-size:11px;color:var(--dim)}
 .search-loading{padding:14px;text-align:center;font-size:12px;color:var(--dim)}
+/* ── NEW FEATURE CSS ── */
+.severity-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.sev-btn{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:9px 6px;cursor:pointer;font-family:var(--f);font-size:12px;font-weight:700;color:var(--dim);display:flex;align-items:center;justify-content:center;gap:5px;transition:all .18s}
+.sev-btn.active{border-color:var(--brand-lt);color:#FFD0D8;background:var(--brand-sub)}
+.tcard-icon{font-size:32px;margin-bottom:6px;line-height:1;display:flex;justify-content:center}
+.tcard.sel#tc-ca{border-color:#94A3B8}
+.lang-btn{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:13px 16px;cursor:pointer;transition:background .15s;width:100%;text-align:left}
+.lang-btn:hover{background:var(--card2)}
+.chat-msg{max-width:85%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4}
+.chat-msg.mine{background:var(--brand-sub);border:1px solid var(--brand-lt);color:#FFD0D8;align-self:flex-end;border-bottom-right-radius:3px}
+.chat-msg.other{background:var(--card);border:1px solid var(--bdr);color:var(--tx);align-self:flex-start;border-bottom-left-radius:3px}
+.chat-msg-author{font-size:10px;font-weight:700;margin-bottom:2px;opacity:.7}
+.chat-msg-time{font-size:10px;opacity:.5;margin-top:2px;text-align:right}
+.emerg-section{margin-bottom:14px}
+.emerg-title{font-size:10px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;padding:0 2px}
+.emerg-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;margin-bottom:7px;text-decoration:none}
+.emerg-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.emerg-name{font-size:13px;font-weight:800;color:var(--tx)}
+.emerg-number{font-size:11px;color:var(--dim);margin-top:2px}
 .hamburger-btn{display:none;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:8px;cursor:pointer;color:var(--dim);transition:all .18s;line-height:0}
 .hamburger-btn:hover{color:var(--tx)}
 .desktop-only{display:flex;gap:6px;align-items:center}
@@ -909,8 +928,43 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
     </div>
-    <div style="padding:0 20px 6px;font-size:11px;color:var(--mut);text-align:center;font-style:italic">"Tu reporte, nuestra solución"</div>
+      <button class="mm-btn" onclick="openEmergencyModal();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(255,61,61,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FF7A7A" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 013.1 4.2 2 2 0 015.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L9 9.9a16 16 0 006.1 6.1l1.3-1.3a2 2 0 012-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Emergencias</div><div class="mm-btn-sub">CFE · JAPAY · Cruz Roja · 911</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="openRankings();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(245,183,49,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--elec)"><rect x="2" y="14" width="4" height="8" rx="2"/><rect x="9" y="9" width="4" height="13" rx="2"/><rect x="16" y="4" width="4" height="18" rx="2"/><path d="M4 8l5-5 4 4 7-7" stroke="var(--elec)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Ranking de zonas</div><div class="mm-btn-sub">Las más activas este mes</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="document.getElementById('lang-modal').style.display='flex';toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(34,208,240,.1)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--agua)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Idioma / Language</div><div id="mm-lang-sub" class="mm-btn-sub">Español · English · Maya</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+    <div style="padding:0 20px 6px;font-size:11px;color:var(--mut);text-align:center;font-style:italic" data-i18n="slogan">"Tu reporte, nuestra solución"</div>
   </div>
+</div>
+
+<!-- HEAT ALERT BANNER -->
+<div id="heat-banner" style="position:fixed;top:calc(62px + env(safe-area-inset-top,0px));left:0;right:0;z-index:890;display:none;align-items:center;gap:10px;padding:8px 16px;background:linear-gradient(135deg,rgba(255,100,0,.95),rgba(200,40,0,.95));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,150,0,.4)">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="#FFE0A0"><path d="M12 2a7 7 0 017 7c0 2.4-1.2 4.5-3 5.7V17a1 1 0 01-1 1H9a1 1 0 01-1-1v-2.3A7 7 0 0112 2zm-2 17h4v1a2 2 0 01-4 0v-1z"/></svg>
+  <span id="heat-text" style="font-size:12px;font-weight:700;color:#FFE0A0;flex:1">⚠️ Calor extremo en Mérida</span>
+  <span id="heat-temp" style="font-size:14px;font-weight:800;color:white"></span>
+  <button onclick="document.getElementById('heat-banner').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:16px;padding:0;line-height:1">✕</button>
+</div>
+
+<!-- OFFLINE BANNER -->
+<div id="offline-banner" style="position:fixed;top:calc(62px + env(safe-area-inset-top,0px));left:0;right:0;z-index:890;display:none;align-items:center;justify-content:center;gap:8px;padding:7px 16px;background:rgba(74,90,122,.95);border-bottom:1px solid var(--bdr)">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="#94A3B8"><path d="M1 1l22 22M16.7 16.7A7.97 7.97 0 0112 18H5a5 5 0 01-.9-9.9M10.1 5.1A7.93 7.93 0 0112 5c4 0 7.4 2.7 7.9 6.5A5 5 0 0119 21"/></svg>
+  <span style="font-size:12px;font-weight:700;color:#94A3B8">Sin conexión — mostrando datos en caché</span>
 </div>
 
 <div id="map"></div>
@@ -1048,9 +1102,28 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
     <div class="s-body">
       <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
       <div id="step-1">
-        <div class="type-row">
-          <div class="tcard el" id="tc-el" onclick="selType('apagon')"><div class="tcard-icon">⚡</div><div class="tcard-name">APAGÓN</div><div class="tcard-desc">Sin electricidad en la zona</div></div>
-          <div class="tcard ag" id="tc-ag" onclick="selType('agua')"><div class="tcard-icon">💧</div><div class="tcard-name">FUGA DE AGUA</div><div class="tcard-desc">Tubería rota o fuga visible</div></div>
+        <div class="type-row" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="tcard el" id="tc-el" onclick="selType('apagon')">
+            <div class="tcard-icon">
+              <svg viewBox="0 0 28 36" width="28" height="36" fill="none"><ellipse cx="14" cy="13" rx="9" ry="9.5" stroke="#F5B731" stroke-width="1.8"/><line x1="14" y1="22.5" x2="14" y2="26" stroke="#F5B731" stroke-width="2.5" stroke-linecap="round"/><rect x="10.5" y="26" width="7" height="2" rx="1" fill="#F5B731" opacity=".6"/><line x1="10" y1="8" x2="18" y2="18" stroke="#FF4040" stroke-width="1.5" stroke-linecap="round"/><line x1="18" y1="8" x2="10" y2="18" stroke="#FF4040" stroke-width="1.5" stroke-linecap="round"/><path d="M4 32L24 32" stroke="#F5B731" stroke-width="1" opacity=".3"/></svg>
+            </div>
+            <div class="tcard-name" data-i18n="type_apagon">APAGÓN</div>
+            <div class="tcard-desc" data-i18n="type_apagon_desc">Sin electricidad</div>
+          </div>
+          <div class="tcard ag" id="tc-ag" onclick="selType('agua')">
+            <div class="tcard-icon">
+              <svg viewBox="0 0 28 36" width="28" height="36" fill="none"><path d="M14 2C14 2 5 13 5 20a9 9 0 0018 0C23 13 14 2 14 2z" fill="#22D0F0" opacity=".9"/><path d="M10 17c0 3 2 5 4 5" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity=".5"/></svg>
+            </div>
+            <div class="tcard-name" data-i18n="type_agua">FUGA</div>
+            <div class="tcard-desc" data-i18n="type_agua_desc">Tubería rota</div>
+          </div>
+          <div class="tcard" id="tc-ca" onclick="selType('corte_agua')" style="border-color:var(--bdr)">
+            <div class="tcard-icon">
+              <svg viewBox="0 0 28 36" width="28" height="36" fill="none"><path d="M6 10h16M6 10 C6 10 4 22 14 28C24 22 22 10 22 10" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="5" x2="23" y2="28" stroke="#FF4040" stroke-width="2" stroke-linecap="round"/><path d="M10 16h8" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" opacity=".5"/></svg>
+            </div>
+            <div class="tcard-name" id="tc-ca-name" style="color:#94A3B8" data-i18n="type_corte">SIN AGUA</div>
+            <div class="tcard-desc" data-i18n="type_corte_desc">Corte de servicio</div>
+          </div>
         </div>
         <div class="btn-row"><button class="btn btn-back" onclick="closeModal()">Cancelar</button><button class="btn btn-brand" id="btn-s1" onclick="goStep(2)" disabled>Continuar →</button></div>
       </div>
@@ -1071,6 +1144,21 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
           <div class="photo-drop"><input type="file" id="f-photo" accept="image/*" capture="environment" onchange="previewPhoto(event)"/>
             <div id="ph-ph"><div class="ph-icon">📷</div><div class="ph-txt">Tomar foto o subir imagen</div><div class="ph-sub">Visible al tocar el pin</div></div>
             <img id="photo-prev" alt=""/>
+          </div>
+        </div>
+        <!-- SEVERITY -->
+        <div class="fld">
+          <label data-i18n="severity_label">Severidad</label>
+          <div class="severity-row" id="severity-row">
+            <button class="sev-btn" data-val="leve" onclick="selSev('leve')" type="button">
+              <span>🟢</span><span data-i18n="sev_leve">Leve</span>
+            </button>
+            <button class="sev-btn active" data-val="moderado" onclick="selSev('moderado')" type="button">
+              <span>🟡</span><span data-i18n="sev_mod">Moderado</span>
+            </button>
+            <button class="sev-btn" data-val="critico" onclick="selSev('critico')" type="button">
+              <span>🔴</span><span data-i18n="sev_crit">Crítico</span>
+            </button>
           </div>
         </div>
         <div class="privacy"><span class="pi">🔒</span><span>Tu nombre y teléfono son <strong>estrictamente privados</strong>. Solo se usan para verificación anti-bots. Nunca aparecen en el mapa.</span></div>
@@ -1200,6 +1288,93 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
   </div>
 </div>
 
+<!-- ZONE CHAT MODAL -->
+<div id="chat-modal" style="position:fixed;inset:0;z-index:2800;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:20px 20px 0 0;width:100%;max-width:480px;height:70vh;display:flex;flex-direction:column;animation:shup .3s cubic-bezier(.4,0,.2,1)">
+    <div style="width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0"></div>
+    <div style="padding:12px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--agua)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span style="font-size:15px;font-weight:800;flex:1" id="chat-title">Chat de vecinos</span>
+      <button onclick="closeChat()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:18px;padding:0">✕</button>
+    </div>
+    <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent">
+      <div style="text-align:center;color:var(--mut);font-size:12px;padding:20px">Cargando mensajes…</div>
+    </div>
+    <div style="padding:10px 14px;border-top:1px solid var(--bdr);display:flex;gap:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))">
+      <input id="chat-input" type="text" placeholder="Escribe un mensaje…" maxlength="160" style="flex:1;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:10px 14px;color:var(--tx);font-family:var(--f);font-size:14px;outline:none" onkeydown="if(event.key==='Enter')sendChatMessage()"/>
+      <button onclick="sendChatMessage()" style="background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;border-radius:12px;padding:10px 16px;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EMERGENCY DIRECTORY MODAL -->
+<div id="emergency-modal" style="position:fixed;inset:0;z-index:2800;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:18px;width:100%;max-width:460px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.6)">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">🚨</span>
+      <span style="font-size:17px;font-weight:800;flex:1" data-i18n="emergency_dir">Directorio de Emergencias</span>
+      <button onclick="document.getElementById('emergency-modal').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700">✕</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:14px 16px 20px;scrollbar-width:thin">
+      <div id="emergency-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGE SELECTOR -->
+<div id="lang-modal" style="position:fixed;inset:0;z-index:2800;background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:20px 20px 0 0;width:100%;max-width:460px;padding:0 0 env(safe-area-inset-bottom,0px);animation:shup .3s cubic-bezier(.4,0,.2,1)">
+    <div style="width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0"></div>
+    <div style="padding:16px 20px 24px">
+      <div style="font-size:17px;font-weight:800;margin-bottom:16px;text-align:center">🌐 Idioma / Language / Léelo'ob</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onclick="setLang('es');document.getElementById('lang-modal').style.display='none'" class="lang-btn" id="lang-es">
+          <span style="font-size:24px">🇲🇽</span>
+          <div><div style="font-size:15px;font-weight:800">Español</div><div style="font-size:12px;color:var(--dim)">Español de México</div></div>
+          <span id="lang-check-es" style="color:var(--grn);font-size:18px">✓</span>
+        </button>
+        <button onclick="setLang('en');document.getElementById('lang-modal').style.display='none'" class="lang-btn" id="lang-en">
+          <span style="font-size:24px">🇺🇸</span>
+          <div><div style="font-size:15px;font-weight:800">English</div><div style="font-size:12px;color:var(--dim)">American English</div></div>
+          <span id="lang-check-en" style="color:var(--grn);font-size:18px;display:none">✓</span>
+        </button>
+        <button onclick="setLang('yua');document.getElementById('lang-modal').style.display='none'" class="lang-btn" id="lang-yua">
+          <span style="font-size:24px">🌽</span>
+          <div><div style="font-size:15px;font-weight:800">Maya Yucateco</div><div style="font-size:12px;color:var(--dim)">Mayat'aan — en progreso</div></div>
+          <span id="lang-check-yua" style="color:var(--grn);font-size:18px;display:none">✓</span>
+        </button>
+      </div>
+      <button onclick="document.getElementById('lang-modal').style.display='none'" style="width:100%;margin-top:12px;padding:13px;border-radius:12px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer">Cerrar / Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULED OUTAGES (admin add form) -->
+<div id="schedule-add-modal" style="position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.75);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--surf);border:1px solid var(--brand-lt);border-radius:18px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(101,8,31,.5)">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">📅</span>
+      <span style="font-size:17px;font-weight:800;flex:1">Programar incidencia</span>
+      <button onclick="document.getElementById('schedule-add-modal').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700">✕</button>
+    </div>
+    <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px">
+      <div class="fld"><label>Tipo</label>
+        <select id="sch-type" style="width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;color:var(--tx);font-family:var(--f);font-size:14px;outline:none">
+          <option value="apagon">⚡ Apagón programado</option>
+          <option value="corte_agua">🚰 Corte de agua programado</option>
+        </select>
+      </div>
+      <div class="fld"><label>Título</label><input type="text" id="sch-title" placeholder="Ej. Mantenimiento CFE zona norte"/></div>
+      <div class="fld"><label>Descripción</label><input type="text" id="sch-desc" placeholder="Descripción opcional"/></div>
+      <div class="fld"><label>Fecha y hora</label><input type="datetime-local" id="sch-date" style="width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;color:var(--tx);font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none"/></div>
+      <div class="fld"><label>Duración estimada (horas)</label><input type="number" id="sch-duration" placeholder="4" min="0.5" max="72" step="0.5" value="4"/></div>
+      <button onclick="submitScheduledOutage()" style="padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer">Publicar aviso</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADMIN LOGIN -->
 <div id="admin-login">
   <div class="login-sheet">
@@ -1227,6 +1402,7 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <div class="admin-tab active" id="atab-overview" onclick="switchAdminTab('overview')">📊 Resumen</div>
       <div class="admin-tab" id="atab-apagones" onclick="switchAdminTab('apagones')">⚡ Apagones</div>
       <div class="admin-tab" id="atab-agua" onclick="switchAdminTab('agua')">💧 Fugas</div>
+      <div class="admin-tab" id="atab-sched" onclick="document.getElementById('schedule-add-modal').style.display='flex'">📅 Programar</div>
     </div>
     <div class="admin-body" id="admin-body"></div>
   </div>
@@ -1420,7 +1596,7 @@ function animateGlow(){
 
 function updateZones(reports){
   const bySec={};
-  reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r);});
+  reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r); // corte_agua → agua layer});
   Object.entries(districtLayers).forEach(([sec,poly])=>{
     const d=bySec[sec],els=d?.apagon||[],ags=d?.agua||[];const g=glowLayers[sec];
     if(els.length>=1&&layersOn.apagon){ // 1 reporte ya activa la zona
@@ -1478,7 +1654,10 @@ function mapPlaceOrShow(e,sec,dl){
     </div>` : `<div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center;padding:6px;background:var(--card);border-radius:8px">
       Toca <strong>＋</strong> para reportar también sin luz en esta zona
     </div>`}
-    <div class="pp-acts" style="margin-top:8px">
+    <button class="pbtn" style="width:100%;margin-top:8px;border-color:rgba(34,208,240,.3);color:var(--agua)" onclick="map.closePopup();openChat('${sec}')">
+      💬 Chat de vecinos de esta zona
+    </button>
+    <div class="pp-acts" style="margin-top:6px">
       <button class="pbtn" onclick="shareReport('apagon','${sec}',${cnt})" style="border-color:rgba(37,211,102,.3);color:#25D366">
         <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M11.5 10.5a2 2 0 00-1.6.8L6.4 9.5a2 2 0 000-3L9.9 4.7a2 2 0 10-.8-1.4L5.6 5.1a2 2 0 100 5.8l3.5 1.8a2 2 0 101.4-2.2z"/></svg>
         Compartir
@@ -1617,6 +1796,7 @@ function buildAguaPopup(r){
 async function renderAll(){
   const reports=await loadReports();
   renderAguaMarkers(reports);updateZones(reports);renderZoneBulbs(reports);
+  if(scheduledOutages.length) renderScheduledOnMap();
   // Animated counters
   const el=reports.filter(r=>r.type==='apagon').length;
   const ag=reports.filter(r=>r.type==='agua').length;
@@ -1677,7 +1857,7 @@ function renderSidebar(reports){
   if(!active.length){el.innerHTML=`<div class="sb-empty"><span class="sb-ei">🌙</span>Sin reportes activos<br/>¡Todo tranquilo!</div>`;return;}
   el.innerHTML=active.map(r=>`
     <div class="sb-item ${r.type==='apagon'?'el':'ag'}" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','${r.type}','${r.seccion||''}')">
-      <div class="sb-h ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡ Apagón':'💧 Fuga'}${r.confirmations>0?`<span style="color:var(--grn);font-size:10px;margin-left:auto">✓${r.confirmations}</span>`:''}${(r.repair_requests||0)>0?`<span style="color:var(--agua);font-size:10px;margin-left:auto">🔧${r.repair_requests}</span>`:''}</div>
+      <div class="sb-h ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡ Apagón':r.type==='corte_agua'?'🚰 Sin Agua':'💧 Fuga'}${r.confirmations>0?`<span style="color:var(--grn);font-size:10px;margin-left:auto">✓${r.confirmations}</span>`:''}${(r.repair_requests||0)>0?`<span style="color:var(--agua);font-size:10px;margin-left:auto">🔧${r.repair_requests}</span>`:''}</div>
       <div class="sb-m">${fmtTime(r.timestamp)}<br/>${r.type==='apagon'?fmtRemain(r.timestamp):'⏳ Hasta reparación'}${r.type==='apagon'&&(r.resolve_votes||0)>0?` · 🗳️${r.resolve_votes}/${RESOLVE_THRESHOLD}`:''}</div>
     </div>`).join('');
 }
@@ -1691,7 +1871,7 @@ function flyTo(id,lat,lng,type,sec){
 // TICKER
 function renderTicker(reports){
   if(!reports.length){document.getElementById('ticker-inner').innerHTML='<span class="tick-item">🌙 Sin incidencias activas en Mérida</span>';return;}
-  const items=reports.slice(0,20).map(r=>`<span class="tick-item ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡':'💧'} ${r.type==='apagon'?'Apagón':'Fuga'} ${r.seccion?'· Sec.'+r.seccion:''} · ${fmtTime(r.timestamp)}</span>`).join('');
+  const items=reports.slice(0,20).map(r=>`<span class="tick-item ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡':r.type==='corte_agua'?'🚰':'💧'} ${r.type==='apagon'?'Apagón':r.type==='corte_agua'?'Sin Agua':'Fuga'} ${r.seccion?'· Sec.'+r.seccion:''} · ${fmtTime(r.timestamp)}</span>`).join('');
   document.getElementById('ticker-inner').innerHTML=items+items;
 }
 
@@ -1724,7 +1904,16 @@ function renderAdminPanel(){
 
 // FLOW
 function startFlow(){flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};['tc-el','tc-ag'].forEach(id=>document.getElementById(id).classList.remove('sel'));document.getElementById('btn-s1').disabled=true;document.getElementById('btn-s2').disabled=true;document.getElementById('f-nombre').value='';document.getElementById('f-tel').value='';document.getElementById('photo-prev').style.display='none';document.getElementById('ph-ph').style.display='block';document.getElementById('nbr-banner').classList.remove('show');document.getElementById('btn-gps').classList.remove('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('Elige cómo ubicar tu reporte',false);goStep(1);openModal();}
-function goStep(n){[1,2,3].forEach(i=>{document.getElementById('step-'+i).style.display=i===n?'':'none';document.getElementById('st'+i).className='step '+(i<n?'done':i===n?'active':'');});flow.step=n;const T=['','¿Qué está pasando?','¿Dónde ocurre?','Tus datos de contacto'],S=['','Selecciona el tipo de incidencia','Ubica el problema en el mapa','Privados — verificación anti-bots'];document.getElementById('s-title').textContent=T[n];document.getElementById('s-sub').textContent=S[n];if(n===3){document.getElementById('photo-wrap').style.display=flow.type==='agua'?'':'none';const b=document.getElementById('btn-s3');b.className='btn '+(flow.type==='agua'?'btn-agua':'btn-brand');b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';chkForm();}}
+function goStep(n){[1,2,3].forEach(i=>{document.getElementById('step-'+i).style.display=i===n?'':'none';document.getElementById('st'+i).className='step '+(i<n?'done':i===n?'active':'');});flow.step=n;const T=['','¿Qué está pasando?','¿Dónde ocurre?','Tus datos de contacto'],S=['','Selecciona el tipo de incidencia','Ubica el problema en el mapa','Privados — verificación anti-bots'];document.getElementById('s-title').textContent=T[n];document.getElementById('s-sub').textContent=S[n];if(n===3){
+    document.getElementById('photo-wrap').style.display=flow.type==='agua'?'':'none';
+    const b=document.getElementById('btn-s3');
+    const btnLabels={apagon:t('report_btn_apagon')||'Reportar Apagón ⚡',agua:t('report_btn_agua')||'Reportar Fuga 💧',corte_agua:t('report_btn_corte')||'Sin Agua 🚰'};
+    b.className='btn '+(flow.type==='agua'?'btn-agua':flow.type==='corte_agua'?'btn-agua':'btn-brand');
+    b.textContent=btnLabels[flow.type]||'Reportar';
+    flow.severity=flow.severity||'moderado';
+    document.querySelectorAll('.sev-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.val==='moderado'));
+    chkForm();
+  }}
 function selType(t){flow.type=t;document.getElementById('tc-el').classList.toggle('sel',t==='apagon');document.getElementById('tc-ag').classList.toggle('sel',t==='agua');document.getElementById('btn-s1').disabled=false;}
 function useGPS(){document.getElementById('btn-gps').classList.add('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('🛰️ Obteniendo GPS…',false);if(!navigator.geolocation){setLocStatus('❌ GPS no disponible',false);return;}navigator.geolocation.getCurrentPosition(pos=>{flow.lat=pos.coords.latitude;flow.lng=pos.coords.longitude;flow.seccion=findSeccion(flow.lat,flow.lng);showGPSMarker(flow.lat,flow.lng,true);setLocOk('✅ Ubicación GPS detectada');document.getElementById('btn-s2').disabled=false;map.flyTo([flow.lat,flow.lng],15,{duration:1});checkNeighbors();},()=>{setLocStatus('❌ GPS fallido — usa "Marcar en mapa"',false);document.getElementById('btn-gps').classList.remove('active');},{enableHighAccuracy:true,timeout:8000});}
 function useMapClick(){document.getElementById('btn-map').classList.add('active');document.getElementById('btn-gps').classList.remove('active');closeModal();startPlacing();}
@@ -1779,6 +1968,8 @@ async function submitReport(){
   const rep={
     id:uid(),type:flow.type,lat:flow.lat,lng:flow.lng,seccion:flow.seccion,
     timestamp:Date.now(),resolved:false,resolved_at:null,confirmations:0,
+    severity:flow.severity||'moderado',
+    heat_alert:currentTemp>=HEAT_THRESHOLD,
     nombre,telefono:tel,photo_data:flow.photoData||''
   };
   const saved=await saveReport(rep);
@@ -1819,6 +2010,354 @@ function initRealtime(){
     if(payload.eventType==='INSERT'&&payload.new) maybeNotify(payload.new);
   }).subscribe();
 }
+
+// ══════════════════════════════════════════════
+//  i18n — MULTILENGUAJE (ES / EN / MAYA YUA)
+// ══════════════════════════════════════════════
+let currentLang = localStorage.getItem('apx_lang') || 'es';
+const TRANSLATIONS = {
+  es:{
+    appName:'Apagones MX', slogan:'Tu reporte, nuestra solución',
+    type_apagon:'APAGÓN', type_apagon_desc:'Sin electricidad',
+    type_agua:'FUGA', type_agua_desc:'Tubería rota',
+    type_corte:'SIN AGUA', type_corte_desc:'Corte de servicio',
+    severity_label:'Severidad', sev_leve:'Leve', sev_mod:'Moderado', sev_crit:'Crítico',
+    emergency_dir:'Directorio de Emergencias',
+    report_btn_apagon:'Reportar Apagón ⚡', report_btn_agua:'Reportar Fuga 💧', report_btn_corte:'Reportar Sin Agua 🚰',
+    hola:'¡Hola Vecino! 👋', otra_vez:'¿Otra vez se fue la luz?',
+    que_reportamos:'¿Qué está pasando?', continuar:'Continuar →',
+    search_placeholder:'Buscar colonia o calle...',
+  },
+  en:{
+    appName:'Outages MX', slogan:'Your report, our solution',
+    type_apagon:'BLACKOUT', type_apagon_desc:'No electricity',
+    type_agua:'WATER LEAK', type_agua_desc:'Broken pipe',
+    type_corte:'NO WATER', type_corte_desc:'Water cutoff',
+    severity_label:'Severity', sev_leve:'Low', sev_mod:'Medium', sev_crit:'Critical',
+    emergency_dir:'Emergency Directory',
+    report_btn_apagon:'Report Blackout ⚡', report_btn_agua:'Report Leak 💧', report_btn_corte:'Report No Water 🚰',
+    hola:'Hello Neighbor! 👋', otra_vez:'Did the power go out again?',
+    que_reportamos:'What is happening?', continuar:'Continue →',
+    search_placeholder:'Search neighborhood or street...',
+  },
+  yua:{
+    appName:'Apagones MX', slogan:"A máax ku ts'o'okol, yaan k k'áat",
+    type_apagon:"MA' YAAN K'AK'NAL", type_apagon_desc:"Ma' yaan electricidad",
+    type_agua:"HA' YÉETEL K'AAS", type_agua_desc:'Tubo xáak',
+    type_corte:"MA' YAAN HA'", type_corte_desc:"Cortaron el ha'",
+    severity_label:'Ba\'ax ku k\'abéet', sev_leve:'Chéen', sev_mod:'Nojoch', sev_crit:"K'as túun",
+    emergency_dir:"Directorio ti' Emergencias",
+    report_btn_apagon:"Ts'íib apagón ⚡", report_btn_agua:"Ts'íib ha' k'aas 💧", report_btn_corte:"Ts'íib ma' yaan ha' 🚰",
+    hola:"¡Bix a beel, Vecino! 👋", otra_vez:"¿Xan ka bin k'ak'nal?",
+    que_reportamos:"¿Ba'ax yaan?", continuar:'K tsikbal →',
+    search_placeholder:"Páajtal u kaxtik coloniani...",
+  }
+};
+
+function t(key){ return TRANSLATIONS[currentLang]?.[key] || TRANSLATIONS.es[key] || key; }
+
+function setLang(lang){
+  currentLang = lang; localStorage.setItem('apx_lang', lang);
+  // Update checkmarks
+  ['es','en','yua'].forEach(l=>{
+    const el=document.getElementById('lang-check-'+l);
+    if(el)el.style.display=l===lang?'inline':'none';
+  });
+  applyTranslations();
+  toast(`🌐 ${lang==='es'?'Español':lang==='en'?'English':'Maya Yucateco'}`,'i');
+}
+
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.dataset.i18n; if(key)el.textContent=t(key);
+  });
+  const si=document.getElementById('search-input');
+  if(si) si.placeholder=t('search_placeholder');
+  const lo=document.querySelector('.logo span');
+  if(lo && lo.childNodes[0]) lo.childNodes[0].textContent=t('appName').split(' ')[0]+' ';
+}
+
+// ══════════════════════════════════════════════
+//  ALERTA DE CALOR EXTREMO
+// ══════════════════════════════════════════════
+let currentTemp = null;
+
+async function fetchHeatData(){
+  try{
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=20.9674&longitude=-89.6237&current=temperature_2m,apparent_temperature&timezone=America%2FMerida');
+    const d=await r.json();
+    currentTemp=d.current.temperature_2m;
+    const feels=d.current.apparent_temperature;
+    const banner=document.getElementById('heat-banner');
+    const txt=document.getElementById('heat-text');
+    const tmp=document.getElementById('heat-temp');
+    if(currentTemp>=HEAT_CRITICAL){
+      banner.style.display='flex';
+      banner.style.background='linear-gradient(135deg,rgba(220,20,20,.97),rgba(150,0,0,.97))';
+      txt.textContent=`🚨 CALOR EXTREMO — ${currentTemp}°C / Sensación: ${feels}°C. Apagón = EMERGENCIA MÉDICA`;
+      tmp.textContent='🌡️ '+currentTemp+'°C';
+    } else if(currentTemp>=HEAT_THRESHOLD){
+      banner.style.display='flex';
+      txt.textContent=`⚠️ Calor intenso en Mérida — ${currentTemp}°C / Sensación: ${feels}°C`;
+      tmp.textContent='🌡️ '+currentTemp+'°C';
+    }
+    // Show temp in topbar updated text
+    const upd=document.getElementById('updated-txt');
+    if(upd) upd.textContent=`${currentTemp}°C · Actualizado`;
+  }catch(e){ console.warn('Heat API:',e.message); }
+}
+
+// ══════════════════════════════════════════════
+//  MODO OFFLINE
+// ══════════════════════════════════════════════
+function initOfflineDetection(){
+  function update(){
+    const banner=document.getElementById('offline-banner');
+    if(banner) banner.style.display=navigator.onLine?'none':'flex';
+    // adjust map top if banners are showing
+    const heatShowing=document.getElementById('heat-banner')?.style.display==='flex';
+    const offShowing=!navigator.onLine;
+    const offset=62+(heatShowing?36:0)+(offShowing?32:0);
+    if(map) map.getContainer().style.top=offset+'px';
+  }
+  window.addEventListener('online',update); window.addEventListener('offline',update); update();
+}
+
+// ══════════════════════════════════════════════
+//  SEVERITY SELECTOR
+// ══════════════════════════════════════════════
+function selSev(val){
+  document.querySelectorAll('.sev-btn').forEach(b=>b.classList.toggle('active',b.dataset.val===val));
+  flow.severity=val;
+}
+
+// ══════════════════════════════════════════════
+//  TIPO CORTE DE AGUA
+// ══════════════════════════════════════════════
+// Extend selType to handle corte_agua
+const _origSelType=selType;
+function selType(t_){
+  flow.type=t_;
+  document.getElementById('tc-el')?.classList.toggle('sel',t_==='apagon');
+  document.getElementById('tc-ag')?.classList.toggle('sel',t_==='agua');
+  document.getElementById('tc-ca')?.classList.toggle('sel',t_==='corte_agua');
+  document.getElementById('btn-s1').disabled=false;
+}
+
+// ══════════════════════════════════════════════
+//  ZONE CHAT
+// ══════════════════════════════════════════════
+let chatSeccion='', chatChannel=null, chatVecinoNum=0;
+const MSG_TTL = 8*60*60*1000;
+
+function getVecinoNum(){
+  let n=parseInt(sessionStorage.getItem('apx_vecino_num')||'0');
+  if(!n){n=Math.floor(Math.random()*90)+10;sessionStorage.setItem('apx_vecino_num',n);}
+  return n;
+}
+
+async function openChat(sec){
+  chatSeccion=sec;
+  chatVecinoNum=getVecinoNum();
+  document.getElementById('chat-title').textContent=`💬 Chat zona`;
+  document.getElementById('chat-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+  await loadChatMessages();
+  // Subscribe to realtime
+  if(chatChannel)chatChannel.unsubscribe();
+  chatChannel=db.channel('chat-'+sec)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'zone_messages',filter:`seccion=eq.${sec}`},
+      payload=>{if(payload.new)appendChatMsg(payload.new,false);}
+    ).subscribe();
+}
+
+function closeChat(){
+  document.getElementById('chat-modal').style.display='none';
+  document.body.style.overflow='';
+  if(chatChannel){chatChannel.unsubscribe();chatChannel=null;}
+}
+
+async function loadChatMessages(){
+  const el=document.getElementById('chat-messages');
+  el.innerHTML='<div style="text-align:center;color:var(--mut);font-size:12px;padding:20px">⏳ Cargando…</div>';
+  try{
+    const since=Date.now()-MSG_TTL;
+    const{data}=await db.from('zone_messages').select('*').eq('seccion',chatSeccion).gt('timestamp',since).order('timestamp',{ascending:true}).limit(60);
+    const msgs=data||[];
+    if(!msgs.length){
+      el.innerHTML='<div style="text-align:center;color:var(--mut);font-size:12px;padding:20px">Sin mensajes aún — ¡sé el primero en escribir! 💬</div>';
+      return;
+    }
+    el.innerHTML='';
+    msgs.forEach(m=>appendChatMsg(m,false));
+    el.scrollTop=el.scrollHeight;
+  }catch(e){el.innerHTML='<div style="text-align:center;color:var(--mut);font-size:12px;padding:20px">Error cargando mensajes</div>';}
+}
+
+function appendChatMsg(msg,scroll=true){
+  const el=document.getElementById('chat-messages');
+  const isMine=msg.vecino_num===chatVecinoNum;
+  const div=document.createElement('div');
+  div.className='chat-msg '+(isMine?'mine':'other');
+  div.innerHTML=`<div class="chat-msg-author">${isMine?'Tú':'Vecino #'+msg.vecino_num}</div>${escapeHtml(msg.message)}<div class="chat-msg-time">${fmtTime(msg.timestamp)}</div>`;
+  // Remove empty state if present
+  const empty=el.querySelector('div:not(.chat-msg)');
+  if(empty)empty.remove();
+  el.appendChild(div);
+  if(scroll)el.scrollTop=el.scrollHeight;
+}
+
+async function sendChatMessage(){
+  const inp=document.getElementById('chat-input');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  inp.value='';
+  const record={id:uid(),seccion:chatSeccion,message:msg,vecino_num:chatVecinoNum,timestamp:Date.now()};
+  appendChatMsg(record,true);
+  try{await db.from('zone_messages').insert([record]);}
+  catch(e){toast('Error enviando mensaje','e');}
+}
+
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ══════════════════════════════════════════════
+//  DIRECTORIO DE EMERGENCIAS
+// ══════════════════════════════════════════════
+const EMERGENCY_DATA = [
+  { section:'⚡ Electricidad (CFE)', items:[
+    {name:'CFE Emergencias',number:'071',href:'tel:071',icon:'⚡',bg:'rgba(245,183,49,.15)',border:'rgba(245,183,49,.3)'},
+    {name:'CFE WhatsApp',number:'800 890-1000',href:'https://wa.me/528008901000?text=Apagón en Mérida',icon:'💬',bg:'rgba(37,211,102,.1)',border:'rgba(37,211,102,.25)'},
+    {name:'CFE Portal',number:'app.cfe.mx',href:'https://app.cfe.mx',icon:'🌐',bg:'rgba(34,208,240,.1)',border:'rgba(34,208,240,.25)'},
+  ]},
+  { section:'💧 Agua (JAPAY)', items:[
+    {name:'JAPAY Servicio',number:'(999) 930-3400',href:'tel:9999303400',icon:'💧',bg:'rgba(34,208,240,.15)',border:'rgba(34,208,240,.3)'},
+    {name:'JAPAY Emergencias',number:'(999) 130-0101',href:'tel:9991300101',icon:'🚨',bg:'rgba(255,75,31,.1)',border:'rgba(255,75,31,.25)'},
+    {name:'JAPAY WhatsApp',number:'Reporte de fuga',href:'https://wa.me/529999303400?text=Fuga de agua en Mérida',icon:'💬',bg:'rgba(37,211,102,.1)',border:'rgba(37,211,102,.25)'},
+  ]},
+  { section:'🚑 Emergencias generales', items:[
+    {name:'Emergencias',number:'911',href:'tel:911',icon:'🆘',bg:'rgba(255,61,61,.15)',border:'rgba(255,61,61,.3)'},
+    {name:'Cruz Roja Mérida',number:'065 / (999) 924-9813',href:'tel:065',icon:'🏥',bg:'rgba(255,61,61,.12)',border:'rgba(255,61,61,.2)'},
+    {name:'Bomberos Mérida',number:'068 / (999) 924-1111',href:'tel:068',icon:'🚒',bg:'rgba(255,100,0,.1)',border:'rgba(255,100,0,.2)'},
+    {name:'Protección Civil',number:'(999) 930-3500',href:'tel:9999303500',icon:'🛡️',bg:'rgba(101,8,31,.12)',border:'rgba(101,8,31,.25)'},
+    {name:'DIF Mérida',number:'(999) 920-0900',href:'tel:9999200900',icon:'👨‍👩‍👧',bg:'rgba(34,208,240,.08)',border:'rgba(34,208,240,.18)'},
+    {name:'Policía Municipal',number:'911 / (999) 942-0060',href:'tel:911',icon:'👮',bg:'rgba(29,155,240,.1)',border:'rgba(29,155,240,.2)'},
+  ]},
+];
+
+function openEmergencyModal(){
+  const list=document.getElementById('emergency-list');
+  list.innerHTML=EMERGENCY_DATA.map(section=>`
+    <div class="emerg-section">
+      <div class="emerg-title">${section.section}</div>
+      ${section.items.map(item=>`
+        <a href="${item.href}" target="_blank" rel="noopener" class="emerg-item" style="background:${item.bg};border-color:${item.border}">
+          <div class="emerg-icon" style="background:${item.bg};border:1px solid ${item.border}">${item.icon}</div>
+          <div><div class="emerg-name">${item.name}</div><div class="emerg-number">${item.number}</div></div>
+        </a>`).join('')}
+    </div>`).join('');
+  document.getElementById('emergency-modal').style.display='flex';
+}
+
+// ══════════════════════════════════════════════
+//  INCIDENCIAS PROGRAMADAS (admin)
+// ══════════════════════════════════════════════
+let scheduledOutages=[], scheduledMarkers=[];
+
+async function loadScheduledOutages(){
+  try{
+    const now=Date.now();
+    const{data}=await db.from('scheduled_outages').select('*').eq('active',true).gt('scheduled_for',now-12*3600000);
+    scheduledOutages=data||[];
+    renderScheduledOnMap();
+  }catch(e){console.warn('Scheduled:',e.message);}
+}
+
+function renderScheduledOnMap(){
+  scheduledMarkers.forEach(m=>m.remove()); scheduledMarkers=[];
+  scheduledOutages.forEach(s=>{
+    const center=getZoneCentroid(s.seccion);
+    if(!center)return;
+    const when=new Date(s.scheduled_for);
+    const hh=String(when.getHours()).padStart(2,'0'), mm=String(when.getMinutes()).padStart(2,'0');
+    const icon=L.divIcon({
+      html:`<div class="sched-pin">${s.type==='apagon'?'📅⚡':'📅🚰'} ${hh}:${mm}</div>`,
+      iconSize:[null,null],iconAnchor:[40,14],className:''
+    });
+    const m=L.marker([center.lat,center.lng],{icon,zIndexOffset:600});
+    m.bindPopup(`<div class="popup"><div class="pp-body">
+      <div class="pp-type" style="color:#A855F7">📅 ${s.type==='apagon'?'Apagón':'Corte de agua'} programado</div>
+      <div class="pp-row"><strong>${s.title}</strong></div>
+      <div class="pp-row">🕐 <strong>${when.toLocaleString('es-MX',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</strong></div>
+      <div class="pp-row">⏱️ Duración: <strong>${s.duration_hours}h</strong></div>
+      ${s.description?`<div class="pp-row">${s.description}</div>`:''}
+    </div></div>`,{maxWidth:280,className:''});
+    m.addTo(map); scheduledMarkers.push(m);
+  });
+}
+
+async function submitScheduledOutage(){
+  const type=document.getElementById('sch-type').value;
+  const title=document.getElementById('sch-title').value.trim();
+  const desc=document.getElementById('sch-desc').value.trim();
+  const dateStr=document.getElementById('sch-date').value;
+  const duration=parseFloat(document.getElementById('sch-duration').value)||4;
+  if(!title||!dateStr){toast('Completa título y fecha','e');return;}
+  const record={id:uid(),type,title,description:desc,scheduled_for:new Date(dateStr).getTime(),duration_hours:duration,active:true};
+  const{error}=await db.from('scheduled_outages').insert([record]);
+  if(error){toast('Error guardando: '+error.message,'e');return;}
+  document.getElementById('schedule-add-modal').style.display='none';
+  await loadScheduledOutages();
+  toast('📅 Aviso programado publicado','s');
+}
+
+// ══════════════════════════════════════════════
+//  RANKINGS DE COLONIAS
+// ══════════════════════════════════════════════
+async function openRankings(){
+  // Reuse stats modal with rankings tab
+  document.getElementById('stats-modal').style.display='flex';
+  document.getElementById('stats-body').innerHTML='<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Calculando ranking…</div>';
+  try{
+    const since30=Date.now()-30*24*3600000;
+    const{data:all}=await db.from('reports').select('id,type,seccion,timestamp,resolved').gt('timestamp',since30);
+    const reports=all||[];
+    const zones={};
+    reports.forEach(r=>{
+      if(!r.seccion)return;
+      if(!zones[r.seccion])zones[r.seccion]={total:0,el:0,ag:0,ca:0,resolved:0,active:0};
+      zones[r.seccion].total++;
+      zones[r.seccion][r.type==='apagon'?'el':r.type==='agua'?'ag':'ca']++;
+      if(r.resolved)zones[r.seccion].resolved++;
+      else zones[r.seccion].active++;
+    });
+    const ranked=Object.entries(zones).sort((a,b)=>b[1].total-a[1].total).slice(0,10);
+    const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+    document.getElementById('stats-body').innerHTML=`
+      <div style="font-size:13px;color:var(--dim);margin-bottom:14px;line-height:1.5">🏆 Las zonas más activas en los últimos 30 días. Más reportes = vecinos más comprometidos.</div>
+      ${!ranked.length?'<div style="text-align:center;padding:30px;color:var(--mut)">Sin datos suficientes aún</div>':
+      ranked.map(([zone,d],i)=>`
+        <div style="background:var(--card);border:1px solid ${i<3?'rgba(245,183,49,.3)':'var(--bdr)'};border-radius:12px;padding:13px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px">
+          <div style="font-size:22px;width:28px;text-align:center">${medals[i]}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Zona ${zone}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${d.el>0?`<span style="font-size:11px;font-weight:700;color:var(--elec)">⚡${d.el}</span>`:''}
+              ${d.ag>0?`<span style="font-size:11px;font-weight:700;color:var(--agua)">💧${d.ag}</span>`:''}
+              ${d.ca>0?`<span style="font-size:11px;font-weight:700;color:#94A3B8">🚰${d.ca}</span>`:''}
+              ${d.active>0?`<span style="font-size:11px;font-weight:700;color:#FF8A6E">${d.active} activo${d.active>1?'s':''}</span>`:''}
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:22px;font-weight:800;color:${i<3?'var(--elec)':'#FFD0D8'}">${d.total}</div>
+            <div style="font-size:10px;color:var(--dim)">reportes</div>
+          </div>
+        </div>`).join('')}
+      <div style="margin-top:12px;font-size:11px;color:var(--mut);text-align:center">¡Más reportes = más presión a CFE y JAPAY para atender!</div>`;
+  }catch(e){document.getElementById('stats-body').innerHTML='<div style="text-align:center;padding:30px;color:var(--mut)">Error cargando</div>';}
+}
+
+
+
 setInterval(renderAll,60000);
 
 // ══════════════════════════════════════════════
@@ -2139,6 +2678,10 @@ window.addEventListener('DOMContentLoaded',async()=>{
   clearTimeout(t); hide();
   try{initRealtime();}catch(e){console.warn(e);}
   setTimeout(parseURLParams, 2000);
+  initOfflineDetection();
+  fetchHeatData(); setInterval(fetchHeatData, 10*60*1000); // refresh every 10min
+  loadScheduledOutages(); setInterval(loadScheduledOutages, 5*60*1000);
+  applyTranslations(); setLang(currentLang);
   setTimeout(()=>{
     if(typeof Notification!=='undefined'&&Notification.permission==='default'&&!isIOSPWA()){
       document.getElementById('notif-prompt').style.display='flex';
