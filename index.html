@@ -739,7 +739,6 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
     <button class="tbar-btn" onclick="openStats()" title="Estadísticas">📊</button>
     <button class="tbar-btn" id="install-btn" onclick="installPWA()" title="Instalar app" style="display:none">📲</button>
     <button class="tbar-btn" id="notif-btn" onclick="requestNotifications()" title="Activar notificaciones">🔔</button>
-    <button class="tbar-btn" id="admin-btn" onclick="openAdminLogin()" title="Panel Admin">🔐 Admin</button>
   </div>
 </header>
 
@@ -1117,9 +1116,14 @@ function updateZones(reports){
   reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r);});
   Object.entries(districtLayers).forEach(([sec,poly])=>{
     const d=bySec[sec],els=d?.apagon||[],ags=d?.agua||[];const g=glowLayers[sec];
-    if(els.length>0&&layersOn.apagon){
-      const intensity=Math.min(0.18+els.length*0.18,0.85);poly._state='apagon';poly._intensity=intensity;
+    if(els.length>=3&&layersOn.apagon){
+      // 3+ reports → full glow
+      const intensity=Math.min(0.22+els.length*0.15,0.85);poly._state='apagon';poly._intensity=intensity;
       poly.setStyle({fillColor:'#FF4B1F',color:'#FF6B3F',weight:1.5,opacity:1});poly.bringToFront();
+    } else if(els.length>0&&els.length<3&&layersOn.apagon){
+      // 1-2 reports → subtle dim indicator, not fully lit
+      poly._state='pending';poly._intensity=0;
+      poly.setStyle({fillColor:'#FF8C5A',fillOpacity:0.08,color:'#FF8C5A',weight:1,opacity:.5});
     } else if(ags.length>0&&layersOn.agua){
       poly._state='agua';poly._intensity=0;
       poly.setStyle({fillColor:'#22D0F0',fillOpacity:.15,color:'#22D0F0',weight:1.5,opacity:.8});
@@ -1139,7 +1143,10 @@ function mapPlaceOrShow(e,sec,dl){
   const cnt=els.length,ttl=fmtRemain(Math.min(...els.map(r=>r.timestamp))),votes=Math.max(...els.map(r=>r.resolve_votes||0)),pct=Math.round((votes/RESOLVE_THRESHOLD)*100);
   const html=`<div class="popup"><div class="pp-body">
     <div class="pp-type el">⚡ Apagón Activo ${cnt>=5?'<span class="pp-badge" style="background:rgba(255,61,61,.15);border-color:rgba(255,61,61,.3);color:#FF7A7A">🔥 CRÍTICO</span>':''}</div>
-    <div class="pp-zone">🔴 <span><strong>${cnt} vecino${cnt>1?'s':''}</strong> sin luz en esta zona<br/>Expira: <strong>${ttl}</strong></span></div>
+    <div class="pp-zone">🔴 <span>
+      <strong>${cnt}/3 vecino${cnt>1?'s':''}</strong> sin luz en esta zona
+      ${cnt>=3?'<br/>⚡ Zona activa — podemos exigir nuestro derecho':`<br/>Faltan ${3-cnt} reporte${3-cnt>1?'s':''} para activar la zona`}
+      <br/>Expira: <strong>${ttl}</strong></span></div>
     <div class="pp-row">🗳️ Votos para resolver: <strong>${votes}/${RESOLVE_THRESHOLD}</strong></div>
     <div class="vote-bar"><div class="vote-fill" style="width:${Math.min(pct,100)}%"></div></div>
     <div class="pp-acts" style="margin-top:12px">
@@ -1226,14 +1233,15 @@ function animCount(id, target) {
   }, 60);
 }
 
-async function doAguaConf(id){await confirmReport(id);map.closePopup();await renderAll();toast('✓ Confirmado — gracias','s');}
+async function doAguaConf(id){await confirmReport(id);map.closePopup();await renderAll();addVecinoActivity('confirm');toast('✓ Confirmado — gracias','s');}
 async function doRepairReq(id){await requestRepair(id);map.closePopup();await renderAll();toast('🔧 Solicitud de reparación enviada','i');}
 async function adminResolveWater(id){await resolveReport(id);map.closePopup();aguaMarkers[id]?.remove();delete aguaMarkers[id];await renderAll();renderAdminPanel();toast('✅ Fuga marcada como reparada','s');}
-async function doElConf(sec){for(const r of cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon'))await confirmReport(r.id);map.closePopup();await renderAll();toast('+ Reporte confirmado','s');}
+async function doElConf(sec){for(const r of cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon'))await confirmReport(r.id);map.closePopup();await renderAll();addVecinoActivity('confirm');toast('+ Reporte confirmado','s');}
 async function doElVoteResolve(sec){
   const reps=cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon');let autoRes=false;
   for(const r of reps)if(await voteResolve(r.id))autoRes=true;
-  map.closePopup();await renderAll();toast(autoRes?'✅ Zona restaurada por consenso vecinal':'✓ Voto registrado — necesitamos '+RESOLVE_THRESHOLD+' votos','s');
+  map.closePopup();await renderAll();addVecinoActivity('confirm');
+  toast(autoRes?'✅ Zona restaurada por consenso vecinal':'✓ Voto registrado — necesitamos '+RESOLVE_THRESHOLD+' votos','s');
 }
 async function adminForceResolve(id){await resolveReport(id);aguaMarkers[id]?.remove();delete aguaMarkers[id];await renderAll();renderAdminPanel();toast('✅ Resuelto (Admin)','s');}
 
@@ -1282,7 +1290,17 @@ function checkPw(){const pw=document.getElementById('pw-input').value;if(pw===AD
 function openAdminPanel(){renderAdminPanel();document.getElementById('admin-panel').classList.add('open');}
 function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');}
 function switchAdminTab(tab){adminTab=tab;['overview','apagones','agua'].forEach(t=>document.getElementById('atab-'+t).classList.toggle('active',t===tab));renderAdminPanel();}
-function logoClick(){logoClicks++;clearTimeout(logoTimer);logoTimer=setTimeout(()=>{logoClicks=0;},2000);if(logoClicks>=5){logoClicks=0;openAdminLogin();}}
+function logoClick(){
+  logoClicks++;
+  clearTimeout(logoTimer);
+  logoTimer=setTimeout(()=>{logoClicks=0;},2000);
+  if(logoClicks===3) toast('💡 Sigue dando clic…','i');
+  if(logoClicks>=5){
+    logoClicks=0;
+    document.getElementById('admin-btn-hidden').style.display='none'; // just in case
+    openAdminLogin();
+  }
+}
 function renderAdminPanel(){
   const body=document.getElementById('admin-body'),all=cachedReports,apagones=all.filter(r=>r.type==='apagon'),agua=all.filter(r=>r.type==='agua'),urgentWater=agua.filter(r=>(r.repair_requests||0)>0);
   if(adminTab==='overview'){body.innerHTML=`<div class="admin-stats"><div class="a-stat"><div class="a-stat-n all">${all.length}</div><div class="a-stat-l">Total activos</div></div><div class="a-stat"><div class="a-stat-n el">${apagones.length}</div><div class="a-stat-l">Apagones</div></div><div class="a-stat"><div class="a-stat-n ag">${agua.length}</div><div class="a-stat-l">Fugas</div></div></div>${urgentWater.length>0?`<div class="admin-section"><div class="admin-section-title">🔧 Reparaciones pendientes</div>${urgentWater.map(r=>`<div class="a-report"><div class="a-report-icon">💧</div><div class="a-report-info"><div class="a-report-head ag">Fuga — Sección ${r.seccion||'?'}<span class="a-report-badge repair" style="margin-left:auto">🔧 ${r.repair_requests}</span></div><div class="a-report-meta">${r.nombre||'Anónimo'} · ${fmtTime(r.timestamp)}</div><div class="a-report-acts"><button class="a-btn fly" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','agua','');closeAdmin()">Ver</button><button class="a-btn resolve" onclick="adminResolveWater('${r.id}')">✅ Reparada</button></div></div>${r.photo_data&&r.photo_data.length>10?`<img class="a-photo-thumb" src="${r.photo_data}" style="display:block"/>`:''}
@@ -1305,7 +1323,21 @@ function cancelPlace(){stopPlacing();closeModal();}
 function escKey(e){if(e.key==='Escape')cancelPlace();}
 function setLocStatus(txt,ok){document.getElementById('loc-txt').textContent=txt;document.getElementById('loc-st').className='loc-st'+(ok?' ok':'');}
 function setLocOk(txt){setLocStatus(txt,true);}
-function checkNeighbors(){if(!flow.seccion||!flow.type)return;const n=cachedReports.filter(r=>r.seccion===flow.seccion&&r.type===flow.type).length;const b=document.getElementById('nbr-banner');if(n>0){document.getElementById('nbr-txt').textContent=`${n} vecino${n>1?'s ya reportaron':'ya reportó'} en tu colonia — tu reporte intensificará la zona`;b.classList.add('show');}else b.classList.remove('show');}
+function checkNeighbors(){
+  if(!flow.seccion||!flow.type)return;
+  const n=cachedReports.filter(r=>r.seccion===flow.seccion&&r.type===flow.type).length;
+  const b=document.getElementById('nbr-banner');
+  if(n>0){
+    const needed=3-n;
+    const msg=flow.type==='apagon'
+      ? needed>0
+        ? `${n} vecino${n>1?'s ya reportaron':'ya reportó'} sin luz aquí — faltan ${needed} para iluminar la zona en el mapa 💪`
+        : `Con tu reporte, podemos exigir nuestro derecho a la luz eléctrica ⚡`
+      : `Con tu reporte, podemos exigir atención a esta fuga de agua 💧`;
+    document.getElementById('nbr-txt').textContent=msg;
+    b.classList.add('show');
+  }else b.classList.remove('show');
+}
 function previewPhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');const m=900;let w=i.width,h=i.height;if(w>m||h>m){if(w>h){h=Math.round(h*m/w);w=m;}else{w=Math.round(w*m/h);h=m;}}c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);const d=c.toDataURL('image/jpeg',.72);const p=document.getElementById('photo-prev');p.src=d;p.style.display='block';document.getElementById('ph-ph').style.display='none';flow.photoData=d;};i.src=ev.target.result;};r.readAsDataURL(f);}
 function chkForm(){const n=document.getElementById('f-nombre').value.trim();const t=document.getElementById('f-tel').value.trim();document.getElementById('btn-s3').disabled=!(n.length>=2&&t.length>=7);}
 async function submitReport(){
@@ -1323,7 +1355,14 @@ async function submitReport(){
   const saved=await saveReport(rep);
   closeModal();
   if(saved){
-    toast(flow.type==='apagon'?'⚡ Apagón reportado — zona activada':'💧 Fuga reportada en el mapa','b');
+    addVecinoActivity('report');
+    const activeInZone=cachedReports.filter(r=>r.seccion===rep.seccion&&r.type===rep.type).length+1;
+    const msg=rep.type==='apagon'
+      ? activeInZone>=3
+        ? '⚡ Zona activada — juntos exigimos nuestro derecho a la luz'
+        : `⚡ Reporte enviado — faltan ${Math.max(0,3-activeInZone)} más para iluminar la zona`
+      : '💧 Fuga reportada — con tu reporte, exigimos atención';
+    toast(msg,'b');
     await renderAll();map.flyTo([flow.lat,flow.lng],15,{duration:1});
   } else {
     toast('Error al enviar — verifica que ejecutaste setup.sql en Supabase','e');
@@ -1373,11 +1412,7 @@ function getVecinoScore(){const c=parseInt(localStorage.getItem('apx_confirmatio
 function addVecinoActivity(t){const k=t==='confirm'?'apx_confirmations':'apx_reports';localStorage.setItem(k,(parseInt(localStorage.getItem(k)||'0')+1)+'');updateVecinoBadge();}
 function updateVecinoBadge(){const v=getVecinoScore(),b=document.getElementById('vecino-badge');if(!b)return;if(v.ok){b.style.display='flex';b.innerHTML=v.total>=10?'🏆 Vecino Destacado':v.total>=6?'⭐⭐ Vecino Confiable':'⭐ Vecino Activo';}else b.style.display='none';}
 
-// Patch confirm actions to track activity
-const _oc1=doAguaConf,_oc2=doElConf,_oc3=doElVoteResolve;
-async function doAguaConf(id){await _oc1(id);addVecinoActivity('confirm');}
-async function doElConf(sec){await _oc2(sec);addVecinoActivity('confirm');}
-async function doElVoteResolve(sec){await _oc3(sec);addVecinoActivity('confirm');}
+// Confirm activity tracked inline in each function — no redeclarations needed
 
 // 7-day history
 let historyOn=false,historyLayers={};
@@ -1387,9 +1422,7 @@ async function toggleHistory(){historyOn=!historyOn;const card=document.getEleme
 async function openStats(){document.getElementById('stats-modal').style.display='flex';document.getElementById('stats-body').innerHTML='<div style="text-align:center;padding:36px;color:var(--dim)"><div style="font-size:28px;margin-bottom:8px">⏳</div>Cargando…</div>';try{const since7=Date.now()-7*24*60*60*1000,since1=Date.now()-24*60*60*1000;const active=cachedReports;const{data:hist}=await db.from('reports').select('*').eq('resolved',true).gt('resolved_at',since7);const history=hist||[];const all=[...active,...history];const elT=all.filter(r=>r.type==='apagon').length,agT=all.filter(r=>r.type==='agua').length,grand=elT+agT||1;const todayCount=all.filter(r=>r.timestamp>since1).length;const resolvable=history.filter(r=>r.resolved_at&&r.timestamp);const avgHr=resolvable.length?(resolvable.reduce((s,r)=>s+(r.resolved_at-r.timestamp),0)/resolvable.length/3600000).toFixed(1):null;const zones={};all.forEach(r=>{if(!r.seccion)return;if(!zones[r.seccion])zones[r.seccion]={el:0,ag:0};zones[r.seccion][r.type==='apagon'?'el':'ag']++;});const topZ=Object.entries(zones).map(([z,d])=>({z,total:d.el+d.ag,...d})).sort((a,b)=>b.total-a.total).slice(0,5);const v=getVecinoScore();document.getElementById('stats-body').innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">${sCard(active.length,'Activos ahora','#FFD0D8')}${sCard(todayCount,'Reportes hoy','var(--elec)')}${sCard(all.length,'Esta semana','var(--agua)')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">${sCard(elT,'⚡ Apagones (7d)','var(--elec)')}${sCard(agT,'💧 Fugas (7d)','var(--agua)')}</div>${avgHr?`<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><span style="font-size:26px">⏱️</span><div><div style="font-size:22px;font-weight:800;color:var(--grn)">${avgHr}h</div><div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Tiempo promedio de resolución</div></div></div>`:''}<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Distribución</div><div style="height:9px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:7px"><div style="width:${Math.round(elT/grand*100)}%;background:var(--elec-zone)"></div><div style="flex:1;background:var(--agua);opacity:.8"></div></div><div style="display:flex;gap:14px;font-size:11px;font-weight:600"><span style="color:var(--elec)">⚡ ${Math.round(elT/grand*100)}%</span><span style="color:var(--agua)">💧 ${Math.round(agT/grand*100)}%</span></div></div>${topZ.length?`<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">🔥 Zonas más afectadas</div>${topZ.map((d,i)=>`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Zona ${i+1}</span><span style="font-size:12px;font-weight:800;color:${d.el>d.ag?'var(--elec)':'var(--agua)'}">${d.total} reporte${d.total>1?'s':''}</span></div><div style="height:5px;background:var(--bdr);border-radius:3px;overflow:hidden"><div style="width:${Math.round(d.total/topZ[0].total*100)}%;height:100%;background:${d.el>d.ag?'var(--elec-zone)':'var(--agua)'};border-radius:3px"></div></div><div style="font-size:10px;color:var(--mut);margin-top:2px">${d.el?`⚡${d.el} `:''}${d.ag?`💧${d.ag}`:''}</div></div>`).join('')}</div>`:''}${v.total>0?`<div style="background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.25);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px"><span style="font-size:28px">${v.ok?'⭐':'🌱'}</span><div><div style="font-size:14px;font-weight:800;color:var(--grn)">Tu contribución</div><div style="font-size:12px;color:var(--dim)">${v.r} reporte${v.r!==1?'s':''} · ${v.c} confirmaciones anónimas</div></div></div>`:''}`;} catch(e){document.getElementById('stats-body').innerHTML='<div style="text-align:center;padding:30px;color:var(--mut)">Error cargando</div>';}}
 function sCard(n,l,c){return`<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center"><div style="font-size:26px;font-weight:800;color:${c};line-height:1;margin-bottom:4px">${n}</div><div style="font-size:10px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.4px">${l}</div></div>`;}
 
-// Also patch submitReport to track reports
-const _origSubmit=submitReport;
-async function submitReport(){await _origSubmit();addVecinoActivity('report');}
+// Also patch submitReport to track reports — INLINE, no redeclaration needed
 
 // INIT
 window.addEventListener('DOMContentLoaded',async()=>{
