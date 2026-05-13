@@ -900,7 +900,7 @@ function mapPlaceOrShow(e,sec,dl){
   const cnt=els.length,ttl=fmtRemain(Math.min(...els.map(r=>r.timestamp))),votes=Math.max(...els.map(r=>r.resolve_votes||0)),pct=Math.round((votes/RESOLVE_THRESHOLD)*100);
   const html=`<div class="popup"><div class="pp-body">
     <div class="pp-type el">⚡ Apagón Activo ${cnt>=5?'<span class="pp-badge" style="background:rgba(255,61,61,.15);border-color:rgba(255,61,61,.3);color:#FF7A7A">🔥 CRÍTICO</span>':''}</div>
-    <div class="pp-zone">🔴 <span><strong>${cnt} vecino${cnt>1?'s':'}</strong> sin luz en Sección ${sec}<br/>Expira: <strong>${ttl}</strong></span></div>
+    <div class="pp-zone">🔴 <span><strong>${cnt} vecino${cnt>1?'s':''}</strong> sin luz en Sección ${sec}<br/>Expira: <strong>${ttl}</strong></span></div>
     <div class="pp-row">🗳️ Votos para resolver: <strong>${votes}/${RESOLVE_THRESHOLD}</strong></div>
     <div class="vote-bar"><div class="vote-fill" style="width:${Math.min(pct,100)}%"></div></div>
     <div class="pp-acts" style="margin-top:12px">
