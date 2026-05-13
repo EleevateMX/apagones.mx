@@ -1645,17 +1645,14 @@ function animateGlow(){
 
 function updateZones(reports){
   const bySec={};
-  reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r); // corte_agua → agua layer});
+  reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r); // corte_agua → agua layer
+  });
   Object.entries(districtLayers).forEach(([sec,poly])=>{
     const d=bySec[sec],els=d?.apagon||[],ags=d?.agua||[];const g=glowLayers[sec];
     if(els.length>=1&&layersOn.apagon){ // 1 reporte ya activa la zona
       // 3+ reports → full glow
       const intensity=Math.min(0.22+els.length*0.15,0.85);poly._state='apagon';poly._intensity=intensity;
       poly.setStyle({fillColor:'#FF4B1F',color:'#FF6B3F',weight:1.5,opacity:1});poly.bringToFront();
-    /* single-report threshold — removed pending state */
-      // 1-2 reports → subtle dim indicator, not fully lit
-      poly._state='pending';poly._intensity=0;
-      poly.setStyle({fillColor:'#FF8C5A',fillOpacity:0.08,color:'#FF8C5A',weight:1,opacity:.5});
     } else if(ags.length>0&&layersOn.agua){
       poly._state='agua';poly._intensity=0;
       poly.setStyle({fillColor:'#22D0F0',fillOpacity:.15,color:'#22D0F0',weight:1.5,opacity:.8});
@@ -2493,7 +2490,8 @@ function shareReport(type, seccion, cnt) {
   const btns  = document.getElementById('share-buttons');
   const emoji = type === 'apagon' ? '⚡' : '💧';
   const nombre = type === 'apagon' ? 'Apagón' : 'Fuga de agua';
-  const msg = `${emoji} *${nombre} en Mérida, Yucatán*\n${cnt ? `👥 ${cnt} vecino${cnt>1?'s':'} reportaron` : 'Nuevo reporte'}\n\n🗺️ Ve el mapa en tiempo real:\n${APP_URL}\n\n_Suma tu reporte y exijamos atención juntos_ 💪`;
+  const cntTxt = cnt ? ('👥 '+cnt+' vecino'+(cnt>1?'s':'')+' reportaron') : 'Nuevo reporte';
+  const msg = emoji+' *'+nombre+' en Mérida, Yucatán*\n'+cntTxt+'\n\n🗺️ Ve el mapa en tiempo real:\n'+APP_URL+'\n\n_Suma tu reporte y exijamos atención juntos_ 💪';
   const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
   const zoneUrl = seccion ? `${APP_URL}?zone=${seccion}&type=${type}` : APP_URL;
 
