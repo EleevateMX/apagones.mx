@@ -48,6 +48,42 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .ob-mx{color:var(--dim);font-weight:500}
 
 .ob-illo{width:100%;max-width:320px;height:220px;margin-bottom:24px}
+/* SVG character animations */
+.arm-left-1  { transform-origin:136px 130px; animation:waveL1 1.8s ease-in-out infinite; }
+.arm-right-1 { transform-origin:180px 130px; animation:waveR1 1.8s ease-in-out infinite; }
+@keyframes waveL1 {
+  0%,100%{ transform:rotate(0deg) }
+  30%    { transform:rotate(-18deg) }
+  60%    { transform:rotate(10deg) }
+}
+@keyframes waveR1 {
+  0%,100%{ transform:rotate(0deg) }
+  30%    { transform:rotate(18deg) }
+  60%    { transform:rotate(-10deg) }
+}
+.sparks-1 { animation:sparksFade 1.8s ease-in-out infinite; }
+@keyframes sparksFade { 0%,100%{opacity:.8} 50%{opacity:.2} }
+
+.arm-left-2  { transform-origin:138px 135px; animation:pointL 2.2s ease-in-out infinite; }
+.arm-right-2 { transform-origin:178px 135px; animation:pointR 2.2s ease-in-out infinite; }
+@keyframes pointL {
+  0%,100%{ transform:rotate(0deg) }
+  40%    { transform:rotate(8deg) }
+  70%    { transform:rotate(-5deg) }
+}
+@keyframes pointR {
+  0%,100%{ transform:rotate(0deg) }
+  40%    { transform:rotate(-8deg) }
+  70%    { transform:rotate(5deg) }
+}
+.elec-bounce { animation:elecB 1.4s ease-in-out infinite alternate; transform-origin:68px 88px; }
+@keyframes elecB { from{transform:scale(1) translateY(0)} to{transform:scale(1.08) translateY(-4px)} }
+.water-bounce { animation:waterB 1.6s ease-in-out infinite alternate; transform-origin:262px 90px; }
+@keyframes waterB { from{transform:scale(1) translateY(0)} to{transform:scale(1.06) translateY(-5px)} }
+.bulb-flicker { animation:flicker 2.4s ease-in-out infinite; }
+@keyframes flicker { 0%,100%{opacity:.4} 20%{opacity:.7} 40%{opacity:.3} 60%{opacity:.6} 80%{opacity:.2} }
+.candle-flame { animation:candleFlame 0.8s ease-in-out infinite alternate; transform-origin:265px 153px; }
+@keyframes candleFlame { from{transform:scaleX(1) rotate(-3deg)} to{transform:scaleX(.85) rotate(3deg)} }
 
 .ob-headline{font-size:24px;font-weight:800;text-align:center;line-height:1.2;letter-spacing:-.5px;margin-bottom:10px;max-width:320px}
 .ob-sub{font-size:14px;color:var(--dim);text-align:center;line-height:1.6;max-width:300px;margin-bottom:28px}
@@ -388,8 +424,10 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 
       <!-- Candle on table -->
       <rect x="258" y="155" width="14" height="30" rx="4" fill="#F5E6A3"/>
+      <g class="candle-flame">
       <path d="M265 153 Q268 144 265 141 Q262 144 265 153Z" fill="#F5B731"/>
       <circle cx="265" cy="148" r="10" fill="url(#candleGlow)"/>
+      </g>
       <!-- Table -->
       <rect x="240" y="185" width="50" height="8" rx="3" fill="#2A1520"/>
       <rect x="244" y="193" width="6" height="22" rx="2" fill="#2A1520"/>
@@ -440,6 +478,7 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <ellipse cx="176" cy="95" rx="7" ry="4" fill="#C04040" opacity=".25"/>
 
       <!-- Left arm (raised up in frustration) -->
+      <g class="arm-left-1">
       <path d="M136 130 Q110 118 96 98" stroke="#8B5E52" stroke-width="13" fill="none" stroke-linecap="round"/>
       <path d="M136 130 Q110 118 96 98" stroke="#A0715E" stroke-width="10" fill="none" stroke-linecap="round"/>
       <!-- Left hand -->
@@ -448,8 +487,10 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <rect x="87" y="82" width="5" height="12" rx="2.5" fill="#B07A68"/>
       <rect x="93" y="80" width="5" height="14" rx="2.5" fill="#B07A68"/>
       <rect x="99" y="83" width="5" height="11" rx="2.5" fill="#B07A68"/>
+      </g>
 
       <!-- Right arm (raised) -->
+      <g class="arm-right-1">
       <path d="M180 130 Q206 118 220 98" stroke="#8B5E52" stroke-width="13" fill="none" stroke-linecap="round"/>
       <path d="M180 130 Q206 118 220 98" stroke="#A0715E" stroke-width="10" fill="none" stroke-linecap="round"/>
       <!-- Right hand -->
@@ -457,13 +498,16 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <rect x="218" y="82" width="5" height="12" rx="2.5" fill="#B07A68"/>
       <rect x="224" y="80" width="5" height="14" rx="2.5" fill="#B07A68"/>
       <rect x="230" y="83" width="5" height="11" rx="2.5" fill="#B07A68"/>
+      </g>
 
       <!-- Frustration sparks -->
+      <g class="sparks-1">
       <path d="M88 80 L82 68 L89 74 L86 60" stroke="#F5B731" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".8"/>
       <path d="M228 78 L234 65 L227 72 L230 58" stroke="#F5B731" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".8"/>
       <!-- Sweat drops -->
       <path d="M178 72 Q181 65 178 62 Q175 65 178 72Z" fill="#22D0F0" opacity=".7"/>
       <path d="M186 62 Q188 56 186 53 Q184 56 186 62Z" fill="#22D0F0" opacity=".5"/>
+      </g>
 
       <!-- Question marks (confused) -->
       <text x="115" y="50" font-size="22" font-weight="800" fill="#65081F" opacity=".7" font-family="'Plus Jakarta Sans',sans-serif">?</text>
@@ -501,6 +545,7 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <rect width="320" height="220" fill="url(#bgGrad2)" rx="16"/>
 
       <!-- LEFT: ELECTRICITY SIDE -->
+      <g class="elec-bounce">
       <!-- Glow circle -->
       <circle cx="58" cy="90" r="45" fill="url(#elecGlow)"/>
       <!-- Lightning bolt (large) -->
@@ -509,10 +554,12 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <circle cx="35" cy="70" r="3" fill="#F5B731" opacity=".6"/>
       <circle cx="82" cy="58" r="2" fill="#F5B731" opacity=".5"/>
       <circle cx="28" cy="105" r="2.5" fill="#F5B731" opacity=".4"/>
+      </g>
       <!-- Label -->
       <text x="58" y="150" text-anchor="middle" font-size="11" font-weight="800" fill="#F5B731" opacity=".9" font-family="'Plus Jakarta Sans',sans-serif">APAGÓN</text>
 
       <!-- RIGHT: WATER SIDE -->
+      <g class="water-bounce">
       <!-- Glow circle -->
       <circle cx="262" cy="90" r="45" fill="url(#waterGlow)"/>
       <!-- Water drop (large) -->
@@ -523,6 +570,7 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <path d="M248 118 Q246 125 248 128 Q250 125 248 118Z" fill="#22D0F0" opacity=".6"/>
       <path d="M258 125 Q256 130 258 133 Q260 130 258 125Z" fill="#22D0F0" opacity=".5"/>
       <path d="M270 120 Q268 126 270 129 Q272 126 270 120Z" fill="#22D0F0" opacity=".4"/>
+      </g>
       <!-- Label -->
       <text x="262" y="150" text-anchor="middle" font-size="11" font-weight="800" fill="#22D0F0" opacity=".9" font-family="'Plus Jakarta Sans',sans-serif">FUGA DE AGUA</text>
 
@@ -560,6 +608,7 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <path d="M150 104 Q158 110 166 104" stroke="#6B2E1A" stroke-width="2" fill="none" stroke-linecap="round"/>
 
       <!-- LEFT ARM pointing to electricity -->
+      <g class="arm-left-2">
       <path d="M138 135 Q108 120 80 105" stroke="#8B5E52" stroke-width="12" fill="none" stroke-linecap="round"/>
       <path d="M138 135 Q108 120 80 105" stroke="#A0715E" stroke-width="9" fill="none" stroke-linecap="round"/>
       <!-- Left hand pointing -->
@@ -567,14 +616,17 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
       <path d="M68 99 Q76 94 84 99" fill="#B07A68"/>
       <!-- Pointing finger -->
       <rect x="62" y="96" width="14" height="6" rx="3" fill="#B07A68"/>
+      </g>
 
       <!-- RIGHT ARM pointing to water -->
+      <g class="arm-right-2">
       <path d="M178 135 Q208 120 236 105" stroke="#8B5E52" stroke-width="12" fill="none" stroke-linecap="round"/>
       <path d="M178 135 Q208 120 236 105" stroke="#A0715E" stroke-width="9" fill="none" stroke-linecap="round"/>
       <!-- Right hand pointing -->
       <circle cx="240" cy="103" r="9" fill="#A0715E"/>
       <path d="M232 99 Q240 94 248 99" fill="#B07A68"/>
       <rect x="240" y="96" width="14" height="6" rx="3" fill="#B07A68"/>
+      </g>
 
       <!-- Speech bubble -->
       <rect x="120" y="55" width="76" height="28" rx="10" fill="#1A0E14" stroke="#2A1520" stroke-width="1.5"/>
@@ -736,7 +788,12 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 // ══════════════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════════════
-const KML_URL = 'https://corsproxy.io/?' + encodeURIComponent('https://www.google.com/maps/d/u/0/kml?forcekml=1&mid=10ZjeDwOsMnrbiXpU2NSUh3TJUJbvGdw');
+const KML_PROXIES = [
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'https://thingproxy.freeboard.io/fetch/'
+];
+const KML_TARGET = 'https://www.google.com/maps/d/u/0/kml?forcekml=1&mid=10ZjeDwOsMnrbiXpU2NSUh3TJUJbvGdw';
 const MERIDA  = [20.9674, -89.6237];
 const TTL_EL  = 3 * 60 * 60 * 1000;
 const RESOLVE_THRESHOLD = 3;
@@ -781,18 +838,21 @@ function enterMap(preType) {
 }
 
 function startFlowWithType(type) {
+  // Reset state
   flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
   ['tc-el','tc-ag'].forEach(id=>document.getElementById(id)?.classList.remove('sel'));
-  document.getElementById('btn-s1').disabled=true;
   document.getElementById('btn-s2').disabled=true;
   document.getElementById('f-nombre').value='';
   document.getElementById('f-tel').value='';
-  setLocStatus('Elige cómo ubicar tu reporte',false);
+  if(document.getElementById('photo-prev')) document.getElementById('photo-prev').style.display='none';
+  if(document.getElementById('ph-ph')) document.getElementById('ph-ph').style.display='block';
   document.getElementById('nbr-banner').classList.remove('show');
   document.getElementById('btn-gps').classList.remove('active');
   document.getElementById('btn-map').classList.remove('active');
-  goStep(1);
+  setLocStatus('Elige cómo ubicar tu reporte',false);
+  // Pre-select the type chosen in onboarding, skip step 1
   selType(type);
+  goStep(2); // Jump directly to location step
   openModal();
 }
 
@@ -837,8 +897,24 @@ function initMap(){
   setInterval(animateGlow,60);
 }
 
+async function tryFetchKML() {
+  // Try direct first (might work from GitHub Pages)
+  try {
+    const r = await fetch(KML_TARGET, {mode:'cors'});
+    if (r.ok) return r.text();
+  } catch(e) {}
+  // Try proxies in sequence
+  for (const proxy of KML_PROXIES) {
+    try {
+      const r = await fetch(proxy + encodeURIComponent(KML_TARGET));
+      if (r.ok) { const txt = await r.text(); if (txt.includes('<kml')) return txt; }
+    } catch(e) { console.warn('Proxy failed:', proxy); }
+  }
+  throw new Error('All proxies failed');
+}
+
 function loadKML(){
-  fetch(KML_URL).then(r=>r.text()).then(txt=>{
+  tryFetchKML().then(txt=>{
     const doc=new DOMParser().parseFromString(txt,'text/xml');
     doc.querySelectorAll('Placemark').forEach(pm=>{
       const name=pm.querySelector('name')?.textContent?.trim()||'';
@@ -1048,7 +1124,29 @@ function setLocOk(txt){setLocStatus(txt,true);}
 function checkNeighbors(){if(!flow.seccion||!flow.type)return;const n=cachedReports.filter(r=>r.seccion===flow.seccion&&r.type===flow.type).length;const b=document.getElementById('nbr-banner');if(n>0){document.getElementById('nbr-txt').textContent=`${n} vecino${n>1?'s ya reportaron':'ya reportó'} lo mismo en Sección ${flow.seccion} — tu reporte intensificará la zona`;b.classList.add('show');}else b.classList.remove('show');}
 function previewPhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');const m=900;let w=i.width,h=i.height;if(w>m||h>m){if(w>h){h=Math.round(h*m/w);w=m;}else{w=Math.round(w*m/h);h=m;}}c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);const d=c.toDataURL('image/jpeg',.72);const p=document.getElementById('photo-prev');p.src=d;p.style.display='block';document.getElementById('ph-ph').style.display='none';flow.photoData=d;};i.src=ev.target.result;};r.readAsDataURL(f);}
 function chkForm(){const n=document.getElementById('f-nombre').value.trim();const t=document.getElementById('f-tel').value.trim();document.getElementById('btn-s3').disabled=!(n.length>=2&&t.length>=7);}
-async function submitReport(){const nombre=document.getElementById('f-nombre').value.trim();const tel=document.getElementById('f-tel').value.trim();if(!nombre||!tel){toast('Completa nombre y teléfono','e');return;}if(!flow.lat){toast('Falta ubicación','e');return;}const b=document.getElementById('btn-s3');b.disabled=true;b.textContent='Enviando…';const rep={id:uid(),type:flow.type,lat:flow.lat,lng:flow.lng,seccion:flow.seccion,timestamp:Date.now(),resolved:false,resolved_at:null,confirmations:0,resolve_votes:0,repair_requests:0,nombre,telefono:tel,photo_data:flow.photoData||''};const saved=await saveReport(rep);closeModal();if(saved){toast(flow.type==='apagon'?'⚡ Apagón reportado — zona activada':'💧 Fuga reportada en el mapa','b');await renderAll();map.flyTo([flow.lat,flow.lng],15,{duration:1});}else toast('Error al enviar','e');flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};}
+async function submitReport(){
+  const nombre=document.getElementById('f-nombre').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  if(!nombre||!tel){toast('Completa nombre y teléfono','e');return;}
+  if(!flow.lat){toast('Falta ubicación','e');return;}
+  const b=document.getElementById('btn-s3');b.disabled=true;b.textContent='Enviando…';
+  // Only include base columns — new columns (resolve_votes, repair_requests) use DB defaults
+  const rep={
+    id:uid(),type:flow.type,lat:flow.lat,lng:flow.lng,seccion:flow.seccion,
+    timestamp:Date.now(),resolved:false,resolved_at:null,confirmations:0,
+    nombre,telefono:tel,photo_data:flow.photoData||''
+  };
+  const saved=await saveReport(rep);
+  closeModal();
+  if(saved){
+    toast(flow.type==='apagon'?'⚡ Apagón reportado — zona activada':'💧 Fuga reportada en el mapa','b');
+    await renderAll();map.flyTo([flow.lat,flow.lng],15,{duration:1});
+  } else {
+    toast('Error al enviar — verifica que ejecutaste setup.sql en Supabase','e');
+    b.disabled=false;b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';
+  }
+  flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
+}
 function openModal(){document.getElementById('modal-bg').classList.add('open');}
 function closeModal(){document.getElementById('modal-bg').classList.remove('open');if(!flow.placing){document.getElementById('fab').classList.remove('cancel');document.getElementById('fab').textContent='＋';document.getElementById('fab').onclick=startFlow;}}
 function bgClick(e){if(e.target===document.getElementById('modal-bg')){stopPlacing();closeModal();}}
