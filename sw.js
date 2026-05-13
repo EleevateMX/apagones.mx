@@ -1,46 +1,75 @@
-// Apagones MX — Service Worker
-// Version: 2.0
-const CACHE = 'apagones-mx-v2';
+// Apagones MX — Service Worker v3 (Offline Support)
+const CACHE = 'apagones-mx-v3';
+const TILE_CACHE = 'apagones-tiles-v1';
+
 const STATIC = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.svg',
-  './data/distritos.kml',
+  './', './index.html', './manifest.json', './icon.svg',
+  './icon-192.png', './icon-512.png', './data/distritos.kml',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
 ];
 
-// ── INSTALL: cache static assets ──
+// Pre-cache Mérida tiles zoom 10-12 (small area, manageable size)
+const MERIDA_TILES = [];
+for (let z = 10; z <= 12; z++) {
+  const scale = Math.pow(2, z);
+  const lat = 20.9674, lng = -89.6237;
+  const x0 = Math.floor((lng + 180) / 360 * scale);
+  const y0 = Math.floor((1 - Math.log(Math.tan(lat * Math.PI/180) + 1/Math.cos(lat * Math.PI/180)) / Math.PI) / 2 * scale);
+  for (let dx = -2; dx <= 2; dx++) {
+    for (let dy = -2; dy <= 2; dy++) {
+      const x = x0 + dx, y = y0 + dy;
+      if (x >= 0 && y >= 0 && x < scale && y < scale) {
+        MERIDA_TILES.push(`https://a.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}.png`);
+      }
+    }
+  }
+}
+
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(STATIC).catch(() => {}))
-  );
+  e.waitUntil(Promise.all([
+    caches.open(CACHE).then(c => c.addAll(STATIC).catch(() => {})),
+    caches.open(TILE_CACHE).then(c => c.addAll(MERIDA_TILES).catch(() => {}))
+  ]));
   self.skipWaiting();
 });
 
-// ── ACTIVATE: clean old caches ──
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== CACHE && k !== TILE_CACHE).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
 });
 
-// ── FETCH: cache-first for static, network-first for API ──
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  // Network-first for Supabase API
-  if (url.hostname.includes('supabase.co')) {
+
+  // Supabase — network only
+  if (url.hostname.includes('supabase.co') || url.hostname.includes('open-meteo.com')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('{}', {headers:{'Content-Type':'application/json'}})));
+    return;
+  }
+
+  // Map tiles — cache first, then network, store in tile cache
+  if (url.hostname.includes('cartocdn.com') || url.hostname.includes('openstreetmap.org')) {
     e.respondWith(
-      fetch(e.request).catch(() => new Response('[]', { headers: { 'Content-Type': 'application/json' } }))
+      caches.open(TILE_CACHE).then(c =>
+        c.match(e.request).then(cached => {
+          if (cached) return cached;
+          return fetch(e.request).then(resp => {
+            if (resp.ok) c.put(e.request, resp.clone());
+            return resp;
+          }).catch(() => new Response('', {status:404}));
+        })
+      )
     );
     return;
   }
-  // Cache-first for everything else
+
+  // Everything else — cache first
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(resp => {
       if (resp.ok && e.request.method === 'GET') {
@@ -48,33 +77,22 @@ self.addEventListener('fetch', e => {
         caches.open(CACHE).then(c => c.put(e.request, clone));
       }
       return resp;
-    }))
+    }).catch(() => caches.match('./index.html')))
   );
 });
 
-// ── PUSH NOTIFICATIONS ──
+// Push notifications
 self.addEventListener('push', e => {
   const data = e.data?.json() || {};
-  const opts = {
-    body: data.body || '¡Hay un nuevo reporte en tu zona!',
-    icon: './icon.svg',
-    badge: './icon.svg',
-    tag: data.tag || 'apagones-mx',
-    data: { url: data.url || './' },
-    actions: [
-      { action: 'ver',    title: '👁️ Ver en mapa' },
-      { action: 'ignore', title: 'Ignorar' }
-    ],
-    vibrate: [200, 100, 200],
-    requireInteraction: false
-  };
-  e.waitUntil(self.registration.showNotification(data.title || '⚡ Apagones MX', opts));
+  e.waitUntil(self.registration.showNotification(data.title || '⚡ Apagones MX', {
+    body: data.body || 'Nueva incidencia en tu zona',
+    icon: './icon-192.png', badge: './icon-192.png',
+    tag: data.tag || 'apagones-mx', vibrate: [200,100,200],
+    data: { url: './' }
+  }));
 });
 
-// ── NOTIFICATION CLICK ──
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  if (e.action === 'ver' || !e.action) {
-    e.waitUntil(clients.openWindow(e.notification.data?.url || './'));
-  }
+  e.waitUntil(clients.openWindow(e.notification.data?.url || './'));
 });
