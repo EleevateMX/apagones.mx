@@ -441,7 +441,43 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 .zoom-btn{width:36px;height:36px;border-radius:9px;background:rgba(12,6,8,.84);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--bdr);color:var(--dim);font-size:20px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;font-weight:300}
 .zoom-btn:hover{color:var(--tx);border-color:var(--bdr2)}
 
-/* ── HAMBURGER ── */
+/* ── SEARCH BAR ── */
+#search-wrap{
+  position:fixed;top:calc(62px + env(safe-area-inset-top,0px) + 10px);
+  left:50%;transform:translateX(-50%);
+  z-index:800;width:calc(100% - 32px);max-width:400px;
+}
+#search-bar{
+  display:flex;align-items:center;gap:9px;
+  background:rgba(12,6,8,.94);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border:1px solid var(--bdr2);border-radius:14px;
+  padding:10px 14px;box-shadow:0 4px 20px rgba(0,0,0,.4);
+  transition:border-color .2s;
+}
+#search-bar:focus-within{border-color:var(--brand-lt);box-shadow:0 4px 20px var(--brand-gl);}
+#search-input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--tx);font-family:var(--f);font-size:14px;font-weight:500;
+  min-width:0;
+}
+#search-input::placeholder{color:var(--mut)}
+#search-input::-webkit-search-cancel-button{display:none}
+#search-results{
+  background:rgba(12,6,8,.96);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border:1px solid var(--bdr);border-radius:12px;margin-top:6px;
+  overflow:hidden;display:none;box-shadow:0 8px 28px rgba(0,0,0,.5);
+}
+#search-results.show{display:block}
+.search-item{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;
+  cursor:pointer;transition:background .15s;border-bottom:1px solid var(--bdr);
+}
+.search-item:last-child{border-bottom:none}
+.search-item:hover{background:var(--card)}
+.search-item-icon{width:30px;height:30px;border-radius:8px;background:var(--brand-sub);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.search-item-name{font-size:13px;font-weight:600;color:var(--tx);line-height:1.3}
+.search-item-type{font-size:11px;color:var(--dim)}
+.search-loading{padding:14px;text-align:center;font-size:12px;color:var(--dim)}
 .hamburger-btn{display:none;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:8px;cursor:pointer;color:var(--dim);transition:all .18s;line-height:0}
 .hamburger-btn:hover{color:var(--tx)}
 .desktop-only{display:flex;gap:6px;align-items:center}
@@ -858,6 +894,20 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
         <div><div class="mm-btn-name">Instalar App</div><div class="mm-btn-sub">Agregar a inicio</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
+      <button class="mm-btn" onclick="openZoneHistory();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(101,8,31,.15)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFD0D8" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Historial de zonas</div><div class="mm-btn-sub">Últimos 7 días</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="reportToAuthorities(cachedReports.find(r=>r.type==='apagon')?'apagon':'agua');toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(245,183,49,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--elec)" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 01-2.2 2A20 20 0 013.1 4.2 2 2 0 015 2h3a2 2 0 012 1.7 12 12 0 00.7 2.8 2 2 0 01-.4 2L9 9.9a16 16 0 006.1 6.1l1.4-1.4a2 2 0 012-.4 12 12 0 002.8.7 2 2 0 011.7 2z"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Reportar a CFE / JAPAY</div><div class="mm-btn-sub">Contacto oficial</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
     </div>
     <div style="padding:0 20px 6px;font-size:11px;color:var(--mut);text-align:center;font-style:italic">"Tu reporte, nuestra solución"</div>
   </div>
@@ -886,9 +936,62 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 
 <!-- Zoom controls -->
 <div id="zoom-btns">
-  <button onclick="map.zoomIn()" class="zoom-btn">＋</button>
-  <button onclick="map.zoomOut()" class="zoom-btn">−</button>
+  <button onclick="map.zoomIn()" class="zoom-btn">
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
+  </button>
+  <button onclick="map.zoomOut()" class="zoom-btn">
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 8h12"/></svg>
+  </button>
 </div>
+
+<!-- SEARCH BAR -->
+<div id="search-wrap">
+  <div id="search-bar">
+    <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="var(--dim)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M15 15l-3-3"/></svg>
+    <input id="search-input" type="search" placeholder="Buscar colonia o calle..." autocomplete="off" oninput="onSearchInput(event)" onkeydown="onSearchKey(event)" onblur="setTimeout(closeSearch,200)"/>
+    <button id="search-clear" onclick="clearSearch()" style="display:none;background:none;border:none;color:var(--mut);cursor:pointer;font-size:14px;padding:2px;line-height:1;flex-shrink:0">✕</button>
+  </div>
+  <div id="search-results"></div>
+</div>
+
+<!-- CFE / JAPAY AUTHORITY MODAL -->
+<div id="authority-modal" style="position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 0 env(safe-area-inset-bottom,0px);animation:shup .3s cubic-bezier(.4,0,.2,1)">
+    <div style="width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0"></div>
+    <div style="padding:18px 22px 24px">
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px" id="auth-title">Reportar a autoridades</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:18px" id="auth-sub">Contacta directamente a la empresa responsable</div>
+      <div id="auth-buttons" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button onclick="closeAuthModal()" style="width:100%;margin-top:12px;padding:13px;border-radius:12px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="share-modal" style="position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 0 env(safe-area-inset-bottom,0px);animation:shup .3s cubic-bezier(.4,0,.2,1)">
+    <div style="width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0"></div>
+    <div style="padding:18px 22px 24px">
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Compartir reporte</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:18px">Pide a tus vecinos que también reporten para exigir atención</div>
+      <div id="share-buttons" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button onclick="document.getElementById('share-modal').style.display='none'" style="width:100%;margin-top:12px;padding:13px;border-radius:12px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE HISTORY MODAL -->
+<div id="zone-history-modal" style="position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:18px;width:100%;max-width:480px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.6)">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">🗓️</span>
+      <span style="font-size:17px;font-weight:800;flex:1">Historial por zona — 7 días</span>
+      <button onclick="document.getElementById('zone-history-modal').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700">✕</button>
+    </div>
+    <div id="zone-history-body" style="flex:1;overflow-y:auto;padding:14px 18px 20px;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent"></div>
+  </div>
+</div>
+
 <div id="pbanner">📍 Toca el mapa para ubicar — ESC para cancelar</div>
 <button id="fab" onclick="startFlow()">＋</button>
 <div id="toasts"></div>
@@ -1005,16 +1108,95 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
   ⭐ Vecino Activo
 </div>
 
-<!-- NOTIFICATION TOAST (persistent) -->
-<div id="notif-prompt" style="position:fixed;top:74px;right:16px;z-index:950;display:none;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:280px">
-  <span style="font-size:22px">🔔</span>
-  <div style="flex:1">
-    <div style="font-size:12px;font-weight:700;margin-bottom:2px">¿Alertas de apagones?</div>
-    <div style="font-size:11px;color:var(--dim)">Recibe notificaciones cuando hay incidencias en tu zona</div>
+<!-- NOTIFICATION MODULE (full modal) -->
+<div id="notif-modal" style="position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.75);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);display:none;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)">
+  <div id="notif-sheet" style="background:var(--surf);border:1px solid var(--bdr);border-radius:20px 20px 0 0;width:100%;max-width:480px;animation:shup .3s cubic-bezier(.4,0,.2,1)">
+    <div style="width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0"></div>
+    <div id="notif-step-platform" style="padding:22px 24px 28px">
+      <!-- Icon + Title -->
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px var(--brand-gl)">
+          <svg viewBox="0 0 28 28" width="30" height="30" fill="white"><path d="M14 2a8 8 0 00-8 8v5.5l-2 2v1h20v-1l-2-2V10A8 8 0 0014 2zm0 24a3 3 0 002.83-2H11.17A3 3 0 0014 26z"/><circle cx="14" cy="2" r="2.5" fill="white"/></svg>
+        </div>
+        <div style="font-size:20px;font-weight:800;letter-spacing:-.3px;margin-bottom:6px">Alertas de apagones</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.5">Recibe una notificación cuando hay un apagón o fuga de agua en tu zona, aunque no tengas la app abierta</div>
+      </div>
+
+      <!-- Device steps -->
+      <div id="notif-steps-ios" style="display:none">
+        <div style="background:rgba(34,208,240,.06);border:1px solid rgba(34,208,240,.2);border-radius:12px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:800;color:var(--agua);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+            <svg viewBox="0 0 20 24" width="14" height="17" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/><path d="M9 5h2v6H9zm0 8h2v2H9z"/></svg>
+            Pasos para iPhone (Safari)
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-sub);border:1px solid var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#FFD0D8;flex-shrink:0">1</div>
+              <div style="font-size:12px;color:var(--dim);line-height:1.5">Toca el botón <strong style="color:var(--tx)">Compartir</strong> <svg viewBox="0 0 16 20" width="11" height="13" fill="var(--agua)" style="vertical-align:middle"><path d="M8 0L4 4h3v8h2V4h3L8 0zm-6 14v4h12v-4"/></svg> en la barra de Safari</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-sub);border:1px solid var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#FFD0D8;flex-shrink:0">2</div>
+              <div style="font-size:12px;color:var(--dim);line-height:1.5">Selecciona <strong style="color:var(--tx)">"Agregar a pantalla de inicio"</strong></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-sub);border:1px solid var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#FFD0D8;flex-shrink:0">3</div>
+              <div style="font-size:12px;color:var(--dim);line-height:1.5">Abre la app desde el icono en tu pantalla de inicio</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--grn);flex-shrink:0">4</div>
+              <div style="font-size:12px;color:var(--dim);line-height:1.5">Regresa aquí y toca <strong style="color:var(--grn)">"Activar notificaciones"</strong></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button onclick="closeNotifModal()" style="padding:13px;border-radius:12px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer">Ahora no</button>
+          <button onclick="grantNotifications()" style="padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 14px var(--brand-gl)">Activar ahora</button>
+        </div>
+      </div>
+
+      <div id="notif-steps-android" style="display:none">
+        <div style="background:rgba(31,209,138,.06);border:1px solid rgba(31,209,138,.2);border-radius:12px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:800;color:var(--grn);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Android / Chrome</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.6">Al dar clic en <strong style="color:var(--tx)">"Activar notificaciones"</strong>, tu navegador te pedirá permiso. Solo selecciona <strong style="color:var(--tx)">"Permitir"</strong> para empezar a recibir alertas de tu zona.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button onclick="closeNotifModal()" style="padding:13px;border-radius:12px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer">Ahora no</button>
+          <button onclick="grantNotifications()" style="padding:13px;border-radius:12px;background:linear-gradient(135deg,#1FD18A,#10a869);color:#fff;border:none;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 14px rgba(31,209,138,.35)">
+            <svg viewBox="0 0 20 20" width="14" height="14" fill="white" style="vertical-align:middle;margin-right:5px"><path d="M10 2a6 6 0 00-6 6v3.5l-1.5 1.5v1h15v-1L16 11.5V8a6 6 0 00-6-6zm0 16a2 2 0 001.73-1H8.27A2 2 0 0010 18z"/></svg>
+            Activar notificaciones
+          </button>
+        </div>
+      </div>
+
+      <div id="notif-steps-granted" style="display:none;text-align:center;padding:10px 0">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:6px;color:var(--grn)">¡Notificaciones activadas!</div>
+        <div style="font-size:13px;color:var(--dim);margin-bottom:20px;line-height:1.5">Te avisaremos cuando haya un apagón o fuga de agua cerca de ti</div>
+        <button onclick="closeNotifModal()" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer">Perfecto ✓</button>
+      </div>
+
+      <div id="notif-steps-denied" style="display:none;text-align:center;padding:10px 0">
+        <div style="font-size:40px;margin-bottom:12px">🔕</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:8px">Notificaciones bloqueadas</div>
+        <div style="font-size:12px;color:var(--dim);margin-bottom:16px;line-height:1.5">Para activarlas, ve a <strong style="color:var(--tx)">Ajustes del navegador → Notificaciones</strong> y permite el acceso a este sitio</div>
+        <button onclick="closeNotifModal()" style="width:100%;padding:14px;border-radius:12px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer">Entendido</button>
+      </div>
+    </div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:5px">
-    <button onclick="grantNotifications()" style="background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;border-radius:7px;padding:6px 10px;font-family:var(--f);font-size:11px;font-weight:800;cursor:pointer">Sí</button>
-    <button onclick="document.getElementById('notif-prompt').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:7px;padding:6px 10px;font-family:var(--f);font-size:11px;color:var(--dim);cursor:pointer">No</button>
+</div>
+
+<!-- SMALL NOTIF PROMPT (auto-show after 30s) -->
+<div id="notif-prompt" style="position:fixed;top:auto;bottom:calc(50px + env(safe-area-inset-bottom,0px));right:16px;left:16px;z-index:950;display:none;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--brand-lt);border-radius:14px;padding:14px;box-shadow:0 4px 24px rgba(101,8,31,.35);max-width:360px;margin:0 auto">
+  <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));display:flex;align-items:center;justify-content:center;flex-shrink:0">
+    <svg viewBox="0 0 20 22" width="18" height="20" fill="white"><path d="M10 0a7 7 0 00-7 7v5l-2 2v1h18v-1l-2-2V7a7 7 0 00-7-7zm0 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0010 22z"/></svg>
+  </div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:13px;font-weight:800;margin-bottom:2px">¿Alertas de apagones?</div>
+    <div style="font-size:11px;color:var(--dim)">Entérate cuando hay incidencias cerca</div>
+  </div>
+  <div style="display:flex;gap:6px;flex-shrink:0">
+    <button onclick="requestNotifications()" style="background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;border-radius:9px;padding:8px 12px;font-family:var(--f);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Activar</button>
+    <button onclick="document.getElementById('notif-prompt').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:8px;color:var(--mut);cursor:pointer;font-size:16px;line-height:1">✕</button>
   </div>
 </div>
 
@@ -1063,7 +1245,7 @@ const KML_PROXIES = [
   'https://thingproxy.freeboard.io/fetch/'
 ];
 const MERIDA  = [20.9674, -89.6237];
-const TTL_EL  = 3 * 60 * 60 * 1000;
+const TTL_EL  = 8 * 60 * 60 * 1000; // 8 horas
 const RESOLVE_THRESHOLD = 3;
 const ADMIN_PASSWORD = 'alejandra2026';
 const SB_URL = 'https://rwvnulxlygdjxvovxind.supabase.co';
@@ -1241,11 +1423,11 @@ function updateZones(reports){
   reports.forEach(r=>{if(!r.seccion)return;if(!bySec[r.seccion])bySec[r.seccion]={apagon:[],agua:[]};bySec[r.seccion][r.type==='apagon'?'apagon':'agua'].push(r);});
   Object.entries(districtLayers).forEach(([sec,poly])=>{
     const d=bySec[sec],els=d?.apagon||[],ags=d?.agua||[];const g=glowLayers[sec];
-    if(els.length>=3&&layersOn.apagon){
+    if(els.length>=1&&layersOn.apagon){ // 1 reporte ya activa la zona
       // 3+ reports → full glow
       const intensity=Math.min(0.22+els.length*0.15,0.85);poly._state='apagon';poly._intensity=intensity;
       poly.setStyle({fillColor:'#FF4B1F',color:'#FF6B3F',weight:1.5,opacity:1});poly.bringToFront();
-    } else if(els.length>0&&els.length<3&&layersOn.apagon){
+    /* single-report threshold — removed pending state */
       // 1-2 reports → subtle dim indicator, not fully lit
       poly._state='pending';poly._intensity=0;
       poly.setStyle({fillColor:'#FF8C5A',fillOpacity:0.08,color:'#FF8C5A',weight:1,opacity:.5});
@@ -1286,7 +1468,7 @@ function mapPlaceOrShow(e,sec,dl){
     <div class="pp-zone" style="flex-direction:column;gap:4px">
       <div>
         <strong>${cnt}/3 vecino${cnt>1?'s':''}</strong> reportaron sin luz
-        ${cnt>=3?'<br/><span style="color:var(--elec)">⚡ Zona activa — exigimos nuestro derecho</span>':`<br/>Faltan <strong>${3-cnt}</strong> reporte${3-cnt>1?'s':''} para activar la zona`}
+        <br/><span style="color:var(--elec)">⚡ Zona activa — exigimos nuestro derecho</span>
       </div>
       <div style="font-size:11px;color:var(--dim)">Expira: <strong style="color:var(--tx)">${ttl}</strong></div>
     </div>
@@ -1296,6 +1478,13 @@ function mapPlaceOrShow(e,sec,dl){
     </div>` : `<div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center;padding:6px;background:var(--card);border-radius:8px">
       Toca <strong>＋</strong> para reportar también sin luz en esta zona
     </div>`}
+    <div class="pp-acts" style="margin-top:8px">
+      <button class="pbtn" onclick="shareReport('apagon','${sec}',${cnt})" style="border-color:rgba(37,211,102,.3);color:#25D366">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M11.5 10.5a2 2 0 00-1.6.8L6.4 9.5a2 2 0 000-3L9.9 4.7a2 2 0 10-.8-1.4L5.6 5.1a2 2 0 100 5.8l3.5 1.8a2 2 0 101.4-2.2z"/></svg>
+        Compartir
+      </button>
+      <button class="pbtn" onclick="reportToAuthorities('apagon')" style="border-color:rgba(245,183,49,.3);color:var(--elec)">⚡ Reportar a CFE</button>
+    </div>
   </div></div>`;
   L.popup({maxWidth:290,className:''}).setLatLng(e.latlng).setContent(html).openOn(map);
   L.DomEvent.stopPropagation(e);
@@ -1414,6 +1603,13 @@ function buildAguaPopup(r){
         ${isAdm?`<button class="pbtn adm" onclick="adminResolveWater('${r.id}')">🔐 Marcar como reparada</button>`:`
           <button class="pbtn conf" onclick="doAguaConf('${r.id}')">✓ Confirmar</button>
           <button class="pbtn rep" onclick="doRepairReq('${r.id}')">🔧 Pedir reparación</button>`}
+      </div>
+      <div class="pp-acts" style="margin-top:6px">
+        <button class="pbtn" onclick="shareReport('agua','${r.seccion||''}',${r.confirmations||0})" style="border-color:rgba(37,211,102,.3);color:#25D366">
+          <svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor" style="vertical-align:middle;margin-right:3px"><path d="M11.5 10.5a2 2 0 00-1.6.8L6.4 9.5a2 2 0 000-3L9.9 4.7a2 2 0 10-.8-1.4L5.6 5.1a2 2 0 100 5.8l3.5 1.8a2 2 0 101.4-2.2z"/></svg>
+          Compartir
+        </button>
+        <button class="pbtn" onclick="reportToAuthorities('agua')" style="border-color:rgba(34,208,240,.3);color:var(--agua)">💧 Reportar a JAPAY</button>
       </div>
     </div></div>`;
 }
@@ -1564,7 +1760,7 @@ function checkNeighbors(){
     const needed=3-n;
     const msg=flow.type==='apagon'
       ? needed>0
-        ? `${n} vecino${n>1?'s ya reportaron':'ya reportó'} sin luz aquí — faltan ${needed} para iluminar la zona en el mapa 💪`
+        ? `${n} vecino${n>1?'s también están':'también está'} sin luz — tu reporte suma fuerza 💪`
         : `Con tu reporte, podemos exigir nuestro derecho a la luz eléctrica ⚡`
       : `Con tu reporte, podemos exigir atención a esta fuga de agua 💧`;
     document.getElementById('nbr-txt').textContent=msg;
@@ -1593,10 +1789,12 @@ async function submitReport(){
     const msg=rep.type==='apagon'
       ? activeInZone>=3
         ? '⚡ Zona activada — juntos exigimos nuestro derecho a la luz'
-        : `⚡ Reporte enviado — faltan ${Math.max(0,3-activeInZone)} más para iluminar la zona`
+        : '⚡ Zona activada — Con tu reporte exigimos el derecho a la luz'
       : '💧 Fuga reportada — con tu reporte, exigimos atención';
     toast(msg,'b');
     await renderAll();map.flyTo([flow.lat,flow.lng],15,{duration:1});
+    // Offer sharing after 1.5s
+    setTimeout(()=>shareReport(rep.type,rep.seccion,1), 1800);
   } else {
     toast('Error al enviar — verifica que ejecutaste setup.sql en Supabase','e');
     b.disabled=false;b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';
@@ -1623,6 +1821,240 @@ function initRealtime(){
 }
 setInterval(renderAll,60000);
 
+// ══════════════════════════════════════════════
+//  1. BÚSQUEDA DE COLONIAS / CALLES
+// ══════════════════════════════════════════════
+let searchTimeout = null;
+
+function onSearchInput(e) {
+  const q = e.target.value.trim();
+  const clear = document.getElementById('search-clear');
+  clear.style.display = q ? 'block' : 'none';
+  clearTimeout(searchTimeout);
+  if (!q) { closeSearch(); return; }
+  document.getElementById('search-results').innerHTML = '<div class="search-loading">Buscando…</div>';
+  document.getElementById('search-results').classList.add('show');
+  searchTimeout = setTimeout(() => doSearch(q), 400);
+}
+
+async function doSearch(q) {
+  try {
+    // Nominatim bounded to Mérida + Yucatán region
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mérida, Yucatán')}&format=json&limit=6&accept-language=es&addressdetails=1&viewbox=-90.2,21.3,-89.2,20.5&bounded=1`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'ApagonesMX/1.0' } });
+    const data = await res.json();
+    renderSearchResults(data);
+  } catch(e) {
+    document.getElementById('search-results').innerHTML = '<div class="search-loading">Error — intenta de nuevo</div>';
+  }
+}
+
+function renderSearchResults(results) {
+  const el = document.getElementById('search-results');
+  if (!results.length) {
+    el.innerHTML = '<div class="search-loading">Sin resultados en Mérida</div>';
+    return;
+  }
+  el.innerHTML = results.map((r, i) => {
+    const name = r.address?.suburb || r.address?.neighbourhood || r.address?.road || r.display_name.split(',')[0];
+    const type = r.type === 'residential' ? '🏘️ Colonia' : r.type === 'primary' || r.type === 'secondary' ? '🛣️ Calle' : r.class === 'place' ? '📍 Lugar' : '📍 Ubicación';
+    return `<div class="search-item" onclick="goToSearchResult(${r.lat},${r.lon},'${name.replace(/'/g,"\\'")}')">
+      <div class="search-item-icon">${type.split(' ')[0]}</div>
+      <div><div class="search-item-name">${name}</div><div class="search-item-type">${r.display_name.split(',').slice(1,3).join(',')}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function goToSearchResult(lat, lng, name) {
+  closeSearch();
+  map.flyTo([+lat, +lng], 15, { duration: 1 });
+  const zone = findSeccion(+lat, +lng);
+  toast(`📍 ${name}${zone ? ' · zona activa' : ''}`, 'i');
+}
+
+function onSearchKey(e) {
+  if (e.key === 'Escape') clearSearch();
+}
+
+function closeSearch() {
+  document.getElementById('search-results').classList.remove('show');
+}
+
+function clearSearch() {
+  const inp = document.getElementById('search-input');
+  inp.value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  closeSearch();
+}
+
+// ══════════════════════════════════════════════
+//  2. COMPARTIR POR WHATSAPP / LINK
+// ══════════════════════════════════════════════
+const APP_URL = 'https://eleevatemx.github.io/apagones.mx/';
+
+function shareReport(type, seccion, cnt) {
+  const modal = document.getElementById('share-modal');
+  const btns  = document.getElementById('share-buttons');
+  const emoji = type === 'apagon' ? '⚡' : '💧';
+  const nombre = type === 'apagon' ? 'Apagón' : 'Fuga de agua';
+  const msg = `${emoji} *${nombre} en Mérida, Yucatán*\n${cnt ? `👥 ${cnt} vecino${cnt>1?'s':'} reportaron` : 'Nuevo reporte'}\n\n🗺️ Ve el mapa en tiempo real:\n${APP_URL}\n\n_Suma tu reporte y exijamos atención juntos_ 💪`;
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  const zoneUrl = seccion ? `${APP_URL}?zone=${seccion}&type=${type}` : APP_URL;
+
+  btns.innerHTML = `
+    <a href="${waUrl}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:#1A3D2B;border:1px solid #25D366;border-radius:12px;padding:14px;text-decoration:none;color:var(--tx);transition:background .2s" onclick="document.getElementById('share-modal').style.display='none'">
+      <div style="width:40px;height:40px;border-radius:10px;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.2-.5 0-.2-.9-2.1-1.2-2.9-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4C7 7.8 6 8.8 6 10.8c0 2 1.5 3.9 1.7 4.2.2.2 2.9 4.5 7.1 6.3 4.2 1.8 4.2 1.2 5 1.1.8-.1 2.5-1 2.8-2 .4-1 .4-1.8.3-2-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3C8.8 21.5 10.4 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z" fill="none" stroke="white" stroke-width="1.5"/></svg>
+      </div>
+      <div><div style="font-size:14px;font-weight:800">Compartir en WhatsApp</div><div style="font-size:11px;color:#25D366">Invitar vecinos a reportar</div></div>
+    </a>
+    <button onclick="copyLink('${zoneUrl}')" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;cursor:pointer;width:100%;text-align:left;font-family:var(--f);transition:background .18s">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(34,208,240,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--agua)" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1.5 1.5"/><path d="M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1.5-1.5"/></svg>
+      </div>
+      <div><div style="font-size:14px;font-weight:800;color:var(--tx)">Copiar enlace</div><div style="font-size:11px;color:var(--dim)">Link directo a esta zona</div></div>
+    </button>
+    <button onclick="reportToAuthorities('${type}')" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;cursor:pointer;width:100%;text-align:left;font-family:var(--f);transition:background .18s">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(245,183,49,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--elec)" stroke-width="2" stroke-linecap="round"><path d="M3 5h18M3 12h18M3 19h12"/><circle cx="19" cy="19" r="3"/><path d="M19 17v2l1 1"/></svg>
+      </div>
+      <div><div style="font-size:14px;font-weight:800;color:var(--tx)">Reportar a ${type==='apagon'?'CFE':'JAPAY'}</div><div style="font-size:11px;color:var(--dim)">Contactar empresa responsable</div></div>
+    </button>`;
+  modal.style.display = 'flex';
+}
+
+function copyLink(url) {
+  navigator.clipboard?.writeText(url).then(() => {
+    toast('🔗 Enlace copiado al portapapeles','s');
+  }).catch(() => {
+    // Fallback for iOS
+    const el = document.createElement('input');
+    el.value = url; document.body.appendChild(el);
+    el.select(); document.execCommand('copy');
+    document.body.removeChild(el);
+    toast('🔗 Enlace copiado','s');
+  });
+  document.getElementById('share-modal').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+//  3. REPORTAR A CFE / JAPAY
+// ══════════════════════════════════════════════
+function reportToAuthorities(type) {
+  document.getElementById('share-modal').style.display = 'none';
+  document.getElementById('authority-modal').style.display = 'flex';
+  const isElec = type === 'apagon';
+  document.getElementById('auth-title').textContent = isElec ? '⚡ Reportar a CFE' : '💧 Reportar a JAPAY';
+  document.getElementById('auth-sub').textContent = isElec
+    ? 'Comisión Federal de Electricidad — Servicio al cliente'
+    : 'Junta de Agua Potable y Alcantarillado de Yucatán';
+
+  const btns = isElec ? [
+    { icon:'📞', label:'Llamar al 071', sub:'Centro de atención CFE 24h', color:'rgba(245,183,49,.15)', border:'rgba(245,183,49,.3)', href:'tel:071' },
+    { icon:'💬', label:'WhatsApp CFE', sub:'+52 800 890 1000 · Reporte digital', color:'rgba(37,211,102,.15)', border:'rgba(37,211,102,.3)', href:`https://wa.me/528008901000?text=${encodeURIComponent('Hola, quiero reportar un apagón en mi colonia en Mérida, Yucatán.')}` },
+    { icon:'🌐', label:'Portal CFE', sub:'app.cfe.mx · Reporte en línea', color:'rgba(34,208,240,.15)', border:'rgba(34,208,240,.3)', href:'https://app.cfe.mx' },
+    { icon:'🐦', label:'Twitter / X @CFEmx', sub:'Mención pública para más presión', color:'rgba(29,155,240,.15)', border:'rgba(29,155,240,.3)', href:'https://twitter.com/intent/tweet?text='+encodeURIComponent('@CFEmx Apagón en Mérida, Yucatán. Favor de atender. #Mérida #CFE') },
+  ] : [
+    { icon:'📞', label:'Llamar a JAPAY', sub:'(999) 930-3400 · Mérida', color:'rgba(34,208,240,.15)', border:'rgba(34,208,240,.3)', href:'tel:9999303400' },
+    { icon:'📞', label:'Línea de emergencias', sub:'(999) 130-0101', color:'rgba(255,75,31,.15)', border:'rgba(255,75,31,.3)', href:'tel:9991300101' },
+    { icon:'💬', label:'WhatsApp JAPAY', sub:'Reporte de fuga de agua', color:'rgba(37,211,102,.15)', border:'rgba(37,211,102,.3)', href:`https://wa.me/529999303400?text=${encodeURIComponent('Hola, quiero reportar una fuga de agua en Mérida, Yucatán.')}` },
+  ];
+
+  document.getElementById('auth-buttons').innerHTML = btns.map(b =>
+    `<a href="${b.href}" target="_blank" rel="noopener" onclick="closeAuthModal()" style="display:flex;align-items:center;gap:12px;background:${b.color};border:1px solid ${b.border};border-radius:12px;padding:14px;text-decoration:none;color:var(--tx)">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${b.icon}</div>
+      <div><div style="font-size:14px;font-weight:800">${b.label}</div><div style="font-size:11px;color:var(--dim)">${b.sub}</div></div>
+    </a>`
+  ).join('');
+}
+function closeAuthModal(){ document.getElementById('authority-modal').style.display='none'; }
+
+// ══════════════════════════════════════════════
+//  4. URL ZONE PARAMS — deep linking
+// ══════════════════════════════════════════════
+function parseURLParams() {
+  const p = new URLSearchParams(location.search);
+  const zone = p.get('zone');
+  const type = p.get('type');
+  if (zone && districtLayers[zone]) {
+    setTimeout(() => {
+      const centroid = getZoneCentroid(zone);
+      if (centroid) {
+        map.flyTo([centroid.lat, centroid.lng], 14, { duration: 1.5 });
+        toast(`📍 Zona compartida cargada`, 'i');
+      }
+    }, 1500);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  5. HISTORIAL POR ZONA
+// ══════════════════════════════════════════════
+async function openZoneHistory() {
+  document.getElementById('zone-history-modal').style.display = 'flex';
+  document.getElementById('zone-history-body').innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Cargando historial…</div>';
+  try {
+    const since7 = Date.now() - 7*24*60*60*1000;
+    const { data: hist } = await db.from('reports').select('*')
+      .eq('resolved', true).gt('resolved_at', since7).limit(500);
+    const history = hist || [];
+    const active = cachedReports;
+    const all = [...active, ...history];
+
+    // Group by zone
+    const zones = {};
+    all.forEach(r => {
+      const key = r.seccion || 'sin-zona';
+      if (!zones[key]) zones[key] = { active:[], resolved:[], el:0, ag:0 };
+      if (!r.resolved) zones[key].active.push(r);
+      else zones[key].resolved.push(r);
+      zones[key][r.type==='apagon'?'el':'ag']++;
+    });
+
+    const sorted = Object.entries(zones)
+      .map(([z,d]) => ({ z, total:d.active.length+d.resolved.length, ...d }))
+      .filter(d => d.total > 0)
+      .sort((a,b) => b.total - a.total);
+
+    if (!sorted.length) {
+      document.getElementById('zone-history-body').innerHTML = '<div style="text-align:center;padding:30px;color:var(--mut)">Sin reportes en los últimos 7 días</div>';
+      return;
+    }
+
+    document.getElementById('zone-history-body').innerHTML = sorted.map((d, i) => {
+      const hasActive = d.active.length > 0;
+      const avgRes = d.resolved.filter(r=>r.resolved_at&&r.timestamp)
+        .reduce((s,r,_,arr)=>s+(r.resolved_at-r.timestamp)/arr.length, 0);
+      const avgH = avgRes ? (avgRes/3600000).toFixed(1) : null;
+      return `<div style="background:var(--card);border:1px solid ${hasActive?'rgba(255,75,31,.3)':'var(--bdr)'};border-radius:12px;padding:13px 14px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div style="width:28px;height:28px;border-radius:8px;background:${hasActive?'rgba(255,75,31,.2)':'var(--bdr)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:${hasActive?'var(--elec-zone)':'var(--dim)'}">${i+1}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:800;color:var(--tx)">Zona ${d.z==='sin-zona'?'sin clasificar':d.z}</div>
+            <div style="font-size:11px;color:var(--dim)">${d.total} reporte${d.total>1?'s':''} en 7 días</div>
+          </div>
+          ${hasActive?`<span style="background:rgba(255,75,31,.15);border:1px solid rgba(255,75,31,.3);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:800;color:#FF8A6E">ACTIVO</span>`:''}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${d.el>0?`<span style="background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.25);border-radius:8px;padding:3px 9px;font-size:11px;font-weight:700;color:var(--elec)">⚡ ${d.el} apagón${d.el>1?'es':''}</span>`:''}
+          ${d.ag>0?`<span style="background:rgba(34,208,240,.1);border:1px solid rgba(34,208,240,.25);border-radius:8px;padding:3px 9px;font-size:11px;font-weight:700;color:var(--agua)">💧 ${d.ag} fuga${d.ag>1?'s':''}</span>`:''}
+          ${avgH?`<span style="background:rgba(31,209,138,.1);border:1px solid rgba(31,209,138,.2);border-radius:8px;padding:3px 9px;font-size:11px;font-weight:700;color:var(--grn)">⏱️ ${avgH}h prom.</span>`:''}
+        </div>
+        <button onclick="flyToZone('${d.z}');document.getElementById('zone-history-modal').style.display='none'" style="margin-top:8px;background:none;border:1px solid var(--bdr);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:var(--f);font-size:11px;font-weight:700;color:var(--dim)">
+          Ver en mapa →
+        </button>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('zone-history-body').innerHTML = '<div style="text-align:center;padding:30px;color:var(--mut)">Error cargando historial</div>';
+  }
+}
+
+function flyToZone(sec) {
+  const centroid = getZoneCentroid(sec);
+  if (centroid) map.flyTo([centroid.lat, centroid.lng], 14, { duration: 1 });
+}
+
 // PWA
 let deferredInstall=null;
 function initPWA(){
@@ -1635,10 +2067,49 @@ function initPWA(){
 function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('install-banner').style.display='none';});}
 
 // Notifications
-let notifGranted=typeof Notification!=='undefined'&&Notification.permission==='granted';
-function requestNotifications(){if(!('Notification'in window)){toast('Tu navegador no soporta notificaciones','e');return;}if(Notification.permission==='granted'){notifGranted=true;toast('Notificaciones ya activas','s');return;}if(Notification.permission==='denied'){toast('Notificaciones bloqueadas en tu navegador','e');return;}document.getElementById('notif-prompt').style.display='flex';}
-async function grantNotifications(){document.getElementById('notif-prompt').style.display='none';if(!('Notification'in window))return;const p=await Notification.requestPermission();if(p==='granted'){notifGranted=true;document.getElementById('notif-btn').textContent='🔔✓';toast('Notificaciones activadas','s');}else toast('Notificaciones no permitidas','e');}
-function maybeNotify(r){if(!notifGranted)return;const title=r.type==='apagon'?'Nuevo apagón reportado':'Nueva fuga de agua';const body='Mérida, Yucatán — toca para ver';if('serviceWorker'in navigator){navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,icon:'./icon.svg',badge:'./icon.svg',tag:r.id,vibrate:[200,100,200]}));}else new Notification(title,{body});}
+let notifGranted = typeof Notification !== 'undefined' && Notification.permission === 'granted';
+function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
+function isIOSPWA(){return isIOS()&&window.navigator.standalone===true;}
+function requestNotifications(){
+  if(typeof Notification==='undefined'){toast('Tu navegador no soporta notificaciones aún','e');return;}
+  if(Notification.permission==='granted'){notifGranted=true;toast('Las notificaciones ya están activas ✓','s');return;}
+  if(Notification.permission==='denied'){openNotifModal('denied');return;}
+  openNotifModal('default');
+}
+function openNotifModal(state){
+  const modal=document.getElementById('notif-modal');
+  ['notif-steps-ios','notif-steps-android','notif-steps-granted','notif-steps-denied'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
+  if(state==='granted')document.getElementById('notif-steps-granted').style.display='block';
+  else if(state==='denied')document.getElementById('notif-steps-denied').style.display='block';
+  else if(isIOS()&&!isIOSPWA())document.getElementById('notif-steps-ios').style.display='block';
+  else document.getElementById('notif-steps-android').style.display='block';
+  modal.style.display='flex';document.body.style.overflow='hidden';
+}
+function closeNotifModal(){
+  document.getElementById('notif-modal').style.display='none';document.body.style.overflow='';
+}
+async function grantNotifications(){
+  if(typeof Notification==='undefined')return;
+  if(isIOS()&&!isIOSPWA()){toast('Instala la app primero: Compartir → Agregar a inicio','w');return;}
+  const p=await Notification.requestPermission();
+  if(p==='granted'){
+    notifGranted=true;
+    const nb=document.getElementById('notif-btn');if(nb)nb.style.color='var(--grn)';
+    const mm=document.getElementById('mm-notif-btn');if(mm)mm.querySelector('.mm-btn-sub').textContent='Activas ✓';
+    document.getElementById('notif-prompt').style.display='none';
+    openNotifModal('granted');
+  } else openNotifModal('denied');
+}
+function maybeNotify(r){
+  if(!notifGranted||Notification.permission!=='granted')return;
+  const title=r.type==='apagon'?'⚡ Apagón reportado cerca':'💧 Fuga de agua reportada';
+  const body='Mérida, Yucatán — toca para ver en el mapa';
+  const opts={body,icon:'./icon-192.png',badge:'./icon-192.png',tag:r.id,vibrate:[200,100,200]};
+  if('serviceWorker'in navigator){navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,opts)).catch(()=>new Notification(title,{body,icon:'./icon-192.png'}));}
+  else if(typeof Notification!=='undefined')new Notification(title,{body,icon:'./icon-192.png'});
+}
 
 // Vecino Activo
 const VTH=3;
@@ -1661,13 +2132,18 @@ function sCard(n,l,c){return`<div style="background:var(--card);border:1px solid
 // INIT
 window.addEventListener('DOMContentLoaded',async()=>{
   initPWA(); initMap(); updateVecinoBadge();
-  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){notifGranted=true;document.getElementById('notif-btn').textContent='🔔✓';}
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){notifGranted=true;const nb=document.getElementById('notif-btn');if(nb)nb.style.color='var(--grn)';}
   const hide=()=>{const l=document.getElementById('loading');if(l){l.classList.add('out');setTimeout(()=>l.remove(),600);}};
   const t=setTimeout(hide,4000);
   try{await renderAll();}catch(e){console.warn(e);}
   clearTimeout(t); hide();
   try{initRealtime();}catch(e){console.warn(e);}
-  setTimeout(()=>{if(typeof Notification!=='undefined'&&Notification.permission==='default')document.getElementById('notif-prompt').style.display='flex';},35000);
+  setTimeout(parseURLParams, 2000);
+  setTimeout(()=>{
+    if(typeof Notification!=='undefined'&&Notification.permission==='default'&&!isIOSPWA()){
+      document.getElementById('notif-prompt').style.display='flex';
+    }
+  },30000);
 });
 
 </script>
