@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Apagones MX — Dashboard Público · Mérida</title>
+<meta name="description" content="Dashboard en tiempo real de apagones y fugas de agua en Mérida, Yucatán. Datos ciudadanos abiertos."/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{--brand:#65081F;--elec:#F5B731;--agua:#22D0F0;--grn:#1FD18A;--red:#FF4B4B;--f:'Plus Jakarta Sans',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F7F4F6;color:#1A0E14;font-family:var(--f);min-height:100vh}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,#65081F,#3E0513);padding:20px 32px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 24px rgba(101,8,31,.3)}
+.hdr-logo{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
+.hdr-title{font-size:22px;font-weight:800;color:white;letter-spacing:-.3px}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.hdr-live{display:flex;align-items:center;gap:6px;background:rgba(255,61,61,.2);border:1px solid rgba(255,100,100,.3);border-radius:20px;padding:5px 12px;margin-left:auto}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#FF3D3D;animation:lp 1.2s ease-in-out infinite}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-live span{font-size:11px;font-weight:800;color:#FF9090;letter-spacing:.5px}
+.hdr-updated{font-size:11px;color:rgba(255,255,255,.4);margin-left:8px}
+
+/* ── LAYOUT ── */
+.container{max-width:1200px;margin:0 auto;padding:28px 24px}
+
+/* ── PRESSURE COUNTER (HERO) ── */
+.pressure-hero{background:linear-gradient(135deg,#1A0E14,#2A0A14);border-radius:20px;padding:32px 36px;margin-bottom:24px;display:flex;align-items:center;gap:32px;box-shadow:0 8px 40px rgba(0,0,0,.15);position:relative;overflow:hidden}
+.pressure-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 50%,rgba(101,8,31,.4),transparent);pointer-events:none}
+.ph-main{flex:1;position:relative;z-index:1}
+.ph-n{font-size:72px;font-weight:800;line-height:1;letter-spacing:-4px;color:white}
+.ph-n span{color:var(--elec)}
+.ph-label{font-size:16px;color:rgba(255,255,255,.6);margin-top:6px;font-weight:500}
+.ph-sub{font-size:13px;color:rgba(255,255,255,.35);margin-top:4px}
+.ph-side{display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.ph-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 18px;text-align:center;min-width:120px}
+.ph-stat-n{font-size:28px;font-weight:800;line-height:1}
+.ph-stat-n.el{color:var(--elec)}.ph-stat-n.ag{color:var(--agua)}.ph-stat-n.tot{color:white}
+.ph-stat-l{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;font-weight:700}
+
+/* ── GRID ── */
+.grid{display:grid;gap:18px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}.pressure-hero{flex-direction:column}.ph-side{flex-direction:row;flex-wrap:wrap}}
+
+/* ── CARDS ── */
+.card{background:white;border:1px solid #E8DFE4;border-radius:16px;padding:20px 22px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.card-title{font-size:13px;font-weight:800;color:#6B3D4F;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+
+/* ── MAP ── */
+#map{width:100%;height:380px;border-radius:14px;overflow:hidden;border:1px solid #E8DFE4}
+
+/* ── BAR CHART ── */
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{font-size:12px;font-weight:600;color:#6B3D4F;width:60px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:20px;background:#F4F0F2;border-radius:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:10px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bar-fill.el{background:linear-gradient(90deg,#E8A020,var(--elec))}
+.bar-fill.ag{background:linear-gradient(90deg,#0AAAC4,var(--agua))}
+.bar-val{font-size:12px;font-weight:800;width:30px;flex-shrink:0}
+
+/* ── TIMELINE ── */
+.timeline{display:flex;flex-direction:column;gap:8px}
+.tl-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #F0EBF0}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:1px}
+.tl-dot.el{background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.3)}
+.tl-dot.ag{background:rgba(34,208,240,.12);border:1.5px solid rgba(34,208,240,.25)}
+.tl-info{flex:1}
+.tl-type{font-size:13px;font-weight:700;margin-bottom:2px}
+.tl-type.el{color:#B8860B}.tl-type.ag{color:#0AAAC4}
+.tl-meta{font-size:11px;color:#9E7080;line-height:1.4}
+.tl-sev{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;margin-left:auto;flex-shrink:0;align-self:flex-start}
+.tl-sev.critico{background:#FFE4E4;color:var(--red)}.tl-sev.moderado{background:#FFF8E0;color:#B8860B}.tl-sev.leve{background:#E4F9F0;color:#10a869}
+
+/* ── ZONE TABLE ── */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:800;color:#9E7080;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:2px solid #F0EBF0;text-align:left}
+td{font-size:12px;padding:10px 10px;border-bottom:1px solid #F4F0F2;color:#3A1A25}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FDFBFC}
+.zone-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.zone-badge.hot{background:#FFF0F0;color:var(--red);border:1px solid #FFD0D0}
+.zone-badge.warn{background:#FFF8E0;color:#B8860B;border:1px solid #FFE8A0}
+.zone-badge.ok{background:#E4F9F0;color:#10a869;border:1px solid #B0EDD0}
+
+/* ── RESPONSE TIME ── */
+.resp-bars{display:flex;flex-direction:column;gap:10px}
+.resp-row{display:flex;align-items:center;gap:10px}
+.resp-lbl{font-size:12px;color:#6B3D4F;font-weight:600;width:80px;flex-shrink:0}
+.resp-track{flex:1;height:14px;background:#F4F0F2;border-radius:7px;overflow:hidden}
+.resp-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--grn),#10a869)}
+.resp-fill.slow{background:linear-gradient(90deg,#FF8C00,var(--red))}
+.resp-val{font-size:12px;font-weight:800;color:#3A1A25;width:40px;text-align:right}
+
+/* ── FOOTER ── */
+footer{background:#1A0E14;color:rgba(255,255,255,.4);text-align:center;padding:20px;font-size:12px;margin-top:32px}
+footer a{color:rgba(255,255,255,.6);text-decoration:none}
+footer strong{color:rgba(255,255,255,.8)}
+
+/* ── LOADING ── */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(101,8,31,.2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-logo">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
+  </div>
+  <div>
+    <div class="hdr-title">Apagones MX — Dashboard Público</div>
+    <div class="hdr-sub">Mérida, Yucatán · Datos ciudadanos en tiempo real</div>
+  </div>
+  <div class="hdr-live"><span class="live-dot"></span><span>EN VIVO</span></div>
+  <div class="hdr-updated" id="last-updated">Cargando…</div>
+</header>
+
+<div class="container">
+
+  <!-- PRESSURE COUNTER -->
+  <div class="pressure-hero">
+    <div class="ph-main">
+      <div class="ph-n"><span id="ph-total">—</span></div>
+      <div class="ph-label">vecinos afectados este mes en Mérida</div>
+      <div class="ph-sub">Reportes ciudadanos verificados · Sin login · Sin filtro</div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <a href="./index.html" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#8B0E2A,#65081F);color:#FFE0E6;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:800">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 1v14M1 8h14"/></svg>
+          Ir al mapa
+        </a>
+        <button onclick="exportFullCSV()" style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);padding:10px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.15);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f)">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 1v10m-4-4l4 4 4-4M2 14h12"/></svg>
+          Exportar datos (.CSV)
+        </button>
+      </div>
+    </div>
+    <div class="ph-side">
+      <div class="ph-stat"><div class="ph-stat-n el" id="ph-el">—</div><div class="ph-stat-l">⚡ Apagones</div></div>
+      <div class="ph-stat"><div class="ph-stat-n ag" id="ph-ag">—</div><div class="ph-stat-l">💧 Fugas / Cortes</div></div>
+      <div class="ph-stat"><div class="ph-stat-n tot" id="ph-active">—</div><div class="ph-stat-l">🔴 Activos ahora</div></div>
+    </div>
+  </div>
+
+  <!-- MAP + RECENT -->
+  <div class="grid grid-2" style="margin-bottom:18px">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:16px 20px 12px;border-bottom:1px solid #F0EBF0">
+        <div class="card-title">
+          <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#6B3D4F" stroke-width="2"><path d="M1 2l5 2 4-2 5 2v11l-5-2-4 2-5-2z"/></svg>
+          Mapa de incidencias activas
+        </div>
+      </div>
+      <div id="map"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#6B3D4F" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg>
+        Reportes recientes
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </div>
+
+  <!-- ZONE TABLE + RESPONSE TIME -->
+  <div class="grid grid-2" style="margin-bottom:18px">
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="#6B3D4F"><rect x="2" y="10" width="4" height="8" rx="1"/><rect x="8" y="6" width="4" height="12" rx="1"/><rect x="14" y="2" width="4" height="16" rx="1"/></svg>
+        Zonas más afectadas (30 días)
+      </div>
+      <table id="zone-table">
+        <thead><tr><th>#</th><th>Zona</th><th>Total</th><th>⚡</th><th>💧</th><th>Estado</th></tr></thead>
+        <tbody id="zone-tbody"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#6B3D4F" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l2 2"/></svg>
+        Historial de incumplimiento · Tiempo de respuesta
+      </div>
+      <div id="response-info" style="font-size:12px;color:#9E7080;margin-bottom:12px;line-height:1.5">Calculado con reportes que tienen fecha de resolución registrada.</div>
+      <div class="resp-bars" id="resp-bars"></div>
+    </div>
+  </div>
+
+  <!-- DISTRIBUTION CHART -->
+  <div class="grid grid-2" style="margin-bottom:18px">
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#6B3D4F" stroke-width="2"><path d="M2 18 L8 8 L12 14 L15 10 L19 18Z"/></svg>
+        Distribución por tipo (30 días)
+      </div>
+      <div class="bar-chart" id="type-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#6B3D4F" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="7" height="7" rx="1"/><rect x="11" y="2" width="7" height="7" rx="1"/><rect x="2" y="11" width="7" height="7" rx="1"/><rect x="11" y="11" width="7" height="7" rx="1"/></svg>
+        Distribución por severidad
+      </div>
+      <div class="bar-chart" id="sev-chart"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Apagones MX</strong> · Datos ciudadanos abiertos · Mérida, Yucatán · 
+  <a href="./index.html">Ir al mapa →</a>
+  <br/>Los datos son reportes ciudadanos anónimos y pueden no reflejar la totalidad de las incidencias.
+</footer>
+
+<script>
+const SB_URL = 'https://rwvnulxlygdjxvovxind.supabase.co';
+const SB_KEY = 'sb_publishable_ytmFRe5AcyNey2Q9h6-7bw_ap-tYaKh';
+const TTL = 8 * 60 * 60 * 1000;
+const { createClient } = window.supabase;
+const db = createClient(SB_URL, SB_KEY);
+
+let allReports = [], activeReports = [], map;
+const KML_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.google.com/maps/d/kml?forcekml=1&mid=1Ufh66TquAPG2SgIejPlzQABoZyhX4CI&lid=cCLZA5ZUPu0');
+
+function fmtTime(ts){
+  const m=Math.floor((Date.now()-ts)/60000);
+  if(m<1)return'Ahora';if(m<60)return`${m}m`;return`${Math.floor(m/60)}h ${m%60}m`;
+}
+
+function fmtHours(ms){
+  const h=ms/3600000;
+  return h>=1?h.toFixed(1)+'h':(ms/60000).toFixed(0)+'min';
+}
+
+function animN(id,val){
+  const el=document.getElementById(id); if(!el)return;
+  let n=0,step=Math.ceil(val/30);
+  const t=setInterval(()=>{n=Math.min(n+step,val);el.textContent=n.toLocaleString('es-MX');if(n>=val)clearInterval(t);},40);
+}
+
+async function loadData(){
+  const since30=Date.now()-30*24*3600000;
+  const{data:active}=await db.from('reports').select('*').eq('resolved',false);
+  const{data:hist}=await db.from('reports').select('*').eq('resolved',true).gt('resolved_at',since30);
+  activeReports=(active||[]).filter(r=>r.type==='agua'||r.type==='corte_agua'||(Date.now()-r.timestamp)<TTL);
+  allReports=[...activeReports,...(hist||[])];
+
+  const el=allReports.filter(r=>r.type==='apagon').length;
+  const ag=allReports.filter(r=>r.type!=='apagon').length;
+
+  // Pressure counter
+  animN('ph-total', allReports.length);
+  animN('ph-el', el); animN('ph-ag', ag);
+  animN('ph-active', activeReports.length);
+
+  // Last updated
+  document.getElementById('last-updated').textContent='Act. '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+
+  renderTimeline();
+  renderZoneTable();
+  renderCharts();
+  renderResponseTimes();
+  renderMap();
+}
+
+function renderTimeline(){
+  const tbody=document.getElementById('timeline');
+  const recent=activeReports.sort((a,b)=>b.timestamp-a.timestamp).slice(0,8);
+  if(!recent.length){tbody.innerHTML='<div style="text-align:center;padding:20px;color:#9E7080">Sin reportes activos</div>';return;}
+  tbody.innerHTML=recent.map(r=>`
+    <div class="tl-item">
+      <div class="tl-dot ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡':'💧'}</div>
+      <div class="tl-info">
+        <div class="tl-type ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'Apagón':r.type==='corte_agua'?'Sin agua':'Fuga de agua'}</div>
+        <div class="tl-meta">Hace ${fmtTime(r.timestamp)} ${r.seccion?'· Zona '+r.seccion:''}</div>
+      </div>
+      <span class="tl-sev ${r.severity||'moderado'}">${r.severity==='critico'?'🔴':r.severity==='leve'?'🟢':'🟡'} ${r.severity||'Mod.'}</span>
+    </div>`).join('');
+}
+
+function renderZoneTable(){
+  const zones={};
+  allReports.forEach(r=>{
+    if(!r.seccion)return;
+    if(!zones[r.seccion])zones[r.seccion]={el:0,ag:0,active:0};
+    zones[r.seccion][r.type==='apagon'?'el':'ag']++;
+    if(activeReports.find(a=>a.id===r.id)) zones[r.seccion].active++;
+  });
+  const sorted=Object.entries(zones).map(([z,d])=>({z,total:d.el+d.ag,...d})).sort((a,b)=>b.total-a.total).slice(0,10);
+  const tbody=document.getElementById('zone-tbody');
+  tbody.innerHTML=sorted.map((d,i)=>`
+    <tr>
+      <td style="font-weight:800;color:${i<3?'#B8860B':'#6B3D4F'}">${['🥇','🥈','🥉'][i]||i+1}</td>
+      <td style="font-weight:700">Zona ${d.z}</td>
+      <td style="font-weight:800;color:#1A0E14">${d.total}</td>
+      <td style="color:#B8860B;font-weight:700">${d.el||0}</td>
+      <td style="color:#0AAAC4;font-weight:700">${d.ag||0}</td>
+      <td><span class="zone-badge ${d.active>0?'hot':d.total>5?'warn':'ok'}">${d.active>0?'🔴 Activo':d.total>5?'⚠ Frecuente':'✓ OK'}</span></td>
+    </tr>`).join('');
+}
+
+function renderCharts(){
+  const el=allReports.filter(r=>r.type==='apagon').length;
+  const ag=allReports.filter(r=>r.type==='agua').length;
+  const ca=allReports.filter(r=>r.type==='corte_agua').length;
+  const tot=el+ag+ca||1;
+  document.getElementById('type-chart').innerHTML=[
+    {l:'⚡ Apagones',v:el,c:'el'},
+    {l:'💧 Fugas',v:ag,c:'ag'},
+    {l:'🚰 Sin agua',v:ca,c:'ag'},
+  ].map(d=>`<div class="bar-row">
+    <div class="bar-label">${d.l}</div>
+    <div class="bar-track"><div class="bar-fill ${d.c}" style="width:${Math.round(d.v/tot*100)}%"></div></div>
+    <div class="bar-val" style="color:${d.c==='el'?'#B8860B':'#0AAAC4'}">${d.v}</div>
+  </div>`).join('');
+
+  const leve=allReports.filter(r=>r.severity==='leve').length;
+  const mod=allReports.filter(r=>r.severity==='moderado'||!r.severity).length;
+  const crit=allReports.filter(r=>r.severity==='critico').length;
+  const stot=leve+mod+crit||1;
+  document.getElementById('sev-chart').innerHTML=[
+    {l:'🟢 Leve',v:leve,c:'#10a869'},{l:'🟡 Moderado',v:mod,c:'#B8860B'},{l:'🔴 Crítico',v:crit,c:'#CC2200'},
+  ].map(d=>`<div class="bar-row">
+    <div class="bar-label">${d.l}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(d.v/stot*100)}%;background:${d.c}"></div></div>
+    <div class="bar-val" style="color:${d.c}">${d.v}</div>
+  </div>`).join('');
+}
+
+function renderResponseTimes(){
+  // Group by zone, calculate avg resolution time
+  const zones={};
+  allReports.filter(r=>r.resolved&&r.resolved_at&&r.timestamp).forEach(r=>{
+    if(!r.seccion)return;
+    if(!zones[r.seccion])zones[r.seccion]=[];
+    zones[r.seccion].push(r.resolved_at-r.timestamp);
+  });
+  const sorted=Object.entries(zones)
+    .map(([z,times])=>({z,avg:times.reduce((a,b)=>a+b,0)/times.length,n:times.length}))
+    .filter(d=>d.n>=2).sort((a,b)=>b.avg-a.avg).slice(0,6);
+  if(!sorted.length){
+    document.getElementById('resp-bars').innerHTML='<div style="text-align:center;color:#9E7080;font-size:12px;padding:16px">Insuficientes datos resueltos aún</div>';
+    return;
+  }
+  const maxAvg=Math.max(...sorted.map(d=>d.avg));
+  document.getElementById('resp-info')?.remove();
+  document.getElementById('resp-bars').innerHTML=sorted.map(d=>`
+    <div class="resp-row">
+      <div class="resp-lbl">Zona ${d.z}</div>
+      <div class="resp-track"><div class="resp-fill ${d.avg>4*3600000?'slow':''}" style="width:${Math.round(d.avg/maxAvg*100)}%"></div></div>
+      <div class="resp-val">${fmtHours(d.avg)}</div>
+    </div>`).join('');
+}
+
+function renderMap(){
+  if(map) map.remove();
+  map=L.map('map',{center:[20.9674,-89.6237],zoom:12,zoomControl:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; CARTO',subdomains:'abcd',maxZoom:18}).addTo(map);
+  // Plot active reports
+  activeReports.forEach(r=>{
+    if(!r.lat||!r.lng)return;
+    const color=r.type==='apagon'?'#E8A020':'#0AAAC4';
+    L.circleMarker([r.lat,r.lng],{radius:r.severity==='critico'?9:r.severity==='leve'?5:7,fillColor:color,color:'white',weight:1.5,fillOpacity:.85})
+     .bindPopup(`<strong>${r.type==='apagon'?'⚡ Apagón':r.type==='corte_agua'?'🚰 Sin agua':'💧 Fuga'}</strong><br/>${r.severity||'Moderado'}<br/>${new Date(r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`)
+     .addTo(map);
+  });
+}
+
+// CSV Export
+async function exportFullCSV(){
+  const{data}=await db.from('reports').select('id,type,severity,lat,lng,seccion,timestamp,resolved,resolved_at,confirmations,report_number').order('timestamp',{ascending:false}).limit(2000);
+  const rows=data||[];
+  const hdr=['ID','Tipo','Severidad','Lat','Lng','Zona','Timestamp','Fecha Reporte','Fecha Resolución','Resuelto','Confirmaciones','Folio'];
+  const csv=[hdr.join(','),...rows.map(r=>[r.id,r.type,r.severity||'',r.lat,r.lng,r.seccion||'',r.timestamp,
+    new Date(r.timestamp).toLocaleString('es-MX'),
+    r.resolved_at?new Date(r.resolved_at).toLocaleString('es-MX'):'',
+    r.resolved?'Sí':'No',r.confirmations||0,r.report_number||''
+  ].join(','))].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='apagones-merida-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+loadData();
+setInterval(loadData, 3*60*1000); // refresh every 3min
+
+// Realtime
+db.channel('dash').on('postgres_changes',{event:'*',schema:'public',table:'reports'},()=>loadData()).subscribe();
+</script>
+</body>
+</html>

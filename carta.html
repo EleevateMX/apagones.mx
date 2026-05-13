@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Carta de Queja — Apagones MX</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{--brand:#65081F;--f:'Plus Jakarta Sans',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F0EBF0;font-family:var(--f);min-height:100vh;padding:24px 16px}
+
+.config-panel{max-width:600px;margin:0 auto 24px;background:white;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.cp-title{font-size:20px;font-weight:800;color:#1A0E14;margin-bottom:4px}
+.cp-sub{font-size:13px;color:#9E7080;margin-bottom:20px}
+.fld{margin-bottom:14px}
+.fld label{display:block;font-size:11px;font-weight:700;color:#6B3D4F;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 14px;border:1px solid #DDD0D8;border-radius:10px;font-family:var(--f);font-size:14px;color:#1A0E14;outline:none;transition:border-color .18s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--brand)}
+.fld textarea{resize:vertical;min-height:80px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#8B0E2A,var(--brand));color:white;border:none;border-radius:12px;font-family:var(--f);font-size:16px;font-weight:800;cursor:pointer;margin-top:8px;transition:transform .2s}
+.btn-gen:hover{transform:translateY(-1px)}
+.btn-print{width:100%;padding:13px;background:#1A0E14;color:white;border:none;border-radius:12px;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* ── CARTA FORMAL ── */
+@media screen{
+  .carta-wrap{max-width:700px;margin:0 auto;background:white;border-radius:16px;box-shadow:0 4px 30px rgba(0,0,0,.1);overflow:hidden;display:none}
+  .carta-wrap.visible{display:block}
+  .print-notice{background:#FFF8E0;border:1px solid #FFE080;border-radius:10px;padding:12px 16px;margin:0 24px 16px;font-size:12px;color:#8B6820;display:flex;align-items:center;gap:8px}
+}
+
+.carta{padding:48px 52px;font-family:'Times New Roman',serif;color:#1A0E14;font-size:13px;line-height:1.7}
+.carta-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:16px;border-bottom:2px solid #1A0E14}
+.carta-logo-area{display:flex;align-items:center;gap:10px}
+.carta-logo-box{width:44px;height:44px;background:#65081F;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.carta-brand{font-family:var(--f);font-weight:800;font-size:18px;color:#65081F}
+.carta-brand-sub{font-family:var(--f);font-size:11px;color:#9E7080}
+.carta-date-area{text-align:right;font-size:12px;color:#6B3D4F}
+.carta-city{font-size:14px;font-weight:bold;color:#1A0E14}
+
+.carta h2{font-size:15px;font-weight:bold;text-align:center;margin:24px 0 6px;text-transform:uppercase;letter-spacing:.5px;color:#65081F}
+.carta h3{font-size:13px;font-weight:bold;margin:20px 0 8px;color:#1A0E14;border-bottom:1px solid #DDD0D8;padding-bottom:4px}
+.carta p{margin-bottom:10px;text-align:justify}
+.carta .dest{background:#FFF4F4;border-left:3px solid #65081F;padding:10px 14px;margin:16px 0;font-size:12px}
+.carta .dest strong{color:#65081F}
+
+.data-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px}
+.data-table th{background:#65081F;color:white;padding:8px 12px;text-align:left;font-weight:700}
+.data-table td{padding:7px 12px;border-bottom:1px solid #F0EBF0}
+.data-table tr:nth-child(even) td{background:#FDFBFC}
+
+.firma-area{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.firma-box{text-align:center}
+.firma-line{border-top:1px solid #1A0E14;padding-top:8px;font-size:12px;color:#6B3D4F}
+.carta-footer{margin-top:32px;padding-top:14px;border-top:1px solid #DDD0D8;font-size:10px;color:#9E7080;text-align:center;font-family:var(--f)}
+
+/* ── PRINT STYLES ── */
+@media print{
+  body{background:white;padding:0}
+  .config-panel,.print-notice,.btn-print{display:none!important}
+  .carta-wrap{display:block!important;box-shadow:none;border-radius:0;max-width:100%}
+  .carta{padding:32px 40px}
+  @page{margin:1.5cm;size:A4}
+}
+</style>
+</head>
+<body>
+
+<!-- CONFIGURADOR -->
+<div class="config-panel">
+  <div class="cp-title">📄 Carta de Queja Formal</div>
+  <div class="cp-sub">Genera una carta oficial con los datos del reporte para enviar a CFE o JAPAY</div>
+
+  <div class="grid2">
+    <div class="fld">
+      <label>Destinatario</label>
+      <select id="dest-org">
+        <option value="cfe">CFE — Comisión Federal de Electricidad</option>
+        <option value="japay">JAPAY — Junta de Agua Potable de Yucatán</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label>Tipo de incidencia</label>
+      <select id="tipo-inc">
+        <option value="apagon">⚡ Apagón / Interrupción eléctrica</option>
+        <option value="agua">💧 Fuga de agua</option>
+        <option value="corte_agua">🚰 Corte injustificado de agua</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="fld"><label>Tu nombre completo</label><input id="f-nombre" type="text" placeholder="Ej. María González Pérez"/></div>
+    <div class="fld"><label>Tu dirección</label><input id="f-dir" type="text" placeholder="Calle 60 x 39, Col. Centro"/></div>
+  </div>
+
+  <div class="grid2">
+    <div class="fld"><label>Fecha del inicio del problema</label><input id="f-fecha" type="date"/></div>
+    <div class="fld"><label>Duración aproximada</label><input id="f-duracion" type="text" placeholder="Ej. 8 horas" value=""/></div>
+  </div>
+
+  <div class="fld">
+    <label>Folio de reporte previo (si tienes)</label>
+    <input id="f-folio" type="text" placeholder="Ej. 12345678 (dejar vacío si no aplica)"/>
+  </div>
+
+  <div class="fld">
+    <label>Descripción del daño o problema adicional</label>
+    <textarea id="f-desc" placeholder="Describe si hubo daño a electrodomésticos, problemas de salud, pérdidas económicas, etc."></textarea>
+  </div>
+
+  <div class="fld">
+    <label>Número de vecinos afectados (aprox.)</label>
+    <input id="f-vecinos" type="number" value="1" min="1"/>
+  </div>
+
+  <button class="btn-gen" onclick="generarCarta()">Generar carta de queja</button>
+</div>
+
+<!-- CARTA GENERADA -->
+<div class="carta-wrap" id="carta-wrap">
+  <div class="print-notice">
+    💡 La carta está lista. Revísala y da clic en <strong>"Imprimir / Guardar PDF"</strong> para obtener el archivo.
+    <button class="btn-print" onclick="window.print()" style="margin:0;width:auto;padding:7px 14px;background:var(--brand);border-radius:8px;font-size:12px">🖨️ Imprimir / PDF</button>
+  </div>
+
+  <div class="carta" id="carta-content">
+    <!-- Generado dinámicamente -->
+  </div>
+</div>
+
+<script>
+// Pre-fill today's date
+document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
+
+const ORGS = {
+  cfe: {
+    name: 'Comisión Federal de Electricidad (CFE)',
+    dir: 'Zona de Distribución Mérida\nCalle 62 No. 462 x 53 y 55, Centro Histórico\nMérida, Yucatán, C.P. 97000',
+    cargo: 'C. Gerente de División de Distribución',
+    ley: 'Ley del Servicio Público de Energía Eléctrica y sus Reglamentos, así como la Norma Oficial Mexicana NOM-001-SEDE',
+    ref: 'CFE',
+  },
+  japay: {
+    name: 'Junta de Agua Potable y Alcantarillado de Yucatán (JAPAY)',
+    dir: 'Calle 17 No. 154 x 8 y 10, Col. García Ginerés\nMérida, Yucatán, C.P. 97070',
+    cargo: 'C. Director General de JAPAY',
+    ley: 'Ley de Agua Potable y Alcantarillado del Estado de Yucatán',
+    ref: 'JAPAY',
+  }
+};
+
+const TIPOS = {
+  apagon: {
+    titulo: 'INTERRUPCIÓN DEL SERVICIO DE ENERGÍA ELÉCTRICA',
+    servicio: 'energía eléctrica',
+    derecho: 'electricidad continua y de calidad',
+    cuerpo: 'la interrupción total del suministro de energía eléctrica en mi domicilio y zona de residencia, sin previo aviso, afectando directamente mi calidad de vida, la conservación de alimentos, el funcionamiento de equipos médicos en caso de requerirse, y causando pérdidas económicas derivadas del daño potencial a electrodomésticos por picos de voltaje al restablecerse el servicio.',
+  },
+  agua: {
+    titulo: 'FUGA DE AGUA EN VÍA PÚBLICA',
+    servicio: 'agua potable',
+    derecho: 'agua potable de calidad y continuidad en el servicio',
+    cuerpo: 'la presencia de una fuga de agua en la vía pública de mi colonia, situación que representa un desperdicio irresponsable del recurso hídrico, genera riesgos de accidentes viales, deterioro de la infraestructura urbana y posible contaminación del suministro de agua potable.',
+  },
+  corte_agua: {
+    titulo: 'INTERRUPCIÓN INJUSTIFICADA DEL SERVICIO DE AGUA POTABLE',
+    servicio: 'agua potable',
+    derecho: 'agua potable continua y de calidad',
+    cuerpo: 'la interrupción total del suministro de agua potable en mi domicilio y zona de residencia, sin que exista notificación previa o justificación técnica comunicada a los usuarios, afectando directamente las actividades básicas del hogar y poniendo en riesgo la salud de los habitantes, especialmente de menores de edad y personas adultas mayores.',
+  }
+};
+
+function generarCarta(){
+  const org   = document.getElementById('dest-org').value;
+  const tipo  = document.getElementById('tipo-inc').value;
+  const nombre= document.getElementById('f-nombre').value.trim()||'[NOMBRE DEL CIUDADANO]';
+  const dir   = document.getElementById('f-dir').value.trim()||'[DIRECCIÓN]';
+  const fecha = document.getElementById('f-fecha').value;
+  const dur   = document.getElementById('f-duracion').value.trim()||'[DURACIÓN]';
+  const folio = document.getElementById('f-folio').value.trim();
+  const desc  = document.getElementById('f-desc').value.trim();
+  const vec   = parseInt(document.getElementById('f-vecinos').value)||1;
+
+  const O = ORGS[org];
+  const T = TIPOS[tipo];
+  const fechaStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'}) : '[FECHA]';
+  const hoy = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  const anio = new Date().getFullYear();
+
+  document.getElementById('carta-content').innerHTML = `
+    <div class="carta-header">
+      <div class="carta-logo-area">
+        <div class="carta-logo-box">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
+        </div>
+        <div>
+          <div class="carta-brand">Apagones MX</div>
+          <div class="carta-brand-sub">Plataforma Ciudadana · Mérida, Yucatán</div>
+        </div>
+      </div>
+      <div class="carta-date-area">
+        <div class="carta-city">Mérida, Yucatán</div>
+        <div>${hoy}</div>
+        ${folio?`<div style="margin-top:4px;font-size:11px">Folio prev.: <strong>${folio}</strong></div>`:''}
+      </div>
+    </div>
+
+    <div class="dest">
+      <strong>${O.cargo}</strong><br/>
+      ${O.name}<br/>
+      ${O.dir.replace(/\n/g,'<br/>')}
+    </div>
+
+    <p style="font-weight:bold;font-size:12px">P R E S E N T E</p>
+
+    <h2>${T.titulo}</h2>
+
+    <p>
+      Yo, <strong>${nombre}</strong>, vecino(a) del municipio de Mérida, Yucatán, con domicilio en
+      <strong>${dir}</strong>, en uso de mis derechos como usuario del servicio de ${T.servicio}
+      que presta ${O.ref}, y con fundamento en la ${O.ley}, me dirijo a usted muy
+      respetuosamente para exponer lo siguiente:
+    </p>
+
+    <h3>I. HECHOS</h3>
+    <p>
+      Con fecha <strong>${fechaStr}</strong>, con una duración aproximada de <strong>${dur}</strong>,
+      se presentó ${T.cuerpo}
+    </p>
+    <p>
+      Esta situación afectó a aproximadamente <strong>${vec} vecino${vec>1?'s':''}</strong> del área,
+      quienes también reportaron la incidencia a través de la plataforma ciudadana <em>Apagones MX</em>
+      (apagones.mx), evidenciando el impacto colectivo del problema.
+    </p>
+    ${desc?`<p>Adicionalmente, se registraron los siguientes daños o situaciones derivadas: <em>${desc}</em></p>`:''}
+
+    <table class="data-table">
+      <thead><tr><th>Dato</th><th>Detalle</th></tr></thead>
+      <tbody>
+        <tr><td>Tipo de incidencia</td><td>${T.titulo}</td></tr>
+        <tr><td>Dirección afectada</td><td>${dir}</td></tr>
+        <tr><td>Fecha del evento</td><td>${fechaStr}</td></tr>
+        <tr><td>Duración aproximada</td><td>${dur}</td></tr>
+        <tr><td>Vecinos afectados</td><td>${vec}</td></tr>
+        ${folio?`<tr><td>Folio de reporte previo</td><td>${folio}</td></tr>`:''}
+        <tr><td>Fuente del reporte</td><td>Plataforma Ciudadana Apagones MX · apagones.mx</td></tr>
+        <tr><td>Fecha de este escrito</td><td>${hoy}</td></tr>
+      </tbody>
+    </table>
+
+    <h3>II. FUNDAMENTO LEGAL</h3>
+    <p>
+      El servicio de ${T.servicio} es un servicio público esencial cuya prestación continua
+      y de calidad constituye un derecho de los ciudadanos conforme a la legislación vigente,
+      incluyendo la ${O.ley}. El incumplimiento en la calidad o continuidad del servicio
+      faculta a los usuarios para presentar quejas formales y, en su caso, exigir indemnización
+      por los daños y perjuicios ocasionados.
+    </p>
+
+    <h3>III. PETICIÓN</h3>
+    <p>Con fundamento en lo anteriormente expuesto, respetuosamente solicito:</p>
+    <p>
+      <strong>PRIMERO.</strong> Se atienda y resuelva de manera <strong>urgente e inmediata</strong> la falla reportada.<br/>
+      <strong>SEGUNDO.</strong> Se implementen las medidas preventivas y correctivas necesarias para evitar
+      la recurrencia de estas interrupciones en la zona afectada.<br/>
+      <strong>TERCERO.</strong> Se emita respuesta por escrito en el plazo legal establecido, informando
+      las acciones tomadas y los compromisos de mejora del servicio.<br/>
+      <strong>CUARTO.</strong> En caso de daños a bienes o salud, se informe el procedimiento para
+      solicitar la reparación o indemnización correspondiente.
+    </p>
+
+    <h3>IV. DATOS DE CONTACTO</h3>
+    <p>Quedo en espera de su respuesta en el domicilio señalado, o bien a través de los medios oficiales
+    que ${O.ref} disponga para dar seguimiento a este tipo de solicitudes.</p>
+
+    <div class="firma-area">
+      <div class="firma-box">
+        <div style="height:50px"></div>
+        <div class="firma-line"><strong>${nombre}</strong><br/>Ciudadano(a) afectado(a)</div>
+      </div>
+      <div class="firma-box">
+        <div style="height:50px"></div>
+        <div class="firma-line">Sello de recepción / Fecha</div>
+      </div>
+    </div>
+
+    <div class="carta-footer">
+      Carta generada con apoyo de <strong>Apagones MX</strong> (apagones.mx) — Plataforma ciudadana de reporte de incidencias en Mérida, Yucatán.
+      Este documento es de carácter ciudadano y no garantiza respuesta por parte de la institución.
+      Se recomienda entregar en persona con acuse de recibo o enviar por correo certificado. ${anio}
+    </div>
+  `;
+
+  document.getElementById('carta-wrap').classList.add('visible');
+  document.getElementById('carta-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>
