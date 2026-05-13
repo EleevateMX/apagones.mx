@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Apagones"/>
+<meta name="theme-color" content="#0C0608"/>
+<title>Apagones MX — Widget</title>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --brand:#65081F;--brand-lt:#8B0E2A;
+  --elec:#F5B731;--agua:#22D0F0;--agua-dk:#0AAAC4;
+  --bg:#0C0608;--card:#1A0E14;--card2:#22131A;
+  --bdr:#2A1520;--tx:#F0E8EC;--dim:#9E7080;--mut:#6B3D4F;
+  --grn:#1FD18A;--red:#FF4B4B;
+  --f:'Plus Jakarta Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  height:100%;background:var(--bg);color:var(--tx);
+  font-family:var(--f);overflow:hidden;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ── WIDGET WRAPPER ─────────────────────────── */
+#widget{
+  width:100vw;height:100vh;
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top,12px) 14px env(safe-area-inset-bottom,14px);
+  background:linear-gradient(160deg,#12060A 0%,#0C0608 60%);
+  position:relative;overflow:hidden;
+}
+
+/* Background glow blobs */
+#widget::before{
+  content:'';position:absolute;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(101,8,31,.35) 0%,transparent 70%);
+  top:-60px;right:-60px;pointer-events:none;
+}
+#widget::after{
+  content:'';position:absolute;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(34,208,240,.12) 0%,transparent 70%);
+  bottom:20px;left:-40px;pointer-events:none;
+}
+
+/* ── HEADER ─────────────────────────────────── */
+.w-header{
+  display:flex;align-items:center;gap:9px;
+  margin-bottom:16px;position:relative;z-index:2;
+}
+.w-logo{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#8B0E2A,#3E0513);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 14px rgba(101,8,31,.5);
+  flex-shrink:0;
+}
+.w-brand{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.w-brand span{color:var(--dim);font-weight:500}
+.w-live{
+  margin-left:auto;display:flex;align-items:center;gap:5px;
+  background:rgba(255,61,61,.12);border:1px solid rgba(255,61,61,.25);
+  border-radius:20px;padding:3px 9px;
+}
+.w-live-dot{width:6px;height:6px;border-radius:50%;background:#FF3D3D;animation:lp 1.2s ease-in-out infinite}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.3}}
+.w-live-txt{font-size:10px;font-weight:800;color:#FF7A7A;letter-spacing:.5px}
+
+/* ── MAIN COUNTERS ──────────────────────────── */
+.w-counters{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  margin-bottom:12px;position:relative;z-index:2;
+}
+.w-counter{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:16px;padding:14px 14px 12px;
+  position:relative;overflow:hidden;
+  transition:transform .2s;
+  cursor:pointer;text-decoration:none;
+}
+.w-counter:active{transform:scale(.97)}
+.w-counter::before{
+  content:'';position:absolute;inset:0;opacity:.06;
+}
+.w-counter.el{border-color:rgba(245,183,49,.3)}
+.w-counter.el::before{background:radial-gradient(circle at 0% 0%,#F5B731,transparent)}
+.w-counter.ag{border-color:rgba(34,208,240,.3)}
+.w-counter.ag::before{background:radial-gradient(circle at 0% 0%,#22D0F0,transparent)}
+.w-counter-icon{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.w-counter.el .w-counter-icon{color:rgba(245,183,49,.7)}
+.w-counter.ag .w-counter-icon{color:rgba(34,208,240,.7)}
+.w-counter-n{font-size:38px;font-weight:800;line-height:1;letter-spacing:-2px}
+.w-counter.el .w-counter-n{color:var(--elec)}
+.w-counter.ag .w-counter-n{color:var(--agua)}
+.w-counter-lbl{font-size:11px;color:var(--dim);margin-top:3px}
+
+/* ── STATUS BAND ────────────────────────────── */
+.w-status{
+  display:flex;align-items:center;gap:9px;
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:12px;padding:10px 14px;
+  margin-bottom:12px;position:relative;z-index:2;
+}
+.w-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.w-status-dot.ok{background:var(--grn);box-shadow:0 0 6px var(--grn)}
+.w-status-dot.warn{background:var(--elec);box-shadow:0 0 6px var(--elec);animation:lp 1s infinite}
+.w-status-dot.crit{background:var(--red);box-shadow:0 0 6px var(--red);animation:lp .6s infinite}
+.w-status-txt{font-size:12px;font-weight:700;flex:1}
+.w-status-time{font-size:10px;color:var(--dim)}
+
+/* ── RECENT LIST ────────────────────────────── */
+.w-recent-title{font-size:10px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;position:relative;z-index:2}
+.w-recent{display:flex;flex-direction:column;gap:6px;flex:1;overflow:hidden;position:relative;z-index:2}
+.w-item{
+  display:flex;align-items:center;gap:9px;
+  background:rgba(26,14,20,.7);border:1px solid var(--bdr);
+  border-radius:10px;padding:9px 11px;
+}
+.w-item-icon{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.w-item.el .w-item-icon{background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.2)}
+.w-item.ag .w-item-icon{background:rgba(34,208,240,.12);border:1px solid rgba(34,208,240,.2)}
+.w-item-info{flex:1;min-width:0}
+.w-item-type{font-size:12px;font-weight:700;white-space:nowrap}
+.w-item.el .w-item-type{color:var(--elec)}.w-item.ag .w-item-type{color:var(--agua)}
+.w-item-time{font-size:10px;color:var(--dim)}
+.w-item-sev{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:700;flex-shrink:0}
+.w-item-sev.critico{background:rgba(255,75,31,.15);color:#FF8A6E;border:1px solid rgba(255,75,31,.25)}
+.w-item-sev.moderado{background:rgba(245,183,49,.1);color:var(--elec);border:1px solid rgba(245,183,49,.2)}
+.w-item-sev.leve{background:rgba(31,209,138,.08);color:var(--grn);border:1px solid rgba(31,209,138,.15)}
+
+/* ── FOOTER ─────────────────────────────────── */
+.w-footer{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-top:10px;position:relative;z-index:2;
+}
+.w-foot-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px;border-radius:11px;border:none;cursor:pointer;
+  font-family:var(--f);font-size:12px;font-weight:800;
+  text-decoration:none;transition:transform .15s;
+}
+.w-foot-btn:active{transform:scale(.96)}
+.w-foot-btn.report{background:linear-gradient(135deg,#8B0E2A,#65081F);color:#FFE0E6;box-shadow:0 3px 14px rgba(101,8,31,.4)}
+.w-foot-btn.map{background:var(--card);border:1px solid var(--bdr);color:var(--dim)}
+
+/* ── HEAT BADGE ─────────────────────────────── */
+.w-heat{
+  display:none;align-items:center;gap:7px;
+  background:rgba(255,100,0,.12);border:1px solid rgba(255,150,0,.3);
+  border-radius:10px;padding:8px 12px;margin-bottom:10px;
+  position:relative;z-index:2;font-size:11px;font-weight:700;color:#FFB347;
+}
+
+/* ── LOADING ────────────────────────────────── */
+#loading-screen{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  z-index:100;transition:opacity .4s;
+}
+#loading-screen.out{opacity:0;pointer-events:none}
+.ld-pulse{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#8B0E2A,#3E0513);display:flex;align-items:center;justify-content:center;animation:ldp 1s ease-in-out infinite}
+@keyframes ldp{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.ld-txt{font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="ld-pulse">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
+  </div>
+  <div class="ld-txt">Cargando…</div>
+</div>
+
+<div id="widget">
+  <!-- Header -->
+  <div class="w-header">
+    <div class="w-logo">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
+    </div>
+    <div>
+      <div class="w-brand">Apagones <span>MX</span></div>
+      <div style="font-size:10px;color:var(--mut)">Mérida, Yucatán</div>
+    </div>
+    <div class="w-live"><span class="w-live-dot"></span><span class="w-live-txt">EN VIVO</span></div>
+  </div>
+
+  <!-- Heat alert -->
+  <div class="w-heat" id="w-heat">
+    <svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path d="M10 1a5 5 0 00-3 9V15a3 3 0 006 0v-5a5 5 0 00-3-9zm0 17a1 1 0 01-1-1h2a1 1 0 01-1 1z"/></svg>
+    <span id="w-heat-txt">Calor extremo activo</span>
+  </div>
+
+  <!-- Counters -->
+  <div class="w-counters">
+    <a class="w-counter el" href="./index.html?action=apagon" id="cnt-el">
+      <div class="w-counter-icon">
+        <svg viewBox="0 0 12 16" width="10" height="13" fill="#F5B731"><path d="M8 0L3 7h4l-2 9L13 8H9L8 0Z"/></svg>
+        Apagones
+      </div>
+      <div class="w-counter-n" id="n-el">—</div>
+      <div class="w-counter-lbl">activos ahora</div>
+    </a>
+    <a class="w-counter ag" href="./index.html?action=agua" id="cnt-ag">
+      <div class="w-counter-icon">
+        <svg viewBox="0 0 12 16" width="9" height="12" fill="#22D0F0"><path d="M6 0C6 0 0 7 0 10a6 6 0 0012 0C12 7 6 0 6 0Z"/></svg>
+        Fugas
+      </div>
+      <div class="w-counter-n" id="n-ag">—</div>
+      <div class="w-counter-lbl">reportadas</div>
+    </a>
+  </div>
+
+  <!-- Status -->
+  <div class="w-status">
+    <div class="w-status-dot" id="w-dot"></div>
+    <div class="w-status-txt" id="w-status-txt">Cargando…</div>
+    <div class="w-status-time" id="w-time">—</div>
+  </div>
+
+  <!-- Recent list -->
+  <div class="w-recent-title">Más recientes</div>
+  <div class="w-recent" id="w-recent"></div>
+
+  <!-- Footer buttons -->
+  <div class="w-footer">
+    <a class="w-foot-btn report" href="./index.html">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 1v14M1 8h14"/></svg>
+      Reportar
+    </a>
+    <a class="w-foot-btn map" href="./index.html">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 2l5 2 4-2 5 2v11l-5-2-4 2-5-2z"/><path d="M6 4v11M10 2v11"/></svg>
+      Ver mapa
+    </a>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://rwvnulxlygdjxvovxind.supabase.co';
+const SB_KEY = 'sb_publishable_ytmFRe5AcyNey2Q9h6-7bw_ap-tYaKh';
+const TTL = 8 * 60 * 60 * 1000;
+const { createClient } = window.supabase;
+const db = createClient(SB_URL, SB_KEY);
+
+function fmtTime(ts) {
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return 'Ahora mismo';
+  if (m < 60) return 'Hace ' + m + 'min';
+  return 'Hace ' + Math.floor(m / 60) + 'h';
+}
+
+function now() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+async function fetchData() {
+  try {
+    const { data } = await db.from('reports').select('*').eq('resolved', false);
+    const all = (data || []).filter(r => r.type === 'agua' || r.type === 'corte_agua' || (Date.now() - r.timestamp) < TTL);
+
+    const elec = all.filter(r => r.type === 'apagon');
+    const agua = all.filter(r => r.type === 'agua' || r.type === 'corte_agua');
+    const total = all.length;
+
+    // Counters
+    document.getElementById('n-el').textContent = elec.length;
+    document.getElementById('n-ag').textContent = agua.length;
+
+    // Status
+    const dot  = document.getElementById('w-dot');
+    const stxt = document.getElementById('w-status-txt');
+    if (total === 0) {
+      dot.className = 'w-status-dot ok';
+      stxt.textContent = '✓ Todo en calma en Mérida';
+    } else if (total <= 3) {
+      dot.className = 'w-status-dot warn';
+      stxt.textContent = total + ' incidencia' + (total > 1 ? 's' : '') + ' activa' + (total > 1 ? 's' : '');
+    } else {
+      dot.className = 'w-status-dot crit';
+      stxt.textContent = '⚠ ' + total + ' incidencias activas';
+    }
+    document.getElementById('w-time').textContent = 'Act. ' + now();
+
+    // Recent list (last 3)
+    const recent = all.sort((a,b) => b.timestamp - a.timestamp).slice(0, 3);
+    const list = document.getElementById('w-recent');
+    if (!recent.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--mut);font-size:12px;padding:16px">Sin reportes recientes 🌙</div>';
+    } else {
+      list.innerHTML = recent.map(r => {
+        const isEl = r.type === 'apagon';
+        const sevClx = r.severity || 'moderado';
+        const sevTxt = sevClx === 'critico' ? '🔴 Crítico' : sevClx === 'leve' ? '🟢 Leve' : '🟡 Mod.';
+        const typeIcon = isEl
+          ? '<svg viewBox="0 0 12 16" width="12" height="15" fill="#F5B731"><path d="M8 0L3 7h4l-2 9 8-9H9L8 0Z"/></svg>'
+          : '<svg viewBox="0 0 12 14" width="11" height="13" fill="#22D0F0"><path d="M6 0C6 0 0 6 0 9a6 5 0 0012 0C12 6 6 0 6 0Z"/></svg>';
+        return `<div class="w-item ${isEl?'el':'ag'}">
+          <div class="w-item-icon">${typeIcon}</div>
+          <div class="w-item-info">
+            <div class="w-item-type">${isEl ? '⚡ Apagón' : r.type === 'corte_agua' ? '🚰 Sin agua' : '💧 Fuga'}</div>
+            <div class="w-item-time">${fmtTime(r.timestamp)}</div>
+          </div>
+          <div class="w-item-sev ${sevClx}">${sevTxt}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // Heat check
+    try {
+      const hr = await fetch('https://api.open-meteo.com/v1/forecast?latitude=20.9674&longitude=-89.6237&current=temperature_2m&timezone=America%2FMerida');
+      const hd = await hr.json();
+      const temp = hd.current?.temperature_2m;
+      if (temp >= 37) {
+        const heatEl = document.getElementById('w-heat');
+        document.getElementById('w-heat-txt').textContent = '🌡️ ' + temp + '°C — Calor ' + (temp >= 40 ? 'extremo' : 'intenso') + ' en Mérida';
+        heatEl.style.display = 'flex';
+      }
+    } catch(e) {}
+
+  } catch(e) {
+    document.getElementById('w-status-txt').textContent = 'Sin conexión — datos en caché';
+    document.getElementById('w-dot').className = 'w-status-dot';
+    document.getElementById('w-time').textContent = now();
+  }
+
+  // Hide loader
+  const ld = document.getElementById('loading-screen');
+  if (ld) { ld.classList.add('out'); setTimeout(() => ld.remove(), 500); }
+}
+
+fetchData();
+setInterval(fetchData, 5 * 60 * 1000); // refresh every 5min
+</script>
+</body>
+</html>
