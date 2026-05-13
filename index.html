@@ -425,7 +425,52 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 .zoom-btn{width:36px;height:36px;border-radius:9px;background:rgba(12,6,8,.84);backdrop-filter:blur(14px);border:1px solid var(--bdr);color:var(--dim);font-size:20px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;font-weight:300}
 .zoom-btn:hover{color:var(--tx);border-color:var(--bdr2)}
 
-@media(max-width:520px){.chip-lbl{display:none}#sidebar{width:100vw;bottom:34px}#sidebar.open+#stoggle{right:100vw}#layer-panel{width:200px}#layer-panel.open+#layer-toggle-btn{left:200px}.ob-cards{max-width:100%}#map-city-label{font-size:10px;padding:4px 10px}#heat-legend{display:none}}
+/* ── HAMBURGER ── */
+.hamburger-btn{display:none;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:8px;cursor:pointer;color:var(--dim);transition:all .18s;line-height:0}
+.hamburger-btn:hover{color:var(--tx)}
+.desktop-only{display:flex;gap:6px;align-items:center}
+
+/* ── MOBILE MENU OVERLAY ── */
+#mobile-menu{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
+#mobile-menu.open{display:flex}
+.mm-sheet{background:var(--surf);border:1px solid var(--bdr);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 0 env(safe-area-inset-bottom);animation:shup .3s cubic-bezier(.4,0,.2,1)}
+.mm-handle{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0}
+.mm-live{display:flex;align-items:center;gap:8px;padding:12px 20px 10px;border-bottom:1px solid var(--bdr)}
+.mm-actions{padding:8px 12px 12px}
+.mm-btn{width:100%;display:flex;align-items:center;gap:14px;background:none;border:none;padding:12px 8px;cursor:pointer;text-align:left;border-radius:12px;transition:background .15s}
+.mm-btn:hover{background:var(--card)}
+.mm-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mm-btn-name{font-family:var(--f);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.mm-btn-sub{font-family:var(--f);font-size:11px;color:var(--dim)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hamburger-btn{display:flex}
+  .desktop-only{display:none!important}
+  .topbar-slogan{display:none}
+  .vd{display:none}
+  .chip-lbl{display:none}
+  .chip{padding:4px 9px}
+  .chip-n{font-size:14px}
+  #topbar{padding:0 12px;gap:8px;height:56px}
+  .logo{font-size:15px}
+  .logo-mark{width:30px;height:30px;border-radius:8px}
+  #map{top:56px}
+  #layer-panel,#sidebar{top:56px}
+  #sidebar{width:100vw;bottom:34px}
+  #sidebar.open+#stoggle{right:100vw}
+  #layer-panel{width:90vw;max-width:280px}
+  #layer-panel.open+#layer-toggle-btn{left:90vw;left:min(90vw,280px)}
+  .ob-cards{max-width:100%}
+  #map-city-label{font-size:10px;padding:4px 10px;bottom:42px}
+  #heat-legend{display:none}
+  #fab{bottom:50px;width:56px;height:56px;font-size:26px}
+  #zoom-btns{bottom:96px}
+  #pbanner{font-size:12px;padding:8px 16px}
+}
+@media(min-width:601px){
+  .hamburger-btn{display:none}
+}
 </style>
 </head>
 <body>
@@ -721,26 +766,86 @@ body.placing #map,body.placing #map *{cursor:crosshair!important}
 
 <header id="topbar">
   <div class="logo" id="logo-btn" onclick="logoClick()">
-    <div class="logo-mark">⚡</div>
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
+    </div>
     <span>Apagones <span class="logo-mx">MX</span></span>
   </div>
   <div class="topbar-slogan">Tu reporte, nuestra solución</div>
   <div class="vd"></div>
   <div class="chips">
-    <div class="chip el"><span class="chip-dot"></span><span class="chip-n" id="cnt-el">0</span><span class="chip-lbl" style="color:var(--dim);font-size:11px;font-weight:500;margin-left:2px">Apagones</span></div>
-    <div class="chip ag"><span class="chip-dot"></span><span class="chip-n" id="cnt-ag">0</span><span class="chip-lbl" style="color:var(--dim);font-size:11px;font-weight:500;margin-left:2px">Fugas</span></div>
+    <div class="chip el">
+      <svg viewBox="0 0 10 14" width="9" height="12" fill="#F5B731"><path d="M6.5 0L2 7h3.5L4 14l5.5-7H6L6.5 0Z"/></svg>
+      <span class="chip-n" id="cnt-el">0</span>
+      <span class="chip-lbl">Apagones</span>
+    </div>
+    <div class="chip ag">
+      <svg viewBox="0 0 10 13" width="8" height="11" fill="#22D0F0"><path d="M5 0C5 0 0 5.5 0 8.5A5 5 0 0010 8.5C10 5.5 5 0 5 0Z"/></svg>
+      <span class="chip-n" id="cnt-ag">0</span>
+      <span class="chip-lbl">Fugas</span>
+    </div>
   </div>
   <div class="sp"></div>
-  <div class="topbar-btns">
-    <div class="live-badge" id="live-badge">
-      <span class="live-dot"></span> EN VIVO
-    </div>
+  <div class="topbar-btns desktop-only">
+    <div class="live-badge" id="live-badge"><span class="live-dot"></span><span class="live-txt">EN VIVO</span></div>
     <div class="updated-txt" id="updated-txt">—</div>
-    <button class="tbar-btn" onclick="openStats()" title="Estadísticas">📊</button>
-    <button class="tbar-btn" id="install-btn" onclick="installPWA()" title="Instalar app" style="display:none">📲</button>
-    <button class="tbar-btn" id="notif-btn" onclick="requestNotifications()" title="Activar notificaciones">🔔</button>
+    <button class="tbar-btn" onclick="openStats()" title="Estadísticas">
+      <svg viewBox="0 0 20 20" width="15" height="15" fill="currentColor"><rect x="2" y="11" width="4" height="8" rx="1.5"/><rect x="8" y="6" width="4" height="13" rx="1.5"/><rect x="14" y="2" width="4" height="17" rx="1.5"/></svg>
+    </button>
+    <button class="tbar-btn" id="install-btn" onclick="installPWA()" style="display:none" title="Instalar app">
+      <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v9m-4-4l4 4 4-4M3 16h14"/></svg>
+    </button>
+    <button class="tbar-btn" id="notif-btn" onclick="requestNotifications()" title="Notificaciones">
+      <svg viewBox="0 0 20 20" width="15" height="15" fill="currentColor"><path d="M10 2a5.5 5.5 0 00-5.5 5.5v3.5l-1.5 1.5v1h14v-1L16 11V7.5A5.5 5.5 0 0010 2zm0 16a2 2 0 001.73-1H8.27A2 2 0 0010 18z"/></svg>
+    </button>
   </div>
+  <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileMenu()">
+    <svg viewBox="0 0 22 18" width="22" height="18" fill="currentColor"><rect y="0" width="22" height="2.5" rx="1.25"/><rect y="7.75" width="22" height="2.5" rx="1.25"/><rect y="15.5" width="22" height="2.5" rx="1.25"/></svg>
+  </button>
 </header>
+
+<!-- MOBILE MENU OVERLAY -->
+<div id="mobile-menu" onclick="if(event.target===this)toggleMobileMenu()">
+  <div class="mm-sheet">
+    <div class="mm-handle"></div>
+    <div class="mm-live">
+      <span class="live-dot"></span>
+      <span style="font-size:12px;font-weight:800;color:#FF7A7A;letter-spacing:.5px">EN VIVO</span>
+      <span id="mm-updated" style="font-size:11px;color:var(--mut);margin-left:auto">—</span>
+    </div>
+    <div class="mm-actions">
+      <button class="mm-btn" onclick="openStats();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(34,208,240,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--agua)"><rect x="2" y="12" width="5" height="10" rx="2"/><rect x="9.5" y="7" width="5" height="15" rx="2"/><rect x="17" y="2" width="5" height="20" rx="2"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Estadísticas</div><div class="mm-btn-sub">Zonas y reportes</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="toggleLayerPanel();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(245,183,49,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--elec)"><path d="M4 6h16M4 12h16M4 18h16" stroke="var(--elec)" stroke-width="2.5" stroke-linecap="round"/><circle cx="8" cy="6" r="2.5"/><circle cx="16" cy="12" r="2.5"/><circle cx="8" cy="18" r="2.5"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Capas del mapa</div><div class="mm-btn-sub">Apagones / Agua</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="requestNotifications();toggleMobileMenu()" id="mm-notif-btn">
+        <div class="mm-icon" style="background:rgba(101,8,31,.18)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFD0D8"><path d="M12 2a7 7 0 00-7 7v4l-2 2v1h18v-1l-2-2V9a7 7 0 00-7-7zm0 20a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22z"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Notificaciones</div><div class="mm-btn-sub">Alertas de tu zona</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" id="mm-install-btn" onclick="installPWA();toggleMobileMenu()" style="display:none">
+        <div class="mm-icon" style="background:rgba(31,209,138,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--grn)" stroke-width="2.5" stroke-linecap="round"><path d="M12 3v12m-5-5l5 5 5-5M5 20h14"/></svg>
+        </div>
+        <div><div class="mm-btn-name">Instalar App</div><div class="mm-btn-sub">Agregar a inicio</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div style="padding:0 20px 6px;font-size:11px;color:var(--mut);text-align:center;font-style:italic">"Tu reporte, nuestra solución"</div>
+  </div>
+</div>
 
 <div id="map"></div>
 
@@ -960,6 +1065,8 @@ let cachedReports=[], sidebarOpen=false, layerPanelOpen=false;
 let flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
 let adminMode=false, adminTab='overview';
 let logoClicks=0, logoTimer=null;
+let _placingHandled=false; // prevents double-fire on polygon+map click
+let gpsMarker=null;        // GPS location indicator
 
 // ══════════════════════════════════════════════
 //  ONBOARDING
@@ -1036,8 +1143,10 @@ function initMap(){
   glowPane.style.opacity='0.7';
   map.on('click',e=>{
     if(!flow.placing)return;
+    if(_placingHandled){_placingHandled=false;return;} // polygon already handled
     flow.lat=e.latlng.lat;flow.lng=e.latlng.lng;flow.seccion=findSeccion(flow.lat,flow.lng);
-    stopPlacing();setLocOk(`✅ Ubicación marcada en el mapa`);
+    showGPSMarker(flow.lat,flow.lng,false);
+    stopPlacing();setLocOk('✅ Ubicación marcada en el mapa');
     document.getElementById('btn-s2').disabled=false;checkNeighbors();openModal();
   });
   loadKML();
@@ -1135,7 +1244,14 @@ function updateZones(reports){
 }
 
 function mapPlaceOrShow(e,sec,dl){
-  if(flow.placing){flow.lat=e.latlng.lat;flow.lng=e.latlng.lng;flow.seccion=sec;stopPlacing();setLocOk(`✅ Zona seleccionada`);document.getElementById('btn-s2').disabled=false;checkNeighbors();openModal();L.DomEvent.stopPropagation(e);return;}
+  if(flow.placing){
+    _placingHandled=true; // tell map click handler to skip
+    flow.lat=e.latlng.lat;flow.lng=e.latlng.lng;flow.seccion=sec;
+    showGPSMarker(flow.lat,flow.lng,false);
+    stopPlacing();setLocOk('✅ Zona seleccionada');
+    document.getElementById('btn-s2').disabled=false;checkNeighbors();openModal();
+    L.DomEvent.stopPropagation(e);return;
+  }
   const poly=districtLayers[sec];
   if(!poly||poly._state!=='apagon')return;
   const els=cachedReports.filter(r=>r.seccion===sec&&r.type==='apagon');
@@ -1315,12 +1431,30 @@ function renderAdminPanel(){
 function startFlow(){flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};['tc-el','tc-ag'].forEach(id=>document.getElementById(id).classList.remove('sel'));document.getElementById('btn-s1').disabled=true;document.getElementById('btn-s2').disabled=true;document.getElementById('f-nombre').value='';document.getElementById('f-tel').value='';document.getElementById('photo-prev').style.display='none';document.getElementById('ph-ph').style.display='block';document.getElementById('nbr-banner').classList.remove('show');document.getElementById('btn-gps').classList.remove('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('Elige cómo ubicar tu reporte',false);goStep(1);openModal();}
 function goStep(n){[1,2,3].forEach(i=>{document.getElementById('step-'+i).style.display=i===n?'':'none';document.getElementById('st'+i).className='step '+(i<n?'done':i===n?'active':'');});flow.step=n;const T=['','¿Qué está pasando?','¿Dónde ocurre?','Tus datos de contacto'],S=['','Selecciona el tipo de incidencia','Ubica el problema en el mapa','Privados — verificación anti-bots'];document.getElementById('s-title').textContent=T[n];document.getElementById('s-sub').textContent=S[n];if(n===3){document.getElementById('photo-wrap').style.display=flow.type==='agua'?'':'none';const b=document.getElementById('btn-s3');b.className='btn '+(flow.type==='agua'?'btn-agua':'btn-brand');b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';chkForm();}}
 function selType(t){flow.type=t;document.getElementById('tc-el').classList.toggle('sel',t==='apagon');document.getElementById('tc-ag').classList.toggle('sel',t==='agua');document.getElementById('btn-s1').disabled=false;}
-function useGPS(){document.getElementById('btn-gps').classList.add('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('🛰️ Obteniendo GPS…',false);if(!navigator.geolocation){setLocStatus('❌ GPS no disponible',false);return;}navigator.geolocation.getCurrentPosition(pos=>{flow.lat=pos.coords.latitude;flow.lng=pos.coords.longitude;flow.seccion=findSeccion(flow.lat,flow.lng);setLocOk('✅ Ubicación GPS detectada');document.getElementById('btn-s2').disabled=false;map.flyTo([flow.lat,flow.lng],15,{duration:1});checkNeighbors();},()=>{setLocStatus('❌ GPS fallido — usa "Marcar en mapa"',false);document.getElementById('btn-gps').classList.remove('active');},{enableHighAccuracy:true,timeout:8000});}
+function useGPS(){document.getElementById('btn-gps').classList.add('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('🛰️ Obteniendo GPS…',false);if(!navigator.geolocation){setLocStatus('❌ GPS no disponible',false);return;}navigator.geolocation.getCurrentPosition(pos=>{flow.lat=pos.coords.latitude;flow.lng=pos.coords.longitude;flow.seccion=findSeccion(flow.lat,flow.lng);showGPSMarker(flow.lat,flow.lng,true);setLocOk('✅ Ubicación GPS detectada');document.getElementById('btn-s2').disabled=false;map.flyTo([flow.lat,flow.lng],15,{duration:1});checkNeighbors();},()=>{setLocStatus('❌ GPS fallido — usa "Marcar en mapa"',false);document.getElementById('btn-gps').classList.remove('active');},{enableHighAccuracy:true,timeout:8000});}
 function useMapClick(){document.getElementById('btn-map').classList.add('active');document.getElementById('btn-gps').classList.remove('active');closeModal();startPlacing();}
 function startPlacing(){flow.placing=true;document.body.classList.add('placing');document.getElementById('pbanner').classList.add('show');document.getElementById('fab').classList.add('cancel');document.getElementById('fab').textContent='✕';document.getElementById('fab').onclick=cancelPlace;document.addEventListener('keydown',escKey);}
 function stopPlacing(){flow.placing=false;document.body.classList.remove('placing');document.getElementById('pbanner').classList.remove('show');document.getElementById('fab').classList.remove('cancel');document.getElementById('fab').textContent='＋';document.getElementById('fab').onclick=startFlow;document.removeEventListener('keydown',escKey);}
 function cancelPlace(){stopPlacing();closeModal();}
 function escKey(e){if(e.key==='Escape')cancelPlace();}
+function showGPSMarker(lat,lng,isGPS){
+  if(gpsMarker){gpsMarker.forEach?gpsMarker.forEach(m=>m.remove()):gpsMarker.remove();}
+  const color=isGPS?'#22D0F0':'var(--brand-lt)';
+  const dot=L.circleMarker([lat,lng],{radius:8,fillColor:isGPS?'#22D0F0':'#8B0E2A',color:'#fff',weight:2,fillOpacity:.9}).addTo(map);
+  const ring=L.circleMarker([lat,lng],{radius:18,fillOpacity:0,color:isGPS?'#22D0F0':'#8B0E2A',weight:1.5,opacity:.4}).addTo(map);
+  const ring2=L.circleMarker([lat,lng],{radius:30,fillOpacity:0,color:isGPS?'#22D0F0':'#8B0E2A',weight:1,opacity:.2}).addTo(map);
+  gpsMarker=[dot,ring,ring2];
+  // Remove after report is submitted
+}
+
+function clearGPSMarker(){
+  if(gpsMarker){gpsMarker.forEach?gpsMarker.forEach(m=>m.remove()):gpsMarker.remove();gpsMarker=null;}
+}
+function toggleMobileMenu(){
+  const m=document.getElementById('mobile-menu');
+  m.classList.toggle('open');
+  document.body.style.overflow=m.classList.contains('open')?'hidden':'';
+}
 function setLocStatus(txt,ok){document.getElementById('loc-txt').textContent=txt;document.getElementById('loc-st').className='loc-st'+(ok?' ok':'');}
 function setLocOk(txt){setLocStatus(txt,true);}
 function checkNeighbors(){
@@ -1368,6 +1502,7 @@ async function submitReport(){
     toast('Error al enviar — verifica que ejecutaste setup.sql en Supabase','e');
     b.disabled=false;b.textContent=flow.type==='agua'?'Reportar Fuga 💧':'Reportar Apagón ⚡';
   }
+  clearGPSMarker();
   flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:''};
 }
 function openModal(){document.getElementById('modal-bg').classList.add('open');}
@@ -1393,7 +1528,7 @@ setInterval(renderAll,60000);
 let deferredInstall=null;
 function initPWA(){
   if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('install-btn').style.display='block';setTimeout(()=>{document.getElementById('install-banner').style.display='flex';},5000);});
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('install-btn').style.display='block';const mib=document.getElementById('mm-install-btn');if(mib)mib.style.display='flex';setTimeout(()=>{document.getElementById('install-banner').style.display='flex';},5000);});
   window.addEventListener('appinstalled',()=>{document.getElementById('install-btn').style.display='none';document.getElementById('install-banner').style.display='none';toast('App instalada ✓','s');});
   const a=new URLSearchParams(location.search).get('action');
   if(a==='apagon'||a==='agua')setTimeout(()=>startFlowWithType(a),1200);
