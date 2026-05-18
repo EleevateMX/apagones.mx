@@ -1,0 +1,46 @@
+{
+  "name": "ApagonesMID — Mérida",
+  "short_name": "ApagonesMID",
+  "description": "¿Sin luz o sin agua? Tu reporte es nuestra voz. Reporta apagones y fugas en Mérida.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#65081F",
+  "background_color": "#060406",
+  "lang": "es",
+  "categories": ["utilities", "social", "navigation"],
+  "icons": [
+    { "src": "icon.svg",              "sizes": "any",       "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-72.png",           "sizes": "72x72",     "type": "image/png",     "purpose": "any" },
+    { "src": "icon-96.png",           "sizes": "96x96",     "type": "image/png",     "purpose": "any" },
+    { "src": "icon-128.png",          "sizes": "128x128",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-144.png",          "sizes": "144x144",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-152.png",          "sizes": "152x152",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-180.png",          "sizes": "180x180",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-192.png",          "sizes": "192x192",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-256.png",          "sizes": "256x256",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-384.png",          "sizes": "384x384",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-512.png",          "sizes": "512x512",   "type": "image/png",     "purpose": "any" },
+    { "src": "icon-1024.png",         "sizes": "1024x1024", "type": "image/png",     "purpose": "any" },
+    { "src": "icon-maskable-192.png", "sizes": "192x192",   "type": "image/png",     "purpose": "maskable" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512",   "type": "image/png",     "purpose": "maskable" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Reportar Apagón",
+      "short_name": "Apagón",
+      "description": "Reportar un apagón en tu zona",
+      "url": "./?action=apagon",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Reportar Fuga",
+      "short_name": "Fuga",
+      "description": "Reportar una fuga de agua",
+      "url": "./?action=agua",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

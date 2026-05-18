@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>ApagonesMID</title>
+  <defs>
+    <radialGradient id="iconBg" cx="45%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#8A1228"/>
+      <stop offset="55%" stop-color="#65081F"/>
+      <stop offset="100%" stop-color="#3A0412"/>
+    </radialGradient>
+    <linearGradient id="iconBolt" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="30%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#E8970A"/>
+    </linearGradient>
+    <linearGradient id="iconGloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="boltGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="120" height="120" rx="28" ry="28" fill="url(#iconBg)"/>
+  <path d="M0 0H120V38Q60 52 0 38Z" fill="url(#iconGloss)" opacity="0.55"/>
+  <ellipse cx="60" cy="62" rx="28" ry="34" fill="#FFD700" opacity="0.1"/>
+  <path d="M73 10L42 58H62L47 110L86 54H66Z" fill="url(#iconBolt)" filter="url(#boltGlow)"/>
+  <path d="M66 20L50 52H64L52 92" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>
