@@ -1,5 +1,5 @@
-// Apagones Mid — Service Worker v30 (forced cache refresh)
-const CACHE = 'apagones-mid-v30';
+// Apagones Mid — Service Worker v32 (forced cache refresh)
+const CACHE = 'apagones-mid-v32';
 const TILE_CACHE = 'apagones-tiles-v1';
 
 const STATIC = [
@@ -9,7 +9,7 @@ const STATIC = [
   './icon-72.png', './icon-96.png', './icon-128.png',
   './icon-144.png', './icon-152.png', './icon-167.png',
   './icon-180.png', './icon-192.png', './icon-256.png',
-  './icon-384.png', './icon-512.png', './icon-1024.png',
+  './icon-384.png', './icon-512.png', './icon-1024.png', './og-image.png',
   './icon-maskable-192.png', './icon-maskable-512.png',
   './data/distritos.kml',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
