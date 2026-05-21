@@ -203,7 +203,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 
 #fab{bottom: calc(50px + var(--sab))}
 #zoom-btns{bottom: calc(100px + var(--sab))}
-#vecino-badge{bottom: calc(88px + var(--sab))}
+#vecino-badge{top: calc(var(--topbar-h) + var(--sat) + 62px);left:12px;bottom:auto;right:auto}
 #notif-prompt{bottom: calc(54px + var(--sab))}
 #install-banner{bottom: calc(54px + var(--sab))}
 #search-wrap{top: calc(var(--topbar-h) + var(--sat) + 10px)}
@@ -1048,7 +1048,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   /* Stack FAB + Apagoncito vertically — Apagoncito above + */
   /* Move FABs UP on mobile to avoid bottom sheet handle */
   #fab{bottom: calc(82px + env(safe-area-inset-bottom,0px))!important;width:56px!important;height:56px!important;font-size:24px}
-  #apagoncito-fab{bottom: calc(150px + env(safe-area-inset-bottom,0px))!important;width:48px!important;height:48px!important}
+  #apagoncito-fab{bottom: calc(96px + env(safe-area-inset-bottom,0px))!important;left:16px!important;right:auto!important;width:48px!important;height:48px!important}
   #apagoncito-modal{bottom: calc(280px + env(safe-area-inset-bottom,0px))!important}
   #zoom-btns{bottom: calc(216px + env(safe-area-inset-bottom,0px))!important}
   .hamburger-btn{display:flex}
@@ -2651,7 +2651,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 </div>
 
 <!-- VERIFIED NEIGHBOR BADGE (shows on FAB) -->
-<div id="vecino-badge" style="position:fixed;bottom:82px;right:16px;z-index:901;display:none;align-items:center;gap:5px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.4);border-radius:12px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--grn)">
+<div id="vecino-badge" style="position:fixed;top:calc(var(--topbar-h) + var(--sat) + 62px);left:12px;z-index:901;display:none;align-items:center;gap:5px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.4);border-radius:12px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--grn);box-shadow:0 2px 10px rgba(0,0,0,.3)">
   ⭐ Vecino Activo
 </div>
 
@@ -5460,7 +5460,7 @@ function downloadFile(content, filename, mime){
 
 
 // FLOW
-function startFlow(){flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:'',photoFlags:'',photoMeta:null};['tc-el','tc-ag'].forEach(id=>document.getElementById(id).classList.remove('sel'));document.getElementById('btn-s1').disabled=true;document.getElementById('btn-s2').disabled=true;document.getElementById('f-nombre').value='';document.getElementById('f-tel').value='';const rn=document.getElementById('f-report-num');if(rn)rn.value='';const pp=document.getElementById('photo-prev');if(pp){pp.style.display='none';pp.src='';}const ph=document.getElementById('ph-ph');if(ph)ph.style.display='block';flow.photoData='';document.getElementById('nbr-banner').classList.remove('show');document.getElementById('btn-gps').classList.remove('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('Elige cómo ubicar tu reporte',false);goStep(1);openModal();}
+function startFlow(){if(typeof apagoncitoOpen!=='undefined'&&apagoncitoOpen&&typeof toggleApagoncito==='function')toggleApagoncito();flow={step:0,type:null,lat:null,lng:null,seccion:'',placing:false,photoData:'',photoFlags:'',photoMeta:null};['tc-el','tc-ag'].forEach(id=>document.getElementById(id).classList.remove('sel'));document.getElementById('btn-s1').disabled=true;document.getElementById('btn-s2').disabled=true;document.getElementById('f-nombre').value='';document.getElementById('f-tel').value='';const rn=document.getElementById('f-report-num');if(rn)rn.value='';const pp=document.getElementById('photo-prev');if(pp){pp.style.display='none';pp.src='';}const ph=document.getElementById('ph-ph');if(ph)ph.style.display='block';flow.photoData='';document.getElementById('nbr-banner').classList.remove('show');document.getElementById('btn-gps').classList.remove('active');document.getElementById('btn-map').classList.remove('active');setLocStatus('Elige cómo ubicar tu reporte',false);goStep(1);openModal();}
 function goStep(n){[1,2,3].forEach(i=>{document.getElementById('step-'+i).style.display=i===n?'':'none';document.getElementById('st'+i).className='step '+(i<n?'done':i===n?'active':'');});flow.step=n;const T=['','¿Qué está pasando?','¿Dónde ocurre?','Tus datos de contacto'],S=['','Selecciona el tipo de incidencia','Ubica el problema en el mapa','Privados — verificación anti-bots'];document.getElementById('s-title').textContent=T[n];document.getElementById('s-sub').textContent=S[n];if(n===3){
     // Photo available for all report types
     const photoWrap=document.getElementById('photo-wrap');
@@ -7842,7 +7842,7 @@ async function generateApagReply(q){
 
   // ── QUIÉN ERES ──
   if(q.includes('quién eres') || q.includes('quien eres') || q.includes('who are') || q.includes("máax tech")){
-    return 'Soy <strong>Apagoncito</strong> 💡<br/>Una bombilla un poquito agrietada pero con mucha actitud. Mi misión: ayudarte a navegar los apagones y fugas de Mérida.<br/><br/>Hecho con cariño por <em>EleevateMX</em> para todos los meridanos.';
+    return 'Soy <strong>Apagoncito</strong> 💡<br/>Una bombilla un poquito agrietada pero con mucha actitud. Mi misión: ayudarte a navegar los apagones y fugas de Mérida.<br/><br/>Plataforma ciudadana hecha con cariño para todos los meridanos, autorizada y supervisada por <em>Namore S.A. de C.V.</em>';
   }
 
   return apI18n('fallback');
@@ -8541,7 +8541,7 @@ async function shareReport(type, seccion, cnt) {
       <div style="width:40px;height:40px;border-radius:10px;background:rgba(245,183,49,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--elec)" stroke-width="2" stroke-linecap="round"><path d="M3 5h18M3 12h18M3 19h12"/><circle cx="19" cy="19" r="3"/><path d="M19 17v2l1 1"/></svg>
       </div>
-      <div><div style="font-size:14px;font-weight:800;color:var(--tx)">Reportar a ${type==='apagon'?'CFE':'JAPAY'}</div><div style="font-size:11px;color:var(--dim)">Contactar empresa responsable</div></div>
+      <div><div style="font-size:14px;font-weight:800;color:var(--tx)">Reportar a ${type==='apagon'?'CFE':type==='alumbrado'?'Ayuntamiento':'JAPAY'}</div><div style="font-size:11px;color:var(--dim)">Contactar autoridad responsable</div></div>
     </button>`;
   modal.style.display = 'flex';
 }
@@ -9174,7 +9174,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
 
       <h3 class="pv-h">1. Responsable del tratamiento</h3>
       <p>
-        <strong>EleevateMX</strong> (en adelante, <em>“ApagonesMID”</em> o el <em>“Responsable”</em>), con sede en Mérida, Yucatán, es responsable del uso y protección de los datos personales recabados a través de esta aplicación, conforme a la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares</strong> (LFPDPPP).
+        <strong>Namore S.A. de C.V.</strong> (en adelante, <em>“ApagonesMID”</em> o el <em>“Responsable”</em>), con sede en Mérida, Yucatán, es responsable del uso y protección de los datos personales recabados a través de esta aplicación, conforme a la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares</strong> (LFPDPPP).
       </p>
       <p>
         Este aviso aplica a la aplicación web progresiva (PWA) <strong>ApagonesMID</strong>, mediante la cual los ciudadanos de Mérida pueden reportar apagones, fugas, cortes de agua y problemas de alumbrado público.
@@ -9289,7 +9289,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
       <div class="pv-foot">
         <div>Si consideras que tu derecho a la protección de datos ha sido vulnerado, puedes acudir al <a href="https://www.inai.org.mx" target="_blank" rel="noopener" class="pv-email">INAI</a>.</div>
         <div style="margin-top:10px;font-size:11px;color:var(--mut)">
-          © 2026 EleevateMX — ApagonesMID. Mérida, Yucatán.<br/>
+          © 2026 ApagonesMID — Autorizado y supervisado por Namore S.A. de C.V. Mérida, Yucatán.<br/>
           ¿Preguntas? <a href="mailto:privacidad@apagones.mx" class="pv-email">privacidad@apagones.mx</a>
         </div>
       </div>
