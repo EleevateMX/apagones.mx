@@ -1761,6 +1761,43 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 .hist-stat-n{font-family:var(--f-brand);font-size:20px;font-weight:900;color:var(--tx);line-height:1}
 .hist-stat-l{font-family:var(--f);font-size:10px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
 
+
+/* ── PROMO BAR (non-invasive, above ticker) ─── */
+#promo-bar{
+  position:fixed;bottom:calc(36px + env(safe-area-inset-bottom,0px));left:0;right:0;
+  height:44px;z-index:799;
+  background:rgba(8,5,10,.88);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border-top:1px solid rgba(101,8,31,.35);
+  display:flex;align-items:center;
+  overflow:hidden;
+  transform:translateY(100%);
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+}
+#promo-bar.visible{transform:translateY(0)}
+#promo-bar.hidden{display:none}
+.promo-close{
+  flex-shrink:0;width:32px;height:44px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.3);font-size:14px;
+  border-right:1px solid rgba(255,255,255,.06);
+  transition:color .18s;
+}
+.promo-close:hover{color:rgba(255,255,255,.7)}
+.promo-slides{flex:1;overflow:hidden;position:relative;height:44px}
+.promo-slide{
+  position:absolute;inset:0;display:flex;align-items:center;
+  padding:0 14px;gap:10px;
+  opacity:0;transform:translateX(20px);
+  transition:opacity .4s,transform .4s;
+  pointer-events:none;
+}
+.promo-slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+.promo-slide a{display:flex;align-items:center;gap:8px;text-decoration:none;width:100%}
+.promo-icon{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.promo-text{flex:1;min-width:0}
+.promo-label{font-size:11px;font-weight:800;color:rgba(255,255,255,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.promo-sub{font-size:10px;color:rgba(255,255,255,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.promo-cta{flex-shrink:0;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -2145,7 +2182,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
         <div class="mm-icon" style="background:rgba(34,208,240,.12)">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--agua)"><rect x="2" y="12" width="5" height="10" rx="2"/><rect x="9.5" y="7" width="5" height="15" rx="2"/><rect x="17" y="2" width="5" height="20" rx="2"/></svg>
         </div>
-        <div><div class="mm-btn-name" data-i18n="menu_stats">Estadísticas</div><div class="mm-btn-sub" data-i18n="menu_stats_sub">Zonas y reportes</div></div>
+        <div><div class="mm-btn-name" data-i18n="menu_stats">Estadísticas</div><div class="mm-btn-sub" data-i18n="menu_stats_sub">Colonias y reportes</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
 
@@ -2367,6 +2404,45 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 <button id="fab" onclick="startFlow()" title="Reportar">＋</button>
 
 <div id="toasts"></div>
+<!-- PROMO BAR — non-invasive announcements -->
+<div id="promo-bar">
+  <div class="promo-close" onclick="dismissPromo()" title="Cerrar">✕</div>
+  <div class="promo-slides" id="promo-slides">
+    <!-- Slide 1: Instagram -->
+    <div class="promo-slide active" id="ps-0">
+      <a href="https://www.instagram.com/apagoncito_mid/" target="_blank" rel="noopener">
+        <div class="promo-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📸</div>
+        <div class="promo-text">
+          <div class="promo-label">@apagoncito_mid en Instagram</div>
+          <div class="promo-sub">Reportes en vivo · Mérida, Yucatán</div>
+        </div>
+        <div class="promo-cta" style="background:rgba(253,29,29,.18);color:#fd8080;border:1px solid rgba(253,29,29,.3)">Seguir →</div>
+      </a>
+    </div>
+    <!-- Slide 2: Facebook -->
+    <div class="promo-slide" id="ps-1">
+      <a href="https://www.facebook.com/apagoncito" target="_blank" rel="noopener">
+        <div class="promo-icon" style="background:#1877F2">📘</div>
+        <div class="promo-text">
+          <div class="promo-label">Apagoncito en Facebook</div>
+          <div class="promo-sub">Únete a la comunidad · Comparte reportes</div>
+        </div>
+        <div class="promo-cta" style="background:rgba(24,119,242,.18);color:#6ab0ff;border:1px solid rgba(24,119,242,.3)">Seguir →</div>
+      </a>
+    </div>
+    <!-- Slide 3: WhatsApp -->
+    <div class="promo-slide" id="ps-2">
+      <a href="https://wa.me/529999000000" target="_blank" rel="noopener">
+        <div class="promo-icon" style="background:#25D366">💬</div>
+        <div class="promo-text">
+          <div class="promo-label">Canal de WhatsApp</div>
+          <div class="promo-sub">Alertas instantáneas de tu colonia</div>
+        </div>
+        <div class="promo-cta" style="background:rgba(37,211,102,.15);color:#25D366;border:1px solid rgba(37,211,102,.3)">Unirse →</div>
+      </a>
+    </div>
+  </div>
+</div>
 <div id="ticker"><div class="ticker-inner" id="ticker-inner"></div></div>
 
 <!-- LEFT SIDEBAR: LAYER PANEL -->
@@ -3713,7 +3789,7 @@ function buildZonePopup(cl, type, n){
   const color = '#22D0F0';
   const icon = '💧';
   const title = 'Fuga de agua';
-  const sec = cl.reports[0]?.seccion || 'Zona';
+  const sec = cl.reports[0]?.seccion || '';
   const oldest = Math.min(...cl.reports.map(r=>r.timestamp));
   const ago = fmtTime(oldest);
   const colId = 'ppw_'+Math.random().toString(36).slice(2,8);
@@ -5923,20 +5999,21 @@ function findSeccion(lat,lng){
 }
 
 function getZoneLabel(key){
-  // If it's a KML seccion (numeric), show "Zona X"
-  if(/^[0-9]+$/.test(key)) return 'Zona '+key;
-  // If it's a coord key, show "Zona Sur/Norte/etc" based on position
+  if(!key) return 'Sin ubicación';
+  // Numeric key = KML sección catastral — we resolve to colonia via reverse geocode
+  // Return a placeholder; callers use getColonia() for the real name
+  if(/^[0-9]+$/.test(key)) return 'Sec. '+key;
+  // Coord key — map to cardinal area
   const parts=key.split('_');
   if(parts.length===2){
     const lat=parseFloat(parts[0]);
-    const lng=parseFloat(parts[1]);
-    if(lat>21.05) return 'Zona Norte';
-    if(lat>20.98) return 'Zona Norponiente';
-    if(lat>20.93) return 'Zona Centro';
-    if(lat>20.88) return 'Zona Sur';
-    return 'Zona Suroriente';
+    if(lat>21.05) return 'Norte de Mérida';
+    if(lat>20.98) return 'Norponiente';
+    if(lat>20.93) return 'Centro';
+    if(lat>20.88) return 'Sur de Mérida';
+    return 'Suroriente';
   }
-  return 'Zona '+key;
+  return key;
 }
 function ptInPoly(lat,lng,lls){let ins=false;const n=lls.length;let j=n-1;for(let i=0;i<n;j=i++){const[xi,yi]=[lls[i].lat,lls[i].lng],[xj,yj]=[lls[j].lat,lls[j].lng];if(((yi>lng)!==(yj>lng))&&(lat<(xj-xi)*(lng-yi)/(yj-yi)+xi))ins=!ins;}return ins;}
 function fmtTime(ts){
@@ -6016,7 +6093,7 @@ const TRANSLATIONS = {
     toast_sending:'Enviando…',
     toast_error_loc:'Falta ubicación — regresa y marca tu ubicación',
     toast_error_form:'Completa nombre y teléfono',
-    menu_stats:'Estadísticas', menu_stats_sub:'Zonas y reportes',
+    menu_stats:'Estadísticas', menu_stats_sub:'Colonias y reportes',
     menu_layers:'Capas del mapa', menu_layers_sub:'Apagones / Agua',
     menu_notif:'Notificaciones', menu_notif_sub:'Alertas de tu zona',
     menu_install:'Instalar App', menu_install_sub:'Agregar a inicio',
@@ -6717,7 +6794,7 @@ async function openRankings(){
     const ranked=Object.entries(zones).sort((a,b)=>b[1].total-a[1].total).slice(0,10);
     const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
     document.getElementById('stats-body').innerHTML=`
-      <div style="font-size:13px;color:var(--dim);margin-bottom:14px;line-height:1.5">🏆 Las zonas más activas en los últimos 30 días. Más reportes = vecinos más comprometidos.</div>
+      <div style="font-size:13px;color:var(--dim);margin-bottom:14px;line-height:1.5">🏆 Las colonias más activas en los últimos 30 días. Más reportes = vecinos más comprometidos.</div>
       ${!ranked.length?'<div style="text-align:center;padding:30px;color:var(--mut)">Sin datos suficientes aún</div>':
       ranked.map(([zone,d],i)=>`
         <div style="background:var(--card);border:1px solid ${i<3?'rgba(245,183,49,.3)':'var(--bdr)'};border-radius:12px;padding:13px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px">
@@ -7834,7 +7911,7 @@ async function generateApagReply(q){
       }
       return apI18n('zone_issues',{zone:zoneName,list});
     }
-    if(zoneNum) return apI18n('zone_ok',{zone:'Zona '+zoneNum});
+    if(zoneNum) return apI18n('zone_ok',{zone:'Sección '+zoneNum});
   }
 
   // ── TOP ZONES ──
@@ -9045,7 +9122,7 @@ async function openStats(){
         else if(d.z&&d.z.includes('_')){const p=d.z.split('_');if(p.length===2){lat=parseFloat(p[0]);lng=parseFloat(p[1]);}}
         if(lat&&lng&&typeof getColonia==='function') colonia=await getColonia(lat,lng);
       }catch(e){}
-      el.textContent = colonia || (typeof getZoneLabel==='function'?getZoneLabel(d.z):('Zona '+(i+1)));
+      el.textContent = colonia || (typeof getZoneLabel==='function'?getZoneLabel(d.z):('Sec. '+(i+1)));
     });
   } catch(e){
     console.warn('openStats:',e);
@@ -9086,6 +9163,48 @@ window.addEventListener('DOMContentLoaded',async()=>{
   },30000);
 });
 
+
+// ── PROMO BAR ──────────────────────────────────────────────
+(function initPromoBar(){
+  const key = 'promo_dismissed_v1';
+  if(localStorage.getItem(key)) return; // ya cerrado hoy
+  let current = 0;
+  const slides = document.querySelectorAll('.promo-slide');
+  const bar = document.getElementById('promo-bar');
+  if(!bar||!slides.length) return;
+  // Mostrar después de 3s
+  setTimeout(()=>{ bar.classList.add('visible'); }, 3000);
+  // Rotar slides cada 6s
+  const rot = setInterval(()=>{
+    slides[current].classList.remove('active');
+    current = (current+1) % slides.length;
+    slides[current].classList.add('active');
+  }, 6000);
+  // Ajustar el FAB y zoom-btns para que queden por encima del promo
+  const fab = document.getElementById('fab');
+  const apgFab = document.getElementById('apagoncito-fab');
+  const zoom = document.getElementById('zoom-btns');
+  if(fab) fab.style.bottom='calc(50px + 44px + env(safe-area-inset-bottom,0px))';
+  if(apgFab) apgFab.style.bottom='calc(152px + 44px + env(safe-area-inset-bottom,0px))';
+  if(zoom) zoom.style.bottom='calc(96px + 44px + env(safe-area-inset-bottom,0px))';
+  window._promoInterval = rot;
+})();
+
+function dismissPromo(){
+  const bar = document.getElementById('promo-bar');
+  if(!bar) return;
+  bar.style.transform='translateY(100%)';
+  clearInterval(window._promoInterval);
+  setTimeout(()=>{ bar.classList.add('hidden'); }, 500);
+  // Restaurar posiciones
+  const fab = document.getElementById('fab');
+  const apgFab = document.getElementById('apagoncito-fab');
+  const zoom = document.getElementById('zoom-btns');
+  if(fab) fab.style.bottom='';
+  if(apgFab) apgFab.style.bottom='';
+  if(zoom) zoom.style.bottom='';
+  try{ localStorage.setItem('promo_dismissed_v1', '1'); }catch{}
+}
 </script>
 
 <!-- ═══════════════ HELP MODAL: ¿Cómo reportar? ═══════════════ -->

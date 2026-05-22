@@ -3,299 +3,508 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Carta de Queja — Apagones MX</title>
+<title>Carta de Queja Formal — Apagones MX</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root{--brand:#65081F;--f:'Plus Jakarta Sans',sans-serif}
+:root{--brand:#65081F;--brand-lt:#8B0E2A;--f:'Plus Jakarta Sans',sans-serif;--elec:#F5B731;--agua:#22D0F0}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#F0EBF0;font-family:var(--f);min-height:100vh;padding:24px 16px}
+body{background:#F0EBF0;font-family:var(--f);min-height:100vh;padding:24px 16px 40px}
 
-.config-panel{max-width:600px;margin:0 auto 24px;background:white;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
-.cp-title{font-size:20px;font-weight:800;color:#1A0E14;margin-bottom:4px}
-.cp-sub{font-size:13px;color:#9E7080;margin-bottom:20px}
+.config-panel{max-width:640px;margin:0 auto 24px;background:white;border-radius:16px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.cp-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.cp-icon{width:48px;height:48px;background:#65081F;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-title{font-size:20px;font-weight:800;color:#1A0E14}
+.cp-sub{font-size:12px;color:#9E7080;margin-top:2px}
+
+.section-label{font-size:10px;font-weight:800;color:#65081F;text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #F0EBF0}
 .fld{margin-bottom:14px}
 .fld label{display:block;font-size:11px;font-weight:700;color:#6B3D4F;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
-.fld input,.fld select,.fld textarea{width:100%;padding:11px 14px;border:1px solid #DDD0D8;border-radius:10px;font-family:var(--f);font-size:14px;color:#1A0E14;outline:none;transition:border-color .18s}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 14px;border:1.5px solid #DDD0D8;border-radius:10px;font-family:var(--f);font-size:14px;color:#1A0E14;outline:none;transition:border-color .18s;background:white}
 .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--brand)}
-.fld textarea{resize:vertical;min-height:80px}
+.fld textarea{resize:vertical;min-height:72px;line-height:1.5}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#8B0E2A,var(--brand));color:white;border:none;border-radius:12px;font-family:var(--f);font-size:16px;font-weight:800;cursor:pointer;margin-top:8px;transition:transform .2s}
-.btn-gen:hover{transform:translateY(-1px)}
-.btn-print{width:100%;padding:13px;background:#1A0E14;color:white;border:none;border-radius:12px;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:500px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.tip{background:#FFF8F0;border:1px solid #FFE4B5;border-radius:10px;padding:10px 14px;font-size:12px;color:#8B6000;margin-bottom:16px;line-height:1.5}
+
+.btn-gen{width:100%;padding:15px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:white;border:none;border-radius:12px;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(101,8,31,.3)}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(101,8,31,.4)}
+.btn-gen:active{transform:translateY(0)}
 
 /* ── CARTA FORMAL ── */
 @media screen{
-  .carta-wrap{max-width:700px;margin:0 auto;background:white;border-radius:16px;box-shadow:0 4px 30px rgba(0,0,0,.1);overflow:hidden;display:none}
+  .carta-wrap{max-width:720px;margin:0 auto;background:white;border-radius:16px;box-shadow:0 4px 30px rgba(0,0,0,.12);overflow:hidden;display:none}
   .carta-wrap.visible{display:block}
-  .print-notice{background:#FFF8E0;border:1px solid #FFE080;border-radius:10px;padding:12px 16px;margin:0 24px 16px;font-size:12px;color:#8B6820;display:flex;align-items:center;gap:8px}
+  .action-bar{background:#FDFBFC;border-bottom:1px solid #F0EBF0;padding:14px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .action-bar .note{font-size:12px;color:#9E7080;flex:1;min-width:180px;line-height:1.4}
+  .btn-print{display:inline-flex;align-items:center;gap:7px;background:#1A0E14;color:white;border:none;border-radius:10px;padding:10px 18px;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer}
+  .btn-edit{display:inline-flex;align-items:center;gap:7px;background:#F0EBF0;color:#6B3D4F;border:none;border-radius:10px;padding:10px 16px;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer}
 }
 
-.carta{padding:48px 52px;font-family:'Times New Roman',serif;color:#1A0E14;font-size:13px;line-height:1.7}
-.carta-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:16px;border-bottom:2px solid #1A0E14}
+/* ── DOCUMENTO CARTA ── */
+.carta{padding:52px 56px;font-family:'Times New Roman',Georgia,serif;color:#0D0609;font-size:12.5pt;line-height:1.8}
+@media(max-width:600px){.carta{padding:28px 24px;font-size:11pt}}
+
+.carta-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid #0D0609}
 .carta-logo-area{display:flex;align-items:center;gap:10px}
-.carta-logo-box{width:44px;height:44px;background:#65081F;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.carta-brand{font-family:var(--f);font-weight:800;font-size:18px;color:#65081F}
-.carta-brand-sub{font-family:var(--f);font-size:11px;color:#9E7080}
-.carta-date-area{text-align:right;font-size:12px;color:#6B3D4F}
-.carta-city{font-size:14px;font-weight:bold;color:#1A0E14}
+.carta-logo-box{width:40px;height:40px;background:#65081F;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.carta-brand{font-family:var(--f);font-weight:800;font-size:16px;color:#65081F}
+.carta-brand-sub{font-family:var(--f);font-size:10px;color:#9E7080;margin-top:1px}
+.carta-date-block{text-align:right;font-size:11pt}
+.carta-city{font-weight:bold;font-size:12pt}
+.carta-folioref{margin-top:3px;font-size:10pt;color:#555}
 
-.carta h2{font-size:15px;font-weight:bold;text-align:center;margin:24px 0 6px;text-transform:uppercase;letter-spacing:.5px;color:#65081F}
-.carta h3{font-size:13px;font-weight:bold;margin:20px 0 8px;color:#1A0E14;border-bottom:1px solid #DDD0D8;padding-bottom:4px}
-.carta p{margin-bottom:10px;text-align:justify}
-.carta .dest{background:#FFF4F4;border-left:3px solid #65081F;padding:10px 14px;margin:16px 0;font-size:12px}
-.carta .dest strong{color:#65081F}
+.dest-block{border-left:3px solid #65081F;padding:12px 16px;margin:20px 0;background:#FFF9FB;font-size:11pt;line-height:1.6}
+.dest-block .dest-title{font-weight:bold;color:#65081F;font-size:12pt;margin-bottom:2px}
 
-.data-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px}
-.data-table th{background:#65081F;color:white;padding:8px 12px;text-align:left;font-weight:700}
-.data-table td{padding:7px 12px;border-bottom:1px solid #F0EBF0}
+.presente{font-weight:bold;font-size:11pt;letter-spacing:2px;margin:20px 0 10px;text-align:center;color:#65081F}
+
+.carta h2{font-size:13pt;font-weight:bold;text-align:center;margin:24px 0 10px;text-transform:uppercase;letter-spacing:.8px;color:#0D0609;text-decoration:underline}
+.carta h3{font-size:12pt;font-weight:bold;margin:22px 0 8px;color:#0D0609}
+.carta p{margin-bottom:10px;text-align:justify;hyphens:auto}
+.carta ul{margin:8px 0 12px 22px}
+.carta ul li{margin-bottom:5px}
+
+.data-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:11pt}
+.data-table th{background:#65081F;color:white;padding:7px 12px;text-align:left;font-weight:bold;font-family:var(--f);font-size:10pt;text-transform:uppercase;letter-spacing:.4px}
+.data-table td{padding:8px 12px;border-bottom:1px solid #E8DFE4;vertical-align:top}
 .data-table tr:nth-child(even) td{background:#FDFBFC}
+.data-table td:first-child{font-weight:bold;width:40%;color:#65081F;font-size:10.5pt}
 
-.firma-area{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.art-cite{background:#F7F4F6;border:1px solid #DDD0D8;border-radius:6px;padding:10px 14px;margin:10px 0;font-size:10.5pt;font-style:italic;color:#3A1A25;line-height:1.6}
+.art-cite strong{font-style:normal;color:#0D0609}
+
+.peticion-list{counter-reset:peticion;list-style:none;margin:10px 0 14px;padding:0}
+.peticion-list li{counter-increment:peticion;margin-bottom:10px;padding-left:28px;position:relative;text-align:justify}
+.peticion-list li::before{content:counter(peticion,upper-roman)'.';position:absolute;left:0;font-weight:bold;color:#65081F}
+
+.firma-section{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:48px}
 .firma-box{text-align:center}
-.firma-line{border-top:1px solid #1A0E14;padding-top:8px;font-size:12px;color:#6B3D4F}
-.carta-footer{margin-top:32px;padding-top:14px;border-top:1px solid #DDD0D8;font-size:10px;color:#9E7080;text-align:center;font-family:var(--f)}
+.firma-space{height:56px;border-bottom:1px solid #0D0609;margin-bottom:8px}
+.firma-label{font-size:10pt;color:#555;line-height:1.4}
+.firma-name{font-weight:bold;font-size:11pt;color:#0D0609}
 
-/* ── PRINT STYLES ── */
+.carta-footer-note{margin-top:28px;padding-top:12px;border-top:1px solid #DDD0D8;font-size:9pt;color:#9E7080;text-align:center;font-family:var(--f);line-height:1.5}
+
+/* ── PRINT ── */
 @media print{
   body{background:white;padding:0}
-  .config-panel,.print-notice,.btn-print{display:none!important}
+  .config-panel,.action-bar,.btn-print,.btn-edit{display:none!important}
   .carta-wrap{display:block!important;box-shadow:none;border-radius:0;max-width:100%}
-  .carta{padding:32px 40px}
-  @page{margin:1.5cm;size:A4}
+  .carta{padding:2cm 2.5cm;font-size:11pt}
+  .data-table td,.data-table th{font-size:10pt}
+  @page{margin:1.8cm 2cm;size:A4}
+  .art-cite{break-inside:avoid}
+  .firma-section{break-inside:avoid}
 }
 </style>
 </head>
 <body>
 
-<!-- CONFIGURADOR -->
+<!-- ── CONFIGURADOR ── -->
 <div class="config-panel">
-  <div class="cp-title">📄 Carta de Queja Formal</div>
-  <div class="cp-sub">Genera una carta oficial con los datos del reporte para enviar a CFE o JAPAY</div>
+  <div class="cp-header">
+    <div class="cp-icon">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div>
+      <div class="cp-title">Carta de Queja Formal</div>
+      <div class="cp-sub">Genera un escrito oficial con fundamento legal · CFE o JAPAY</div>
+    </div>
+  </div>
 
+  <div class="tip">
+    💡 <strong>Consejo:</strong> Entrega la carta en persona en las oficinas de CFE o JAPAY y solicita acuse de recibo con sello y fecha. Guarda una copia. Si no obtienes respuesta en 15 días hábiles, puedes escalar a la PROFECO o a la CONAGUA.
+  </div>
+
+  <div class="section-label">¿A quién va dirigida?</div>
   <div class="grid2">
     <div class="fld">
-      <label>Destinatario</label>
-      <select id="dest-org">
-        <option value="cfe">CFE — Comisión Federal de Electricidad</option>
-        <option value="japay">JAPAY — Junta de Agua Potable de Yucatán</option>
+      <label>Institución destinataria</label>
+      <select id="dest-org" onchange="updateTipos()">
+        <option value="cfe">⚡ CFE — Comisión Federal de Electricidad</option>
+        <option value="japay">💧 JAPAY — Junta de Agua Potable de Yucatán</option>
       </select>
     </div>
     <div class="fld">
       <label>Tipo de incidencia</label>
-      <select id="tipo-inc">
-        <option value="apagon">⚡ Apagón / Interrupción eléctrica</option>
-        <option value="agua">💧 Fuga de agua</option>
-        <option value="corte_agua">🚰 Corte injustificado de agua</option>
-      </select>
+      <select id="tipo-inc"></select>
     </div>
   </div>
 
+  <div class="section-label">Datos del ciudadano afectado</div>
   <div class="grid2">
-    <div class="fld"><label>Tu nombre completo</label><input id="f-nombre" type="text" placeholder="Ej. María González Pérez"/></div>
-    <div class="fld"><label>Tu dirección</label><input id="f-dir" type="text" placeholder="Calle 60 x 39, Col. Centro"/></div>
+    <div class="fld"><label>Nombre completo</label><input id="f-nombre" type="text" placeholder="Ej. María González Pérez"/></div>
+    <div class="fld"><label>RFC (opcional)</label><input id="f-rfc" type="text" placeholder="Ej. GOPM850101XXX (si es usuario con contrato)"/></div>
   </div>
-
   <div class="grid2">
-    <div class="fld"><label>Fecha del inicio del problema</label><input id="f-fecha" type="date"/></div>
-    <div class="fld"><label>Duración aproximada</label><input id="f-duracion" type="text" placeholder="Ej. 8 horas" value=""/></div>
+    <div class="fld"><label>Dirección completa</label><input id="f-dir" type="text" placeholder="Calle 60 Núm. 462 x 39 y 41, Col. Centro, Mérida, Yuc."/></div>
+    <div class="fld"><label>Colonia / Fraccionamiento</label><input id="f-colonia" type="text" placeholder="Ej. García Ginerés"/></div>
+  </div>
+  <div class="grid3">
+    <div class="fld"><label>Teléfono de contacto</label><input id="f-tel" type="tel" placeholder="999 123 4567"/></div>
+    <div class="fld"><label>Correo electrónico</label><input id="f-email" type="email" placeholder="correo@ejemplo.com"/></div>
+    <div class="fld"><label>Número de contrato / cuenta</label><input id="f-contrato" type="text" placeholder="Ej. 123456789-0 (al reverso del recibo)"/></div>
   </div>
 
+  <div class="section-label">Datos de la incidencia</div>
+  <div class="grid3">
+    <div class="fld"><label>Fecha de inicio</label><input id="f-fecha" type="date"/></div>
+    <div class="fld"><label>Hora aproximada</label><input id="f-hora" type="time"/></div>
+    <div class="fld"><label>Duración aproximada</label><input id="f-duracion" type="text" placeholder="Ej. 14 horas"/></div>
+  </div>
+  <div class="grid2">
+    <div class="fld">
+      <label>Folio de reporte previo (si existe)</label>
+      <input id="f-folio" type="text" placeholder="Ej. 240521-00123 (dejarlo vacío si no aplica)"/>
+    </div>
+    <div class="fld">
+      <label>Número de vecinos afectados (aprox.)</label>
+      <input id="f-vecinos" type="number" value="1" min="1"/>
+    </div>
+  </div>
   <div class="fld">
-    <label>Folio de reporte previo (si tienes)</label>
-    <input id="f-folio" type="text" placeholder="Ej. 12345678 (dejar vacío si no aplica)"/>
+    <label>Descripción detallada del problema y daños causados</label>
+    <textarea id="f-desc" rows="3" placeholder="Describe daños a electrodomésticos, problemas de salud, pérdidas económicas, si ya reportaste antes sin respuesta, etc."></textarea>
   </div>
 
-  <div class="fld">
-    <label>Descripción del daño o problema adicional</label>
-    <textarea id="f-desc" placeholder="Describe si hubo daño a electrodomésticos, problemas de salud, pérdidas económicas, etc."></textarea>
-  </div>
-
-  <div class="fld">
-    <label>Número de vecinos afectados (aprox.)</label>
-    <input id="f-vecinos" type="number" value="1" min="1"/>
-  </div>
-
-  <button class="btn-gen" onclick="generarCarta()">Generar carta de queja</button>
+  <button class="btn-gen" onclick="generarCarta()">
+    📄 Generar carta de queja
+  </button>
 </div>
 
-<!-- CARTA GENERADA -->
+<!-- ── CARTA GENERADA ── -->
 <div class="carta-wrap" id="carta-wrap">
-  <div class="print-notice">
-    💡 La carta está lista. Revísala y da clic en <strong>"Imprimir / Guardar PDF"</strong> para obtener el archivo.
-    <button class="btn-print" onclick="window.print()" style="margin:0;width:auto;padding:7px 14px;background:var(--brand);border-radius:8px;font-size:12px">🖨️ Imprimir / PDF</button>
+  <div class="action-bar">
+    <div class="note">📋 Carta generada. Revisa los datos antes de imprimir. Solicita <strong>acuse de recibo</strong> al entregar.</div>
+    <button class="btn-edit" onclick="document.getElementById('carta-wrap').classList.remove('visible');window.scrollTo({top:0,behavior:'smooth'})">✏️ Editar</button>
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
   </div>
-
-  <div class="carta" id="carta-content">
-    <!-- Generado dinámicamente -->
-  </div>
+  <div class="carta" id="carta-content"></div>
 </div>
 
 <script>
-// Pre-fill today's date
 document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
+document.getElementById('f-hora').value = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',hour12:false});
 
+// ── DATOS POR ORGANIZACIÓN ────────────────────────────────────
 const ORGS = {
   cfe: {
-    name: 'Comisión Federal de Electricidad (CFE)',
-    dir: 'Zona de Distribución Mérida\nCalle 62 No. 462 x 53 y 55, Centro Histórico\nMérida, Yucatán, C.P. 97000',
-    cargo: 'C. Gerente de División de Distribución',
-    ley: 'Ley del Servicio Público de Energía Eléctrica y sus Reglamentos, así como la Norma Oficial Mexicana NOM-001-SEDE',
+    nombre: 'Comisión Federal de Electricidad (CFE)',
+    dirige: 'C. Gerente Divisional de Distribución CFE Sureste',
+    dir: 'Calle 62 No. 462 x 53 y 55, Col. Centro Histórico\nMérida, Yucatán, C.P. 97000',
+    tel: '071 (atención CFE)',
+    web: 'cfe.mx',
     ref: 'CFE',
+    tipos: [
+      { val:'apagon',      lbl:'⚡ Apagón / Interrupción del servicio eléctrico' },
+      { val:'alumbrado',   lbl:'💡 Alumbrado público deficiente o apagado' },
+      { val:'tension',     lbl:'⚠️ Variaciones de voltaje / daño a equipos' },
+    ]
   },
   japay: {
-    name: 'Junta de Agua Potable y Alcantarillado de Yucatán (JAPAY)',
+    nombre: 'Junta de Agua Potable y Alcantarillado de Yucatán (JAPAY)',
+    dirige: 'C. Director General de JAPAY',
     dir: 'Calle 17 No. 154 x 8 y 10, Col. García Ginerés\nMérida, Yucatán, C.P. 97070',
-    cargo: 'C. Director General de JAPAY',
-    ley: 'Ley de Agua Potable y Alcantarillado del Estado de Yucatán',
+    tel: '(999) 123-0000',
+    web: 'japay.yucatan.gob.mx',
     ref: 'JAPAY',
+    tipos: [
+      { val:'corte_agua',   lbl:'🚰 Corte injustificado del suministro de agua' },
+      { val:'agua',         lbl:'💧 Fuga de agua en vía pública o domiciliaria' },
+      { val:'presion_baja', lbl:'📉 Presión insuficiente / irregular del servicio' },
+      { val:'calidad_agua', lbl:'⚠️ Agua con mal olor, color o calidad deficiente' },
+    ]
   }
 };
 
+// ── CONTENIDO LEGAL POR TIPO ──────────────────────────────────
 const TIPOS = {
   apagon: {
-    titulo: 'INTERRUPCIÓN DEL SERVICIO DE ENERGÍA ELÉCTRICA',
-    servicio: 'energía eléctrica',
-    derecho: 'electricidad continua y de calidad',
-    cuerpo: 'la interrupción total del suministro de energía eléctrica en mi domicilio y zona de residencia, sin previo aviso, afectando directamente mi calidad de vida, la conservación de alimentos, el funcionamiento de equipos médicos en caso de requerirse, y causando pérdidas económicas derivadas del daño potencial a electrodomésticos por picos de voltaje al restablecerse el servicio.',
+    titulo: 'INTERRUPCIÓN INJUSTIFICADA DEL SERVICIO PÚBLICO DE ENERGÍA ELÉCTRICA',
+    resumen: 'la interrupción total del suministro de energía eléctrica en mi domicilio y zona de residencia, sin previo aviso y sin justificación técnica comunicada a los usuarios afectados.',
+    danios: 'La ausencia de suministro eléctrico ocasionó afectaciones directas a la conservación de alimentos bajo refrigeración, pone en riesgo la operación de equipos médicos, impide el desarrollo de actividades laborales y educativas en el hogar, y expone a picos de voltaje a los electrodomésticos al momento del restablecimiento del servicio.',
+    fundamento: [
+      { norma: 'Constitución Política de los Estados Unidos Mexicanos', art: 'Art. 4°', texto: 'Toda persona tiene derecho a un medio ambiente sano y a la satisfacción de servicios públicos esenciales.' },
+      { norma: 'Ley de la Industria Eléctrica', art: 'Art. 2° y 3°', texto: 'El suministro eléctrico es un servicio de interés público. Los suministradores están obligados a mantener la continuidad y calidad del servicio.' },
+      { norma: 'Ley Federal de Protección al Consumidor', art: 'Art. 7° y 8°', texto: 'Los consumidores tienen derecho a recibir el servicio en las condiciones pactadas y a presentar reclamaciones ante cualquier incumplimiento.' },
+      { norma: 'Norma Oficial Mexicana NOM-001-SEDE-2012', art: 'Cap. 2', texto: 'Establece los parámetros mínimos de calidad y continuidad en el suministro eléctrico.' },
+      { norma: 'Contrato de Suministro CFE', art: 'Cláusulas 3 y 7', texto: 'La CFE se obliga a prestar el servicio en forma continua y de calidad; el incumplimiento genera responsabilidad y derecho a reclamación.' },
+    ],
+    peticion: [
+      'Se atienda y resuelva <strong>de manera urgente e inmediata</strong> la falla reportada, restableciéndose el suministro en un plazo no mayor a las siguientes 4 horas.',
+      'Se implemente un plan de mantenimiento preventivo en la infraestructura de la zona para evitar la recurrencia de estas interrupciones.',
+      'Se emita respuesta por escrito en un plazo <strong>no mayor a 15 días hábiles</strong> informando las causas de la falla, las acciones correctivas implementadas y los compromisos de mejora.',
+      'Se informe el procedimiento vigente para solicitar la <strong>reparación o indemnización</strong> por daños materiales ocasionados a equipos electrodomésticos derivados de la interrupción o de picos de voltaje.',
+      'En caso de reincidencia, se derive el expediente ante la <strong>Comisión Reguladora de Energía (CRE)</strong> o la <strong>PROFECO</strong> para su intervención.',
+    ]
   },
-  agua: {
-    titulo: 'FUGA DE AGUA EN VÍA PÚBLICA',
-    servicio: 'agua potable',
-    derecho: 'agua potable de calidad y continuidad en el servicio',
-    cuerpo: 'la presencia de una fuga de agua en la vía pública de mi colonia, situación que representa un desperdicio irresponsable del recurso hídrico, genera riesgos de accidentes viales, deterioro de la infraestructura urbana y posible contaminación del suministro de agua potable.',
+  alumbrado: {
+    titulo: 'DEFICIENCIA EN EL SERVICIO DE ALUMBRADO PÚBLICO',
+    resumen: 'la deficiencia o ausencia total del servicio de alumbrado público en la vía pública de mi colonia, situación que persiste sin atención por parte de la autoridad competente.',
+    danios: 'La falta de alumbrado público genera condiciones de inseguridad para los peatones, favorece actos delictivos, impide la libre circulación nocturna y representa un incumplimiento a las obligaciones del municipio en materia de servicios públicos.',
+    fundamento: [
+      { norma: 'Ley General de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano', art: 'Art. 3° y 5°', texto: 'El alumbrado público es un servicio urbano básico cuya prestación corresponde al municipio.' },
+      { norma: 'Ley Orgánica de los Municipios del Estado de Yucatán', art: 'Art. 36, fracc. IV', texto: 'Son atribuciones del ayuntamiento prestar y mantener los servicios públicos municipales, entre ellos el alumbrado público.' },
+      { norma: 'Bando de Policía y Gobierno de Mérida', art: 'Art. aplicables', texto: 'El Municipio tiene la obligación de mantener en funcionamiento la infraestructura de alumbrado público para garantizar la seguridad ciudadana.' },
+      { norma: 'Ley Federal de Protección al Consumidor', art: 'Art. 7°', texto: 'Los ciudadanos tienen derecho a recibir los servicios en las condiciones y calidad acordes a las normas vigentes.' },
+    ],
+    peticion: [
+      'Se proceda a la <strong>reparación o sustitución inmediata</strong> de las luminarias deficientes o apagadas reportadas en la zona afectada.',
+      'Se realice una <strong>revisión técnica integral</strong> del sistema de alumbrado público de la colonia para identificar y corregir fallas estructurales.',
+      'Se emita respuesta por escrito en un plazo <strong>no mayor a 10 días hábiles</strong> informando las acciones realizadas y el cronograma de restablecimiento.',
+      'Se establezca un mecanismo de seguimiento y mantenimiento preventivo para el alumbrado de la zona.',
+    ]
+  },
+  tension: {
+    titulo: 'VARIACIONES DE VOLTAJE Y DAÑOS A EQUIPOS ELÉCTRICOS',
+    resumen: 'la existencia de variaciones severas de voltaje (sobretensiones, microcortes o subtensiones) que han causado daños materiales a mis equipos electrodomésticos y afectan el normal funcionamiento de los dispositivos conectados a la red eléctrica.',
+    danios: 'Las variaciones de voltaje detectadas provocaron el daño parcial o total de equipos electrodomésticos, generando pérdidas económicas directas. Además, representan un riesgo latente de incendio o cortocircuito.',
+    fundamento: [
+      { norma: 'Norma Oficial Mexicana NOM-001-SEDE-2012', art: 'Cap. 2, secc. 220', texto: 'Establece que el voltaje nominal de suministro debe mantenerse dentro del ±10% del voltaje contratado.' },
+      { norma: 'Ley de la Industria Eléctrica', art: 'Art. 107', texto: 'Los suministradores son responsables de los daños que causen por variaciones en la calidad del suministro.' },
+      { norma: 'Código Civil Federal', art: 'Art. 1910', texto: 'El que obrando ilícitamente o contra las buenas costumbres cause daño a otro, está obligado a repararlo.' },
+      { norma: 'Ley Federal de Protección al Consumidor', art: 'Art. 92', texto: 'El proveedor es responsable de los daños y perjuicios causados al consumidor por deficiencias en la prestación del servicio.' },
+    ],
+    peticion: [
+      'Se realice una <strong>inspección técnica inmediata</strong> de la subestación y la red de distribución que alimenta el domicilio y la zona afectada.',
+      'Se corrijan las variaciones de voltaje documentadas hasta que el suministro cumpla con los parámetros establecidos en la NOM-001-SEDE-2012.',
+      'Se informe el procedimiento y los plazos para la <strong>reclamación e indemnización</strong> por los daños materiales a equipos electrodomésticos ocasionados.',
+      'Se emita respuesta por escrito en un plazo <strong>no mayor a 15 días hábiles</strong> con el diagnóstico técnico y las acciones correctivas.',
+    ]
   },
   corte_agua: {
-    titulo: 'INTERRUPCIÓN INJUSTIFICADA DEL SERVICIO DE AGUA POTABLE',
-    servicio: 'agua potable',
-    derecho: 'agua potable continua y de calidad',
-    cuerpo: 'la interrupción total del suministro de agua potable en mi domicilio y zona de residencia, sin que exista notificación previa o justificación técnica comunicada a los usuarios, afectando directamente las actividades básicas del hogar y poniendo en riesgo la salud de los habitantes, especialmente de menores de edad y personas adultas mayores.',
+    titulo: 'INTERRUPCIÓN INJUSTIFICADA DEL SUMINISTRO DE AGUA POTABLE',
+    resumen: 'la interrupción total del suministro de agua potable en mi domicilio y zona de residencia, sin notificación previa, sin justificación técnica comunicada a los usuarios y sin indicación del tiempo estimado de restablecimiento.',
+    danios: 'La ausencia de agua potable impide el desarrollo de actividades básicas del hogar, representa un grave riesgo sanitario para todos los integrantes del núcleo familiar, afecta de manera especial a menores de edad, personas adultas mayores y enfermos que requieren agua para tratamientos médicos.',
+    fundamento: [
+      { norma: 'Constitución Política de los Estados Unidos Mexicanos', art: 'Art. 4°, párrafo sexto', texto: 'Toda persona tiene derecho al acceso, disposición y saneamiento de agua para consumo personal y doméstico en forma suficiente, salubre, aceptable y asequible.' },
+      { norma: 'Ley de Aguas Nacionales', art: 'Art. 86 bis 1', texto: 'El acceso al agua potable es un derecho humano reconocido; los organismos operadores están obligados a garantizar la continuidad del servicio.' },
+      { norma: 'Ley de Agua Potable y Alcantarillado del Estado de Yucatán', art: 'Art. 4° y 13°', texto: 'JAPAY está obligada a prestar el servicio de agua potable de manera continua, suficiente y de calidad a todos los usuarios registrados.' },
+      { norma: 'Norma Oficial Mexicana NOM-127-SSA1-2021', art: 'Completa', texto: 'Establece los límites permisibles de calidad del agua para uso y consumo humano; el prestador del servicio es responsable de su cumplimiento.' },
+      { norma: 'Ley Federal de Protección al Consumidor', art: 'Art. 7° y 8°', texto: 'Los consumidores tienen derecho a la calidad y continuidad de los servicios contratados.' },
+    ],
+    peticion: [
+      'Se restablezca el suministro de agua potable <strong>de manera urgente e inmediata</strong>, en un plazo no mayor a las siguientes 6 horas.',
+      'Se informe por escrito las causas técnicas o administrativas de la interrupción y el tiempo estimado de atención.',
+      'Se implementen medidas de abastecimiento de emergencia (pipas de agua potable) mientras persista la interrupción, de conformidad con el protocolo de contingencias de JAPAY.',
+      'Se emita respuesta formal en un plazo <strong>no mayor a 15 días hábiles</strong> con acciones correctivas y compromisos de continuidad del servicio.',
+      'En caso de reincidencia, se derive el expediente ante la <strong>CONAGUA</strong> o la <strong>PROFECO</strong> para su intervención.',
+    ]
+  },
+  agua: {
+    titulo: 'FUGA DE AGUA EN VÍA PÚBLICA SIN ATENCIÓN',
+    resumen: 'la existencia de una fuga de agua de gran magnitud en la vía pública de mi colonia, que lleva días sin ser atendida por JAPAY a pesar de haber sido reportada previamente.',
+    danios: 'La fuga de agua sin atención ocasiona un desperdicio masivo del recurso hídrico, deterioro de la carpeta asfáltica y la banqueta, riesgo de accidentes para peatones y vehículos por hundimientos o lodazal, y posible contaminación del acuífero por infiltración de aguas residuales.',
+    fundamento: [
+      { norma: 'Constitución Política de los Estados Unidos Mexicanos', art: 'Art. 4°, párrafo sexto', texto: 'El agua es un bien de dominio público y derecho humano; el Estado debe garantizar su preservación y distribución sustentable.' },
+      { norma: 'Ley de Aguas Nacionales', art: 'Art. 86 y 87', texto: 'CONAGUA y los organismos operadores están obligados a prevenir y atender fugas en la infraestructura hidráulica de manera inmediata.' },
+      { norma: 'Ley de Agua Potable y Alcantarillado del Estado de Yucatán', art: 'Art. 6°, fracc. III', texto: 'JAPAY tiene la obligación de mantener en buen estado la infraestructura hidráulica y atender de manera oportuna cualquier falla o fuga reportada.' },
+      { norma: 'Ley General del Equilibrio Ecológico y la Protección al Ambiente', art: 'Art. 117', texto: 'El desperdicio de agua constituye una infracción ambiental sujeta a sanción cuando deriva de negligencia del organismo operador.' },
+    ],
+    peticion: [
+      'Se envíe personal técnico a <strong>detectar y reparar la fuga</strong> en un plazo no mayor a 24 horas a partir de la recepción de la presente.',
+      'Se selle la zona afectada para prevenir accidentes mientras se realizan los trabajos de reparación.',
+      'Se ejecute la reparación integral de la tubería y la reposición de la carpeta asfáltica dañada.',
+      'Se emita respuesta por escrito en un plazo <strong>no mayor a 10 días hábiles</strong> con el informe de la reparación realizada.',
+    ]
+  },
+  presion_baja: {
+    titulo: 'PRESIÓN INSUFICIENTE O IRREGULAR EN EL SUMINISTRO DE AGUA POTABLE',
+    resumen: 'la existencia de presión insuficiente o altamente irregular en el suministro de agua potable en mi domicilio y colonia, situación que persiste de manera continua y que impide el llenado de tinacos, el funcionamiento de equipos de hidroneumático y el uso básico del agua en el hogar.',
+    danios: 'La baja presión del servicio obliga al uso de almacenamiento adicional con sus costos asociados, impide el uso de equipos que requieren presión mínima, y puede indicar un deficiente mantenimiento de la red de distribución.',
+    fundamento: [
+      { norma: 'Ley de Agua Potable y Alcantarillado del Estado de Yucatán', art: 'Art. 4° y 13°', texto: 'JAPAY está obligada a prestar el servicio de agua potable de manera suficiente, continua y con la presión adecuada para el uso doméstico.' },
+      { norma: 'Norma Oficial Mexicana NOM-127-SSA1-2021', art: 'Secc. 5', texto: 'El suministro de agua debe garantizar parámetros mínimos de presión para asegurar la distribución higiénica del agua potable.' },
+      { norma: 'Ley Federal de Protección al Consumidor', art: 'Art. 7°', texto: 'Los consumidores tienen derecho a recibir el servicio en las condiciones de calidad establecidas.' },
+    ],
+    peticion: [
+      'Se realice una <strong>revisión técnica de la red de distribución</strong> en la colonia para identificar las causas de la baja presión.',
+      'Se ejecuten las acciones correctivas necesarias para restablecer la presión de servicio a los niveles establecidos por las normas vigentes.',
+      'Se emita respuesta por escrito en un plazo <strong>no mayor a 15 días hábiles</strong> con el diagnóstico y el plan de solución.',
+    ]
+  },
+  calidad_agua: {
+    titulo: 'DEFICIENCIA EN LA CALIDAD DEL AGUA POTABLE SUMINISTRADA',
+    resumen: 'la presencia de agua potable con características organolépticas inaceptables (turbiedad, color, olor o sabor anómalos) proveniente de la red de distribución de JAPAY, que hace imposible su uso para consumo humano.',
+    danios: 'El agua de calidad deficiente representa un grave riesgo para la salud pública, pudiendo causar enfermedades gastrointestinales, infecciones de piel o mucosas. Obliga a los usuarios a incurrir en gastos adicionales para la compra de agua embotellada.',
+    fundamento: [
+      { norma: 'Constitución Política de los Estados Unidos Mexicanos', art: 'Art. 4°, párrafo sexto', texto: 'Toda persona tiene derecho al acceso a agua potable salubre y aceptable para consumo humano.' },
+      { norma: 'Norma Oficial Mexicana NOM-127-SSA1-2021', art: 'Completa', texto: 'Establece los límites máximos permisibles de los parámetros físicos, químicos y microbiológicos que debe cumplir el agua para uso y consumo humano. El incumplimiento constituye una infracción sanitaria.' },
+      { norma: 'Ley General de Salud', art: 'Art. 119', texto: 'Las autoridades sanitarias y los organismos operadores tienen la obligación de vigilar y garantizar la calidad del agua de consumo humano.' },
+      { norma: 'Ley de Agua Potable y Alcantarillado del Estado de Yucatán', art: 'Art. 4°', texto: 'JAPAY está obligada a suministrar agua potable que cumpla con las normas oficiales de calidad vigentes.' },
+    ],
+    peticion: [
+      'Se realice de manera inmediata un <strong>análisis de calidad del agua</strong> en los puntos de la red que abastecen a mi colonia y se informe a los usuarios los resultados.',
+      'Se adopten las medidas de emergencia necesarias para garantizar la calidad del agua suministrada (cloración, purificación, flush de la red).',
+      'Se emita un <strong>boletín de alerta sanitaria</strong> a los vecinos de la zona mientras persista la condición de riesgo.',
+      'Se emita respuesta por escrito en un plazo <strong>no mayor a 5 días hábiles</strong> dado el carácter sanitario urgente del problema.',
+      'Se deriven los resultados del análisis a la <strong>Secretaría de Salud del Estado de Yucatán</strong> para su conocimiento y supervisión.',
+    ]
   }
 };
 
+function updateTipos(){
+  const org = document.getElementById('dest-org').value;
+  const sel = document.getElementById('tipo-inc');
+  sel.innerHTML = ORGS[org].tipos.map(t=>`<option value="${t.val}">${t.lbl}</option>`).join('');
+}
+updateTipos();
+
 function generarCarta(){
-  const org   = document.getElementById('dest-org').value;
-  const tipo  = document.getElementById('tipo-inc').value;
-  const nombre= document.getElementById('f-nombre').value.trim()||'[NOMBRE DEL CIUDADANO]';
-  const dir   = document.getElementById('f-dir').value.trim()||'[DIRECCIÓN]';
-  const fecha = document.getElementById('f-fecha').value;
-  const dur   = document.getElementById('f-duracion').value.trim()||'[DURACIÓN]';
-  const folio = document.getElementById('f-folio').value.trim();
-  const desc  = document.getElementById('f-desc').value.trim();
-  const vec   = parseInt(document.getElementById('f-vecinos').value)||1;
+  const org    = document.getElementById('dest-org').value;
+  const tipo   = document.getElementById('tipo-inc').value;
+  const nombre = document.getElementById('f-nombre').value.trim()||'[NOMBRE DEL CIUDADANO]';
+  const rfc    = document.getElementById('f-rfc').value.trim();
+  const dir    = document.getElementById('f-dir').value.trim()||'[DOMICILIO]';
+  const colonia= document.getElementById('f-colonia').value.trim()||'[COLONIA]';
+  const tel    = document.getElementById('f-tel').value.trim();
+  const email  = document.getElementById('f-email').value.trim();
+  const contrato=document.getElementById('f-contrato').value.trim();
+  const fecha  = document.getElementById('f-fecha').value;
+  const hora   = document.getElementById('f-hora').value;
+  const dur    = document.getElementById('f-duracion').value.trim()||'[DURACIÓN]';
+  const folio  = document.getElementById('f-folio').value.trim();
+  const desc   = document.getElementById('f-desc').value.trim();
+  const vec    = parseInt(document.getElementById('f-vecinos').value)||1;
 
   const O = ORGS[org];
   const T = TIPOS[tipo];
-  const fechaStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'}) : '[FECHA]';
+  if(!T){ alert('Tipo de incidencia no reconocido.'); return; }
+
+  const fechaStr = fecha
+    ? new Date(fecha+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})
+    : '[FECHA]';
+  const horaStr  = hora||'[HORA]';
   const hoy = new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
   const anio = new Date().getFullYear();
+  const refNum = 'APG-'+Date.now().toString(36).toUpperCase().slice(-6);
 
   document.getElementById('carta-content').innerHTML = `
     <div class="carta-header">
       <div class="carta-logo-area">
         <div class="carta-logo-box">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
         </div>
         <div>
           <div class="carta-brand">Apagones MX</div>
           <div class="carta-brand-sub">Plataforma Ciudadana · Mérida, Yucatán</div>
         </div>
       </div>
-      <div class="carta-date-area">
+      <div class="carta-date-block">
         <div class="carta-city">Mérida, Yucatán</div>
-        <div>${hoy}</div>
-        ${folio?`<div style="margin-top:4px;font-size:11px">Folio prev.: <strong>${folio}</strong></div>`:''}
+        <div>a ${hoy}</div>
+        <div class="carta-folioref">Ref.: ${refNum}${folio?' · Folio previo: '+folio:''}</div>
       </div>
     </div>
 
-    <div class="dest">
-      <strong>${O.cargo}</strong><br/>
-      ${O.name}<br/>
+    <div class="dest-block">
+      <div class="dest-title">${O.dirige}</div>
+      ${O.nombre}<br/>
       ${O.dir.replace(/\n/g,'<br/>')}
     </div>
 
-    <p style="font-weight:bold;font-size:12px">P R E S E N T E</p>
+    <div class="presente">P R E S E N T E</div>
 
     <h2>${T.titulo}</h2>
 
     <p>
-      Yo, <strong>${nombre}</strong>, vecino(a) del municipio de Mérida, Yucatán, con domicilio en
-      <strong>${dir}</strong>, en uso de mis derechos como usuario del servicio de ${T.servicio}
-      que presta ${O.ref}, y con fundamento en la ${O.ley}, me dirijo a usted muy
-      respetuosamente para exponer lo siguiente:
+      Yo, <strong>${nombre}</strong>${rfc?', con RFC <strong>'+rfc+'</strong>':''}, vecino(a) del municipio de Mérida,
+      Yucatán, con domicilio en <strong>${dir}</strong>, Colonia <strong>${colonia}</strong>${contrato?', número de contrato/cuenta <strong>'+contrato+'</strong>':''},
+      y con datos de contacto: ${tel?'Tel. '+tel+' — ':''}${email||'[correo electrónico]'}, comparezco en ejercicio de mis derechos como
+      usuario del servicio público que presta ${O.ref}, para hacer del conocimiento de usted, con pleno fundamento jurídico,
+      los siguientes:
     </p>
 
-    <h3>I. HECHOS</h3>
+    <h3>I. &nbsp;HECHOS</h3>
     <p>
-      Con fecha <strong>${fechaStr}</strong>, con una duración aproximada de <strong>${dur}</strong>,
-      se presentó ${T.cuerpo}
+      El día <strong>${fechaStr}</strong>, a partir de las <strong>${horaStr} horas</strong>, con una duración
+      aproximada de <strong>${dur}</strong>, se presentó ${T.resumen}
     </p>
+    <p>${T.danios}</p>
     <p>
-      Esta situación afectó a aproximadamente <strong>${vec} vecino${vec>1?'s':''}</strong> del área,
-      quienes también reportaron la incidencia a través de la plataforma ciudadana <em>Apagones MX</em>
-      (apagones.mx), evidenciando el impacto colectivo del problema.
+      Esta situación afecta a un total aproximado de <strong>${vec} vecino${vec>1?'s':''}</strong> de la zona,
+      cuyos reportes se encuentran documentados en la plataforma ciudadana <em>Apagones MX</em>
+      (apagones.mx), evidenciando el carácter colectivo y recurrente del problema.
     </p>
-    ${desc?`<p>Adicionalmente, se registraron los siguientes daños o situaciones derivadas: <em>${desc}</em></p>`:''}
+    ${desc?`<p><strong>Daños y circunstancias adicionales:</strong> ${desc}</p>`:''}
 
     <table class="data-table">
-      <thead><tr><th>Dato</th><th>Detalle</th></tr></thead>
+      <thead><tr><th colspan="2">Resumen de la Incidencia</th></tr></thead>
       <tbody>
         <tr><td>Tipo de incidencia</td><td>${T.titulo}</td></tr>
-        <tr><td>Dirección afectada</td><td>${dir}</td></tr>
+        <tr><td>Domicilio afectado</td><td>${dir}, Col. ${colonia}</td></tr>
         <tr><td>Fecha del evento</td><td>${fechaStr}</td></tr>
+        <tr><td>Hora de inicio</td><td>${horaStr}</td></tr>
         <tr><td>Duración aproximada</td><td>${dur}</td></tr>
         <tr><td>Vecinos afectados</td><td>${vec}</td></tr>
+        ${contrato?`<tr><td>Contrato / cuenta</td><td>${contrato}</td></tr>`:''}
         ${folio?`<tr><td>Folio de reporte previo</td><td>${folio}</td></tr>`:''}
-        <tr><td>Fuente del reporte</td><td>Plataforma Ciudadana Apagones MX · apagones.mx</td></tr>
+        <tr><td>Número de referencia</td><td>${refNum}</td></tr>
         <tr><td>Fecha de este escrito</td><td>${hoy}</td></tr>
       </tbody>
     </table>
 
-    <h3>II. FUNDAMENTO LEGAL</h3>
+    <h3>II. &nbsp;FUNDAMENTO JURÍDICO</h3>
     <p>
-      El servicio de ${T.servicio} es un servicio público esencial cuya prestación continua
-      y de calidad constituye un derecho de los ciudadanos conforme a la legislación vigente,
-      incluyendo la ${O.ley}. El incumplimiento en la calidad o continuidad del servicio
-      faculta a los usuarios para presentar quejas formales y, en su caso, exigir indemnización
-      por los daños y perjuicios ocasionados.
+      La presente solicitud se funda en los siguientes ordenamientos legales que protegen el derecho ciudadano
+      a recibir servicios públicos de calidad y en forma continua:
     </p>
+    ${T.fundamento.map(f=>`
+    <div class="art-cite">
+      <strong>${f.norma} — ${f.art}:</strong> ${f.texto}
+    </div>`).join('')}
 
-    <h3>III. PETICIÓN</h3>
-    <p>Con fundamento en lo anteriormente expuesto, respetuosamente solicito:</p>
+    <h3>III. &nbsp;PETICIÓN FORMAL</h3>
+    <p>Con base en los hechos expuestos y en el fundamento jurídico invocado, respetuosamente
+    <strong>solicito a usted se sirva</strong> acordar lo siguiente:</p>
+    <ol class="peticion-list">
+      ${T.peticion.map(p=>`<li>${p}</li>`).join('')}
+    </ol>
+
+    <h3>IV. &nbsp;DATOS DE CONTACTO PARA RESPUESTA</h3>
     <p>
-      <strong>PRIMERO.</strong> Se atienda y resuelva de manera <strong>urgente e inmediata</strong> la falla reportada.<br/>
-      <strong>SEGUNDO.</strong> Se implementen las medidas preventivas y correctivas necesarias para evitar
-      la recurrencia de estas interrupciones en la zona afectada.<br/>
-      <strong>TERCERO.</strong> Se emita respuesta por escrito en el plazo legal establecido, informando
-      las acciones tomadas y los compromisos de mejora del servicio.<br/>
-      <strong>CUARTO.</strong> En caso de daños a bienes o salud, se informe el procedimiento para
-      solicitar la reparación o indemnización correspondiente.
+      Para los efectos legales y de seguimiento correspondientes, señalo como domicilio para
+      recibir notificaciones: <strong>${dir}, Col. ${colonia}, Mérida, Yucatán</strong>${tel?', Tel. <strong>'+tel+'</strong>':''}${email?', correo electrónico: <strong>'+email+'</strong>':''}.
     </p>
+    <p>
+      En espera de su atención y respuesta oportuna, y reservándome el derecho de acudir ante las
+      instancias reguladoras correspondientes (PROFECO, CRE, CONAGUA o Secretaría de Salud, según aplique)
+      en caso de no obtener respuesta en los plazos señalados, quedo de usted.
+    </p>
+    <p style="text-align:center;margin-top:8px"><strong>A T E N T A M E N T E</strong></p>
 
-    <h3>IV. DATOS DE CONTACTO</h3>
-    <p>Quedo en espera de su respuesta en el domicilio señalado, o bien a través de los medios oficiales
-    que ${O.ref} disponga para dar seguimiento a este tipo de solicitudes.</p>
-
-    <div class="firma-area">
+    <div class="firma-section">
       <div class="firma-box">
-        <div style="height:50px"></div>
-        <div class="firma-line"><strong>${nombre}</strong><br/>Ciudadano(a) afectado(a)</div>
+        <div class="firma-space"></div>
+        <div class="firma-label">
+          <div class="firma-name">${nombre}</div>
+          Ciudadano(a) afectado(a)<br/>
+          ${rfc?'RFC: '+rfc+'<br/>':''}${contrato?'Contrato: '+contrato:''}
+        </div>
       </div>
       <div class="firma-box">
-        <div style="height:50px"></div>
-        <div class="firma-line">Sello de recepción / Fecha</div>
+        <div class="firma-space"></div>
+        <div class="firma-label">
+          Sello y firma de recepción<br/>
+          Fecha de recepción: _____________<br/>
+          Folio asignado: _________________
+        </div>
       </div>
     </div>
 
-    <div class="carta-footer">
-      Carta generada con apoyo de <strong>Apagones MX</strong> (apagones.mx) — Plataforma ciudadana de reporte de incidencias en Mérida, Yucatán.
-      Este documento es de carácter ciudadano y no garantiza respuesta por parte de la institución.
-      Se recomienda entregar en persona con acuse de recibo o enviar por correo certificado. ${anio}
+    <div class="carta-footer-note">
+      Escrito generado con apoyo de <strong>Apagones MX</strong> (apagones.mx) — Plataforma ciudadana de transparencia en servicios públicos, Mérida, Yucatán, ${anio}.
+      Se recomienda entregar en original y copia, exigir acuse de recibo con sello, fecha y nombre de quien recibe.
+      En caso de negativa de recibo, depositar por correo certificado con acuse o ante fedatario público.
     </div>
   `;
 
-  document.getElementById('carta-wrap').classList.add('visible');
-  document.getElementById('carta-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+  const wrap = document.getElementById('carta-wrap');
+  wrap.classList.add('visible');
+  setTimeout(()=>wrap.scrollIntoView({behavior:'smooth',block:'start'}), 100);
 }
 </script>
 </body>
