@@ -174,10 +174,10 @@ footer strong{color:rgba(255,255,255,.8)}
     <div class="card">
       <div class="card-title">
         <svg viewBox="0 0 20 20" width="14" height="14" fill="#6B3D4F"><rect x="2" y="10" width="4" height="8" rx="1"/><rect x="8" y="6" width="4" height="12" rx="1"/><rect x="14" y="2" width="4" height="16" rx="1"/></svg>
-        Zonas más afectadas (30 días)
+        Colonias más afectadas (30 días)
       </div>
       <table id="zone-table">
-        <thead><tr><th>#</th><th>Zona</th><th>Total</th><th>⚡</th><th>💧</th><th>Estado</th></tr></thead>
+        <thead><tr><th>#</th><th>Colonia</th><th>Total</th><th>⚡</th><th>💧</th><th>Estado</th></tr></thead>
         <tbody id="zone-tbody"></tbody>
       </table>
     </div>
@@ -272,22 +272,31 @@ function renderTimeline(){
   const tbody=document.getElementById('timeline');
   const recent=activeReports.sort((a,b)=>b.timestamp-a.timestamp).slice(0,8);
   if(!recent.length){tbody.innerHTML='<div style="text-align:center;padding:20px;color:#9E7080">Sin reportes activos</div>';return;}
-  tbody.innerHTML=recent.map(r=>`
+  // Cargar nombres de colonias async para el timeline
+  const timelineEl = document.getElementById('timeline');
+  const timelineHtml = recent.map((r,i)=>`
     <div class="tl-item">
-      <div class="tl-dot ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'⚡':'💧'}</div>
+      <div class="tl-dot ${typeColor(r.type)}">${typeIcon(r.type)}</div>
       <div class="tl-info">
-        <div class="tl-type ${r.type==='apagon'?'el':'ag'}">${r.type==='apagon'?'Apagón':r.type==='corte_agua'?'Sin agua':'Fuga de agua'}</div>
-        <div class="tl-meta">Hace ${fmtTime(r.timestamp)} ${r.seccion?'· Zona '+r.seccion:''}</div>
+        <div class="tl-type ${typeColor(r.type)}">${typeName(r.type)}</div>
+        <div class="tl-meta" id="tl-loc-${i}">Hace ${fmtTime(r.timestamp)} · Cargando…</div>
       </div>
       <span class="tl-sev ${r.severity||'moderado'}">${r.severity==='critico'?'🔴':r.severity==='leve'?'🟢':'🟡'} ${r.severity||'Mod.'}</span>
     </div>`).join('');
+  timelineEl.innerHTML = timelineHtml;
+  // Resolver colonias async
+  recent.forEach(async(r,i)=>{
+    const el=document.getElementById('tl-loc-'+i); if(!el)return;
+    const col=await getColoniaDashboard(r.seccion||'',r.lat,r.lng);
+    el.textContent=`Hace ${fmtTime(r.timestamp)} · ${col}`;
+  });
 }
 
 function renderZoneTable(){
   const zones={};
   allReports.forEach(r=>{
     if(!r.seccion)return;
-    if(!zones[r.seccion])zones[r.seccion]={el:0,ag:0,active:0};
+    if(!zones[r.seccion])zones[r.seccion]={el:0,ag:0,active:0,lat:r.lat,lng:r.lng};
     zones[r.seccion][r.type==='apagon'?'el':'ag']++;
     if(activeReports.find(a=>a.id===r.id)) zones[r.seccion].active++;
   });
@@ -296,12 +305,18 @@ function renderZoneTable(){
   tbody.innerHTML=sorted.map((d,i)=>`
     <tr>
       <td style="font-weight:800;color:${i<3?'#B8860B':'#6B3D4F'}">${['🥇','🥈','🥉'][i]||i+1}</td>
-      <td style="font-weight:700">Zona ${d.z}</td>
+      <td style="font-weight:700" id="zt-col-${i}">Cargando…</td>
       <td style="font-weight:800;color:#1A0E14">${d.total}</td>
       <td style="color:#B8860B;font-weight:700">${d.el||0}</td>
       <td style="color:#0AAAC4;font-weight:700">${d.ag||0}</td>
       <td><span class="zone-badge ${d.active>0?'hot':d.total>5?'warn':'ok'}">${d.active>0?'🔴 Activo':d.total>5?'⚠ Frecuente':'✓ OK'}</span></td>
     </tr>`).join('');
+  // Resolver colonias async
+  sorted.forEach(async(d,i)=>{
+    const el=document.getElementById('zt-col-'+i); if(!el)return;
+    const col=await getColoniaDashboard(d.z, d.lat, d.lng);
+    el.textContent=col;
+  });
 }
 
 function renderCharts(){
@@ -337,11 +352,11 @@ function renderResponseTimes(){
   const zones={};
   allReports.filter(r=>r.resolved&&r.resolved_at&&r.timestamp).forEach(r=>{
     if(!r.seccion)return;
-    if(!zones[r.seccion])zones[r.seccion]=[];
-    zones[r.seccion].push(r.resolved_at-r.timestamp);
+    if(!zones[r.seccion])zones[r.seccion]={times:[],sampleLat:r.lat,sampleLng:r.lng};
+    zones[r.seccion].times.push(r.resolved_at-r.timestamp);
   });
   const sorted=Object.entries(zones)
-    .map(([z,times])=>({z,avg:times.reduce((a,b)=>a+b,0)/times.length,n:times.length}))
+    .map(([z,d])=>({z,avg:d.times.reduce((a,b)=>a+b,0)/d.times.length,n:d.times.length,sampleLat:d.sampleLat,sampleLng:d.sampleLng}))
     .filter(d=>d.n>=2).sort((a,b)=>b.avg-a.avg).slice(0,6);
   if(!sorted.length){
     document.getElementById('resp-bars').innerHTML='<div style="text-align:center;color:#9E7080;font-size:12px;padding:16px">Insuficientes datos resueltos aún</div>';
@@ -349,12 +364,19 @@ function renderResponseTimes(){
   }
   const maxAvg=Math.max(...sorted.map(d=>d.avg));
   document.getElementById('resp-info')?.remove();
-  document.getElementById('resp-bars').innerHTML=sorted.map(d=>`
+  const respBars=document.getElementById('resp-bars');
+  respBars.innerHTML=sorted.map((d,i)=>`
     <div class="resp-row">
-      <div class="resp-lbl">Zona ${d.z}</div>
+      <div class="resp-lbl" id="rb-col-${i}" title="Zona ${d.z}">Zona ${d.z}</div>
       <div class="resp-track"><div class="resp-fill ${d.avg>4*3600000?'slow':''}" style="width:${Math.round(d.avg/maxAvg*100)}%"></div></div>
       <div class="resp-val">${fmtHours(d.avg)}</div>
     </div>`).join('');
+  sorted.forEach(async(d,i)=>{
+    const el=document.getElementById('rb-col-'+i); if(!el)return;
+    const col=await getColoniaDashboard(d.z, d.sampleLat, d.sampleLng);
+    el.textContent=col.length>12?col.slice(0,11)+'…':col;
+    el.title=col;
+  });
 }
 
 function renderMap(){
@@ -364,9 +386,9 @@ function renderMap(){
   // Plot active reports
   activeReports.forEach(r=>{
     if(!r.lat||!r.lng)return;
-    const color=r.type==='apagon'?'#E8A020':'#0AAAC4';
+    const color=typeMapColor(r.type);
     L.circleMarker([r.lat,r.lng],{radius:r.severity==='critico'?9:r.severity==='leve'?5:7,fillColor:color,color:'white',weight:1.5,fillOpacity:.85})
-     .bindPopup(`<strong>${r.type==='apagon'?'⚡ Apagón':r.type==='corte_agua'?'🚰 Sin agua':'💧 Fuga'}</strong><br/>${r.severity||'Moderado'}<br/>${new Date(r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`)
+     .bindPopup(`<strong>${typeIcon(r.type)} ${typeName(r.type)}</strong><br/>${r.severity||'Moderado'}<br/>${new Date(r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`)
      .addTo(map);
   });
 }
@@ -387,6 +409,41 @@ async function exportFullCSV(){
   a.href=url;a.download='apagones-merida-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
   URL.revokeObjectURL(url);
 }
+
+// ── Helpers de tipo ──────────────────────────────────────────
+function typeName(type){
+  return type==='apagon'?'Apagón':type==='alumbrado'?'Alumbrado público':
+    type==='corte_agua'?'Sin Agua':type==='presion_baja'?'Presión Baja':
+    type==='calidad_agua'?'Calidad del Agua':'Fuga de Agua';
+}
+function typeIcon(type){
+  return type==='apagon'?'⚡':type==='alumbrado'?'💡':'💧';
+}
+function typeColor(type){
+  return type==='apagon'||type==='alumbrado'?'el':'ag';
+}
+function typeMapColor(type){
+  return type==='apagon'?'#E8A020':type==='alumbrado'?'#F5B731':'#0AAAC4';
+}
+// ── Cache de colonias por zona ────────────────────────────────
+const coloniaCache = {};
+async function getColoniaDashboard(seccion, sampleLat, sampleLng){
+  if(coloniaCache[seccion]) return coloniaCache[seccion];
+  if(!sampleLat||!sampleLng) return 'Zona '+seccion;
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${sampleLat}&lon=${sampleLng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID/1.0'}});
+    const d=await r.json();
+    const col=d.address?.suburb||d.address?.neighbourhood||d.address?.residential||d.address?.quarter||'';
+    const city=d.address?.city||d.address?.town||'';
+    const road=d.address?.road||'';
+    let name=col;
+    if(!name) name=city&&city.toLowerCase()!=='mérida'&&city.toLowerCase()!=='merida'?city:road;
+    else if(city&&city.toLowerCase()!=='mérida'&&city.toLowerCase()!=='merida') name=col+', '+city;
+    coloniaCache[seccion]=name||('Zona '+seccion);
+    return coloniaCache[seccion];
+  }catch{return 'Zona '+seccion;}
+}
+
 
 loadData();
 setInterval(loadData, 3*60*1000); // refresh every 3min
