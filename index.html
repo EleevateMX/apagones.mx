@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
   <title>ApagonesMID — Mérida</title>
   <meta name="description" content="¿Sin luz o sin agua? Tu reporte es nuestra voz. Reporta apagones y fugas de agua en Mérida, Yucatán."/>
 
@@ -248,7 +248,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
   width:100%;max-width:360px;
   display:flex;flex-direction:column;
   align-items:center;
-  padding:max(env(safe-area-inset-top,0px),20px) 20px max(env(safe-area-inset-bottom,0px),28px);
+  padding:max(env(safe-area-inset-top,0px),20px) 20px max(env(safe-area-inset-bottom,0px),48px);
   min-height:100%;
   justify-content:center;
   box-sizing:border-box;
@@ -4045,26 +4045,38 @@ function renderAguaMarkers(reports){
 }
 
 function buildAguaPopup(r){
-  const hasPhoto=r.photo_data&&r.photo_data.length>10,repairs=r.repair_requests||0,isAdm=adminMode;
+  const hasPhoto=r.photo_data&&r.photo_data.length>10,isAdm=adminMode;
+  const typeMap={
+    corte_agua:  {icon:'🚰',label:'Sin Agua',      color:'var(--agua)'},
+    presion_baja:{icon:'📉',label:'Presión Baja',  color:'#5BC0DE'},
+    calidad_agua:{icon:'⚠️',label:'Calidad del Agua',color:'#B8860B'},
+    agua:        {icon:'💧',label:'Fuga de Agua',  color:'var(--agua)'}
+  };
+  const t=typeMap[r.type]||typeMap.agua;
+  const colId='pp_col_'+r.id.slice(-6);
+  if(r.lat&&r.lng) setTimeout(async()=>{
+    const el=document.getElementById(colId);
+    if(!el)return;
+    try{const c=await getColonia(r.lat,r.lng);if(c)el.textContent='📍 '+c+', Mérida';}catch{}
+  },200);
+  const votes=r.resolve_votes||0;
+  const confirmLabel=r.type==='corte_agua'?'🚰 Ya regresó el agua':r.type==='presion_baja'?'💧 La presión mejoró':r.type==='calidad_agua'?'✅ Agua ya potable':'💧 Ya se reparó';
   return`<div class="popup">${hasPhoto?`<img class="pp-photo" src="${r.photo_data}"/>`:''}
     <div class="pp-body">
-      <div class="pp-type ag">💧 Fuga de Agua ${r.confirmations>0?`<span class="pp-badge">✓ ${r.confirmations}</span>`:''}</div>
-      <div class="pp-row">📍 <strong>Mérida, Yucatán</strong></div>
-      ${r.report_number?`<div class="pp-row">🗂️ Folio: <strong>${r.report_number}</strong></div>`:''} 
+      <div class="pp-type ag" style="color:${t.color}">${t.icon} ${t.label} ${r.confirmations>0?`<span class="pp-badge">✓ ${r.confirmations}</span>`:''}</div>
+      <div class="pp-row" id="${colId}">📍 Mérida, Yucatán</div>
+      ${r.report_number?`<div class="pp-row">🗂️ Folio: <strong>${r.report_number}</strong></div>`:''}
       <div class="pp-row">🕐 <strong>${fmtTime(r.timestamp)}</strong></div>
-      <div class="pp-row" style="color:var(--agua)">⏳ Activa hasta reparación</div>
-      ${isAdm?`<div class="pp-acts single" style="margin-top:10px">
-        <button class="pbtn adm" onclick="adminResolveWater('${r.id}')">🔐 Marcar como reparada</button>
-      </div>`:(()=>{
-        const isMine = typeof isMyReport==='function' && isMyReport(r);
-        const votes = r.resolve_votes||0;
-        const voted = typeof hasConfirmed==='function' && hasConfirmed(r.id);
-        if(isMine) return `<button class="pbtn" style="width:100%;margin-top:10px;border-color:rgba(31,209,138,.45);color:var(--grn);font-weight:800;font-size:13px;padding:10px" onclick="vecinoConfirmResolved('${r.id}','${r.type}')">✅ Sí, ya se resolvió mi fuga</button>`;
-        if(voted) return `<div style="margin-top:10px;font-size:11px;color:var(--grn);text-align:center;padding:7px 10px;background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.25);border-radius:8px;line-height:1.5">✓ Ya confirmaste — faltan ${Math.max(0,3-votes)} vecino${(3-votes)!==1?'s':''} más</div>`;
-        return `<button class="pbtn" style="width:100%;margin-top:10px;border-color:rgba(31,209,138,.35);color:var(--grn);font-weight:700;font-size:12px;padding:9px" onclick="vecinoConfirmResolved('${r.id}','${r.type}')">💧 Ya se reparó aquí (${votes}/3 vecinos)</button>`;
+      <div class="pp-row" style="color:${t.color}">⏳ Activa hasta reparación</div>
+      ${isAdm?`<div class="pp-acts single" style="margin-top:10px"><button class="pbtn adm" onclick="adminResolveWater('${r.id}')">🔐 Marcar como reparada</button></div>`:(()=>{
+        const isMine=typeof isMyReport==='function'&&isMyReport(r);
+        const voted=typeof hasConfirmed==='function'&&hasConfirmed(r.id);
+        if(isMine)return`<button class="pbtn" style="width:100%;margin-top:10px;border-color:rgba(31,209,138,.45);color:var(--grn);font-weight:800;font-size:13px;padding:10px" onclick="vecinoConfirmResolved('${r.id}','${r.type}')">✅ Sí, ya se resolvió</button>`;
+        if(voted)return`<div style="margin-top:10px;font-size:11px;color:var(--grn);text-align:center;padding:7px 10px;background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.25);border-radius:8px;line-height:1.5">✓ Ya confirmaste — faltan ${Math.max(0,3-votes)} vecino${(3-votes)!==1?'s':''} más</div>`;
+        return`<button class="pbtn" style="width:100%;margin-top:10px;border-color:rgba(31,209,138,.35);color:var(--grn);font-weight:700;font-size:12px;padding:9px" onclick="vecinoConfirmResolved('${r.id}','${r.type}')">${confirmLabel} (${votes}/3 vecinos)</button>`;
       })()}
       <div class="pp-acts" style="margin-top:10px">
-        <button class="pbtn" onclick="shareReport('agua','${r.seccion||''}',${r.confirmations||0})" style="border-color:rgba(37,211,102,.3);color:#25D366">
+        <button class="pbtn" onclick="shareReport('${r.type}','${r.seccion||''}',${r.confirmations||0})" style="border-color:rgba(37,211,102,.3);color:#25D366">
           <svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor" style="vertical-align:middle;margin-right:3px"><path d="M11.5 10.5a2 2 0 00-1.6.8L6.4 9.5a2 2 0 000-3L9.9 4.7a2 2 0 10-.8-1.4L5.6 5.1a2 2 0 100 5.8l3.5 1.8a2 2 0 101.4-2.2z"/></svg>
           Compartir
         </button>
@@ -4072,7 +4084,6 @@ function buildAguaPopup(r){
       </div>
     </div></div>`;
 }
-
 function renderAlumbradoMarkers(reports){
   const list = reports.filter(r=>r.type==='alumbrado');
   const ids = new Set(list.map(r=>r.id));
@@ -7397,10 +7408,14 @@ async function openBulletin(){
       bulletinData._topZNames = topZ.map(z=>getZoneLabel(z[0]));
       bulletinData._namesReady = false;
       Promise.all(topZ.map(async(z,i)=>{
-        const centroid = getZoneCentroid(z[0]);
-        if(centroid){
+        // getZoneCentroid primero (KML), luego coord-key como fallback
+        let lat=null,lng=null;
+        const c=typeof getZoneCentroid==='function'?getZoneCentroid(z[0]):null;
+        if(c){lat=c.lat;lng=c.lng;}
+        else if(z[0]&&z[0].includes('_')){const p=z[0].split('_');if(p.length===2){lat=parseFloat(p[0]);lng=parseFloat(p[1]);}}
+        if(lat&&lng){
           try{
-            const col = await getColonia(centroid.lat, centroid.lng);
+            const col = await getColonia(lat, lng);
             if(col) bulletinData._topZNames[i] = col;
           }catch{}
         }
@@ -9067,10 +9082,15 @@ async function openStats(){
       let colonia='';
       try{
         let lat=d.lat, lng=d.lng;
-        // Si no hay lat/lng, intentar extraer del key coordinado (ej. "20.977_-89.233")
+        // 1. Usar centroide del polígono KML (más preciso para zonas numéricas)
+        if(typeof getZoneCentroid==='function'){
+          const c=getZoneCentroid(d.z);
+          if(c){lat=c.lat;lng=c.lng;}
+        }
+        // 2. Fallback: extraer del key coordinado ("20.977_-89.233")
         if((!lat||!lng) && d.z && d.z.includes('_')){
           const parts=d.z.split('_');
-          if(parts.length===2){ lat=parseFloat(parts[0]); lng=parseFloat(parts[1]); }
+          if(parts.length===2){lat=parseFloat(parts[0]);lng=parseFloat(parts[1]);}
         }
         if(lat&&lng&&typeof getColonia==='function'){
           colonia=await getColonia(lat,lng);

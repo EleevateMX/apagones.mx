@@ -1,5 +1,5 @@
-// Apagones Mid — Service Worker v37 (forced cache refresh)
-const CACHE = 'apagones-mid-v37';
+// Apagones Mid — Service Worker v38 (forced cache refresh)
+const CACHE = 'apagones-mid-v38';
 const TILE_CACHE = 'apagones-tiles-v1';
 
 const STATIC = [
