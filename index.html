@@ -2149,11 +2149,39 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
       <span id="mm-updated" style="font-size:11px;color:var(--mut);margin-left:auto">—</span>
     </div>
     <div class="mm-actions">
-      <button class="mm-btn" onclick="openStats();toggleMobileMenu()">
+            <button class="mm-btn" onclick="openStats();toggleMobileMenu()">
         <div class="mm-icon" style="background:rgba(34,208,240,.12)">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--agua)"><rect x="2" y="12" width="5" height="10" rx="2"/><rect x="9.5" y="7" width="5" height="15" rx="2"/><rect x="17" y="2" width="5" height="20" rx="2"/></svg>
         </div>
         <div><div class="mm-btn-name" data-i18n="menu_stats">Estadísticas</div><div class="mm-btn-sub" data-i18n="menu_stats_sub">Zonas y reportes</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="openBulletin();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(31,209,138,.1)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--grn)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h7M7 16h4"/><circle cx="19" cy="19" r="4" fill="rgba(31,209,138,.2)" stroke="var(--grn)"/><path d="M17 19l1.5 1.5L21 17"/></svg>
+        </div>
+        <div><div class="mm-btn-name" data-i18n="menu_bulletin">Boletín semanal</div><div class="mm-btn-sub" data-i18n="menu_bulletin_sub">Resumen para medios</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="window.open('./dashboard.html','_blank');toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(34,208,240,.1)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--agua)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><rect x="5" y="7" width="4" height="6" rx="1"/><rect x="10" y="9" width="4" height="4" rx="1"/><rect x="15" y="6" width="4" height="7" rx="1"/></svg>
+        </div>
+        <div><div class="mm-btn-name" data-i18n="menu_dashboard">Dashboard público</div><div class="mm-btn-sub" data-i18n="menu_dashboard_sub">Para medios y prensa</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="window.open('./carta.html','_blank');toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(101,8,31,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFD0D8" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+        </div>
+        <div><div class="mm-btn-name" data-i18n="menu_carta">Carta de queja PDF</div><div class="mm-btn-sub" data-i18n="menu_carta_sub">CFE o JAPAY — formal</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="openRankings();toggleMobileMenu()">
+        <div class="mm-icon" style="background:rgba(245,183,49,.12)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--elec)"><rect x="2" y="14" width="4" height="8" rx="2"/><rect x="9" y="9" width="4" height="13" rx="2"/><rect x="16" y="4" width="4" height="18" rx="2"/><path d="M4 8l5-5 4 4 7-7" stroke="var(--elec)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <div><div class="mm-btn-name" data-i18n="menu_rankings">Ranking de zonas</div><div class="mm-btn-sub" data-i18n="menu_rankings_sub">Las más activas este mes</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
       <button class="mm-btn" onclick="toggleLayerPanel();toggleMobileMenu()">
@@ -2191,19 +2219,11 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
         <div><div class="mm-btn-name" data-i18n="menu_report_auth">Reportar a CFE / JAPAY</div><div class="mm-btn-sub" data-i18n="menu_report_auth_sub">Contacto oficial</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
-    </div>
       <button class="mm-btn" onclick="openEmergencyModal();toggleMobileMenu()">
         <div class="mm-icon" style="background:rgba(255,61,61,.12)">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FF7A7A" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 013.1 4.2 2 2 0 015.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L9 9.9a16 16 0 006.1 6.1l1.3-1.3a2 2 0 012-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z"/></svg>
         </div>
         <div><div class="mm-btn-name" data-i18n="menu_emergency">Emergencias</div><div class="mm-btn-sub" data-i18n="menu_emergency_sub">CFE · JAPAY · Cruz Roja · 911</div></div>
-        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-      </button>
-<button class="mm-btn" onclick="openRankings();toggleMobileMenu()">
-        <div class="mm-icon" style="background:rgba(245,183,49,.12)">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--elec)"><rect x="2" y="14" width="4" height="8" rx="2"/><rect x="9" y="9" width="4" height="13" rx="2"/><rect x="16" y="4" width="4" height="18" rx="2"/><path d="M4 8l5-5 4 4 7-7" stroke="var(--elec)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-        </div>
-        <div><div class="mm-btn-name" data-i18n="menu_rankings">Ranking de zonas</div><div class="mm-btn-sub" data-i18n="menu_rankings_sub">Las más activas este mes</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
       <button class="mm-btn" onclick="toggleTheme();toggleMobileMenu()">
@@ -2227,32 +2247,11 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
         <div><div class="mm-btn-name" data-i18n="menu_lang">Idioma / Language</div><div id="mm-lang-sub" class="mm-btn-sub" data-i18n="menu_lang_sub">Español · English · Maya</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
-<button class="mm-btn" onclick="openWidgetGuide();toggleMobileMenu()">
+      <button class="mm-btn" onclick="openWidgetGuide();toggleMobileMenu()">
         <div class="mm-icon" style="background:rgba(245,183,49,.12)">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--elec)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
         </div>
         <div><div class="mm-btn-name" data-i18n="menu_widget">Widget de inicio</div><div class="mm-btn-sub" data-i18n="menu_widget_sub">Estado en tu pantalla de inicio</div></div>
-        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-      </button>
-      <button class="mm-btn" onclick="openBulletin();toggleMobileMenu()">
-        <div class="mm-icon" style="background:rgba(31,209,138,.1)">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--grn)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h7M7 16h4"/><circle cx="19" cy="19" r="4" fill="rgba(31,209,138,.2)" stroke="var(--grn)"/><path d="M17 19l1.5 1.5L21 17"/></svg>
-        </div>
-        <div><div class="mm-btn-name" data-i18n="menu_bulletin">Boletín semanal</div><div class="mm-btn-sub" data-i18n="menu_bulletin_sub">Resumen para medios</div></div>
-        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-      </button>
-      <button class="mm-btn" onclick="window.open('./carta.html','_blank');toggleMobileMenu()">
-        <div class="mm-icon" style="background:rgba(101,8,31,.12)">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFD0D8" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
-        </div>
-        <div><div class="mm-btn-name" data-i18n="menu_carta">Carta de queja PDF</div><div class="mm-btn-sub" data-i18n="menu_carta_sub">CFE o JAPAY — formal</div></div>
-        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-      </button>
-      <button class="mm-btn" onclick="window.open('./dashboard.html','_blank');toggleMobileMenu()">
-        <div class="mm-icon" style="background:rgba(34,208,240,.1)">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--agua)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><rect x="5" y="7" width="4" height="6" rx="1"/><rect x="10" y="9" width="4" height="4" rx="1"/><rect x="15" y="6" width="4" height="7" rx="1"/></svg>
-        </div>
-        <div><div class="mm-btn-name" data-i18n="menu_dashboard">Dashboard público</div><div class="mm-btn-sub" data-i18n="menu_dashboard_sub">Para medios y prensa</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
     <div style="padding:0 20px 6px;font-size:11px;color:var(--mut);text-align:center;font-style:italic" data-i18n="slogan">"¿Sin luz o sin agua? Tu reporte es nuestra voz"</div>
@@ -3707,7 +3706,22 @@ function updateZones(reports){
         className:'zone-circle-agua'
       }).addTo(map);
       circle.bindPopup(buildZonePopup(cl, 'agua', n));
-      zoneCircles[id] = {circle, glow:null, reports:cl.reports, lat:cl.lat, lng:cl.lng, type:'agua', intensity:opacity, radius:rad};
+      // Marcador central con ícono de gota para identificar visualmente la fuga
+      const fugaIcon = L.divIcon({
+        html:`<svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 38 48">
+          <ellipse cx="19" cy="45" rx="9" ry="2.5" fill="rgba(34,208,240,.2)"/>
+          <path d="M19 2C10 2 3 10 3 18C3 30 19 46 19 46C19 46 35 30 35 18C35 10 28 2 19 2Z" fill="#12CBF0" opacity=".9"/>
+          <path d="M19 2C10 2 3 10 3 18L35 18C35 10 28 2 19 2Z" fill="#65081F" opacity=".45"/>
+          <circle cx="19" cy="19" r="10" fill="rgba(8,11,20,.45)"/>
+          <path d="M19 11 Q23.5 17 23.5 20.5 A4.5 4.5 0 0 1 14.5 20.5 Q14.5 17 19 11Z" fill="#fff" opacity=".92"/>
+          ${n>1?`<circle cx="29" cy="7" r="6" fill="#1FD18A"/><text x="29" y="7" text-anchor="middle" font-size="8" dy=".35em" fill="#fff" font-weight="800" font-family="sans-serif">${n}</text>`:''}
+        </svg>`,
+        iconSize:[38,48], iconAnchor:[19,46], popupAnchor:[0,-46], className:''
+      });
+      const centerMarker = L.marker([cl.lat,cl.lng],{icon:fugaIcon, zIndexOffset:400});
+      centerMarker.bindPopup(buildZonePopup(cl,'agua',n));
+      centerMarker.addTo(map);
+      zoneCircles[id] = {circle, glow:centerMarker, reports:cl.reports, lat:cl.lat, lng:cl.lng, type:'agua', intensity:opacity, radius:rad};
     });
   }
 }
@@ -5233,7 +5247,7 @@ async function resetTodo(){
     cachedReports = [];
     Object.values(aguaMarkers||{}).forEach(m=>m.remove()); 
     Object.values(alumbradoMarkers||{}).forEach(m=>m.remove());
-    Object.values(zoneCircles||{}).forEach(z=>{ if(z.circle)z.circle.remove(); });
+    Object.values(zoneCircles||{}).forEach(z=>{ if(z.circle)z.circle.remove(); if(z.glow)z.glow.remove(); });
     Object.values(zoneBulbMarkers||{}).forEach(m=>m.remove());
     if(typeof aguaMarkers!=='undefined') for(const k in aguaMarkers) delete aguaMarkers[k];
     if(typeof alumbradoMarkers!=='undefined') for(const k in alumbradoMarkers) delete alumbradoMarkers[k];
@@ -7510,15 +7524,18 @@ async function getColonia(lat, lng) {
     const col = d.address?.suburb || d.address?.neighbourhood
       || d.address?.residential || d.address?.quarter || '';
     const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || '';
+    const road = d.address?.road || d.address?.pedestrian || d.address?.footway || '';
     let name = col;
     if (!name) {
-      // Sin colonia conocida: usar municipio o calle
-      name = city || d.address?.road || '';
+      // Sin colonia: mostrar calle si está en Mérida, o municipio si es externo
+      const isExternal = city && city.toLowerCase() !== 'mérida' && city.toLowerCase() !== 'merida';
+      name = isExternal ? city : (road || city || '');
     } else if (city && city.toLowerCase() !== 'mérida' && city.toLowerCase() !== 'merida') {
       // Colonia en otro municipio → "Colonia, Municipio"
       name = `${col}, ${city}`;
     }
-    const result = name || `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+    // Si solo tenemos calle, agregar contexto "Col. [calle]" no; dejar solo la calle
+    const result = name || (road ? road : `${lat.toFixed(3)}, ${lng.toFixed(3)}`);
     geoCache[key] = result;
     return result;
   } catch { return `${lat.toFixed(3)},${lng.toFixed(3)}`; }
