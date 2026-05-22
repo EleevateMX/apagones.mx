@@ -177,7 +177,7 @@ html,body,#topbar,#layer-panel,#sidebar,.sheet,.mm-sheet,
 html,body{height:100%;min-height:100%;overflow:hidden;background:var(--map-bg);color:var(--tx);font-family:var(--f);font-weight:400;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 #map{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:1;background:var(--map-bg)}
 /* Fill any gap below the visual viewport with map tile bg (theme-aware) */
-html::after{content:'';position:fixed;left:0;right:0;bottom:0;height:max(env(safe-area-inset-bottom,0px),40px);background:var(--map-bg);z-index:0;pointer-events:none}
+html::after{content:'';position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom,0px);background:var(--map-bg);z-index:0;pointer-events:none}
 .leaflet-control-zoom{display:none}
 /* ── SAFARI / iOS FIXES ── */
 *{-webkit-tap-highlight-color:transparent}
@@ -1764,18 +1764,21 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 
 /* ── PROMO BAR (non-invasive, above ticker) ─── */
 #promo-bar{
-  position:fixed;bottom:calc(36px + env(safe-area-inset-bottom,0px));left:0;right:0;
-  height:44px;z-index:799;
-  background:rgba(8,5,10,.88);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  border-top:1px solid rgba(101,8,31,.35);
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(44px + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  z-index:798;
+  background:rgba(8,5,10,.95);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(101,8,31,.4);
   display:flex;align-items:center;
   overflow:hidden;
   transform:translateY(100%);
-  transition:transform .5s cubic-bezier(.4,0,.2,1);
+  transition:transform .45s cubic-bezier(.4,0,.2,1);
 }
 #promo-bar.visible{transform:translateY(0)}
-#promo-bar.hidden{display:none}
+body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
+#promo-bar.hidden{display:none!important}
 .promo-close{
   flex-shrink:0;width:32px;height:44px;display:flex;align-items:center;justify-content:center;
   cursor:pointer;color:rgba(255,255,255,.3);font-size:14px;
@@ -9173,20 +9176,15 @@ window.addEventListener('DOMContentLoaded',async()=>{
   const bar = document.getElementById('promo-bar');
   if(!bar||!slides.length) return;
   // Mostrar después de 3s
-  setTimeout(()=>{ bar.classList.add('visible'); }, 3000);
+  setTimeout(()=>{ bar.classList.add('visible'); document.body.classList.add('promo-on'); }, 3000);
   // Rotar slides cada 6s
   const rot = setInterval(()=>{
     slides[current].classList.remove('active');
     current = (current+1) % slides.length;
     slides[current].classList.add('active');
   }, 6000);
-  // Ajustar el FAB y zoom-btns para que queden por encima del promo
-  const fab = document.getElementById('fab');
-  const apgFab = document.getElementById('apagoncito-fab');
-  const zoom = document.getElementById('zoom-btns');
-  if(fab) fab.style.bottom='calc(50px + 44px + env(safe-area-inset-bottom,0px))';
-  if(apgFab) apgFab.style.bottom='calc(152px + 44px + env(safe-area-inset-bottom,0px))';
-  if(zoom) zoom.style.bottom='calc(96px + 44px + env(safe-area-inset-bottom,0px))';
+  // Los FABs ya están posicionados sobre el ticker; el ticker sube por CSS (body.promo-on)
+  // No necesitamos mover los FABs manualmente
   window._promoInterval = rot;
 })();
 
@@ -9194,9 +9192,9 @@ function dismissPromo(){
   const bar = document.getElementById('promo-bar');
   if(!bar) return;
   bar.style.transform='translateY(100%)';
+  document.body.classList.remove('promo-on');
   clearInterval(window._promoInterval);
   setTimeout(()=>{ bar.classList.add('hidden'); }, 500);
-  // Restaurar posiciones
   const fab = document.getElementById('fab');
   const apgFab = document.getElementById('apagoncito-fab');
   const zoom = document.getElementById('zoom-btns');
