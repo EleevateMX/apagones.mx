@@ -592,15 +592,7 @@ html.pwa-standalone #topbar{background:#0C0608}
   padding:12px 7px;cursor:pointer;color:var(--mut);font-size:14px;transition:all .2s;
 }
 #layer-toggle-btn:hover{color:var(--tx)}
-#layer-panel.open+#layer-toggle-btn{
-  left:220px;
-  background:rgba(155,16,53,.85);
-  border-color:var(--brand-lt);
-  color:#FFD0D8;
-  font-size:18px;
-  padding:14px 10px;
-  box-shadow:2px 0 12px rgba(101,8,31,.4);
-}
+#layer-panel.open+#layer-toggle-btn{left:220px;background:rgba(155,16,53,.85);border-color:var(--brand-lt);color:#FFD0D8;font-size:18px;padding:14px 10px;box-shadow:2px 0 12px rgba(101,8,31,.4);}
 .lp-head{padding:16px 16px 12px;border-bottom:1px solid var(--bdr);font-size:12px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
 .lp-body{padding:14px;flex:1}
 .layer-card{
@@ -1057,7 +1049,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   /* Move FABs UP on mobile to avoid bottom sheet handle */
   #fab{bottom: calc(82px + env(safe-area-inset-bottom,0px))!important;width:56px!important;height:56px!important;font-size:24px}
   #apagoncito-fab{bottom: calc(152px + env(safe-area-inset-bottom,0px))!important;right:16px!important;left:auto!important;width:48px!important;height:48px!important}
-  #apagoncito-modal{bottom: calc(220px + env(safe-area-inset-bottom,0px))!important;right:8px!important}
+  #apagoncito-modal{bottom: calc(280px + env(safe-area-inset-bottom,0px))!important}
   #zoom-btns{bottom: calc(216px + env(safe-area-inset-bottom,0px))!important}
   .hamburger-btn{display:flex}
   .desktop-only{display:none!important}
@@ -2254,6 +2246,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
         <div><div class="mm-btn-name" data-i18n="menu_widget">Widget de inicio</div><div class="mm-btn-sub" data-i18n="menu_widget_sub">Estado en tu pantalla de inicio</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
+
     <div style="padding:0 20px 6px;font-size:11px;color:var(--mut);text-align:center;font-style:italic" data-i18n="slogan">"¿Sin luz o sin agua? Tu reporte es nuestra voz"</div>
   </div>
 </div>
@@ -2962,7 +2955,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
     </div>
     <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <!-- Bulletin preview -->
-      <div id="bulletin-preview" style="background:#0C0608;padding:20px;margin:14px;border-radius:14px;border:1px solid #2A1520;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y">
+      <div id="bulletin-preview" style="background:#0C0608;padding:20px;margin:14px;border-radius:14px;border:1px solid #2A1520">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #2A1520">
           <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8B0E2A,#3E0513);display:flex;align-items:center;justify-content:center">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7L14 2Z" fill="#F5B731"/></svg>
@@ -3706,22 +3699,11 @@ function updateZones(reports){
         className:'zone-circle-agua'
       }).addTo(map);
       circle.bindPopup(buildZonePopup(cl, 'agua', n));
-      // Marcador central con ícono de gota para identificar visualmente la fuga
-      const fugaIcon = L.divIcon({
-        html:`<svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 38 48">
-          <ellipse cx="19" cy="45" rx="9" ry="2.5" fill="rgba(34,208,240,.2)"/>
-          <path d="M19 2C10 2 3 10 3 18C3 30 19 46 19 46C19 46 35 30 35 18C35 10 28 2 19 2Z" fill="#12CBF0" opacity=".9"/>
-          <path d="M19 2C10 2 3 10 3 18L35 18C35 10 28 2 19 2Z" fill="#65081F" opacity=".45"/>
-          <circle cx="19" cy="19" r="10" fill="rgba(8,11,20,.45)"/>
-          <path d="M19 11 Q23.5 17 23.5 20.5 A4.5 4.5 0 0 1 14.5 20.5 Q14.5 17 19 11Z" fill="#fff" opacity=".92"/>
-          ${n>1?`<circle cx="29" cy="7" r="6" fill="#1FD18A"/><text x="29" y="7" text-anchor="middle" font-size="8" dy=".35em" fill="#fff" font-weight="800" font-family="sans-serif">${n}</text>`:''}
-        </svg>`,
-        iconSize:[38,48], iconAnchor:[19,46], popupAnchor:[0,-46], className:''
-      });
-      const centerMarker = L.marker([cl.lat,cl.lng],{icon:fugaIcon, zIndexOffset:400});
-      centerMarker.bindPopup(buildZonePopup(cl,'agua',n));
-      centerMarker.addTo(map);
-      zoneCircles[id] = {circle, glow:centerMarker, reports:cl.reports, lat:cl.lat, lng:cl.lng, type:'agua', intensity:opacity, radius:rad};
+      const fugaIcon=L.divIcon({html:`<svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 38 48"><ellipse cx="19" cy="45" rx="9" ry="2.5" fill="rgba(34,208,240,.2)"/><path d="M19 2C10 2 3 10 3 18C3 30 19 46 19 46C19 46 35 30 35 18C35 10 28 2 19 2Z" fill="#12CBF0" opacity=".9"/><path d="M19 2C10 2 3 10 3 18L35 18C35 10 28 2 19 2Z" fill="#65081F" opacity=".45"/><circle cx="19" cy="19" r="10" fill="rgba(8,11,20,.45)"/><path d="M19 11 Q23.5 17 23.5 20.5 A4.5 4.5 0 0 1 14.5 20.5 Q14.5 17 19 11Z" fill="#fff" opacity=".92"/>${n>1?`<circle cx="29" cy="7" r="6" fill="#1FD18A"/><text x="29" y="7" text-anchor="middle" font-size="8" dy=".35em" fill="#fff" font-weight="800" font-family="sans-serif">${n}</text>`:''}</svg>`,iconSize:[38,48],iconAnchor:[19,46],popupAnchor:[0,-46],className:''});
+      const fugaCenter=L.marker([cl.lat,cl.lng],{icon:fugaIcon,zIndexOffset:400});
+      fugaCenter.bindPopup(buildZonePopup(cl,'agua',n));
+      fugaCenter.addTo(map);
+      zoneCircles[id] = {circle, glow:fugaCenter, reports:cl.reports, lat:cl.lat, lng:cl.lng, type:'agua', intensity:opacity, radius:rad};
     });
   }
 }
@@ -4012,22 +3994,21 @@ async function doElZoneResolveAdmin(sec){
 
 function waterIcon(r){
   const cnt=r.confirmations||0,urgent=(r.repair_requests||0)>0;
-  // SVG glyphs por subtipo (sin emojis — no renderizan en SVG en móvil)
-  const GLYPHS = {
-    corte_agua:   { color:'#0BA8C4',
+  const GLYPHS={
+    corte_agua:{color:'#0BA8C4',
       glyph:`<line x1="13" y1="13" x2="31" y2="31" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
              <line x1="31" y1="13" x2="13" y2="31" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-             <path d="M22 14 Q26 20 26 24 A4 4 0 0 1 18 24 Q18 20 22 14Z" fill="#22D0F0" opacity=".9"/>` },
-    presion_baja: { color:'#5BC0DE',
+             <path d="M22 14 Q26 20 26 24 A4 4 0 0 1 18 24 Q18 20 22 14Z" fill="#22D0F0" opacity=".9"/>`},
+    presion_baja:{color:'#5BC0DE',
       glyph:`<path d="M13 26 L22 16 L31 26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-             <line x1="22" y1="16" x2="22" y2="30" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>` },
-    calidad_agua: { color:'#B8860B',
+             <line x1="22" y1="16" x2="22" y2="30" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>`},
+    calidad_agua:{color:'#B8860B',
       glyph:`<path d="M22 14 L23.5 23 L20.5 23 Z" fill="#F5B731"/>
-             <circle cx="22" cy="26.5" r="1.5" fill="#F5B731"/>` },
-    agua:         { color:'#12CBF0',
-      glyph:`<path d="M22 13 Q27 20 27 24.5 A5 5 0 0 1 17 24.5 Q17 20 22 13Z" fill="#fff" opacity=".9"/>` }
+             <circle cx="22" cy="26.5" r="1.5" fill="#F5B731"/>`},
+    agua:{color:'#12CBF0',
+      glyph:`<path d="M22 13 Q27 20 27 24.5 A5 5 0 0 1 17 24.5 Q17 20 22 13Z" fill="#fff" opacity=".9"/>`}
   };
-  const cfg = GLYPHS[r.type] || GLYPHS.agua;
+  const cfg=GLYPHS[r.type]||GLYPHS.agua;
   return L.divIcon({
     html:`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">
       <ellipse cx="22" cy="51" rx="11" ry="3" fill="rgba(34,208,240,.18)"/>
@@ -4041,7 +4022,6 @@ function waterIcon(r){
     iconSize:[44,54],iconAnchor:[22,52],popupAnchor:[0,-52],className:''
   });
 }
-
 function renderAguaMarkers(reports){
   // Individual markers for corte_agua, presion_baja, calidad_agua
   // (type 'agua'/fuga uses circular zones, not markers)
@@ -4061,10 +4041,10 @@ function renderAguaMarkers(reports){
 function buildAguaPopup(r){
   const hasPhoto=r.photo_data&&r.photo_data.length>10,isAdm=adminMode;
   const typeMap={
-    corte_agua:  {icon:'🚰',label:'Sin Agua',      color:'var(--agua)'},
-    presion_baja:{icon:'📉',label:'Presión Baja',  color:'#5BC0DE'},
+    corte_agua: {icon:'🚰',label:'Sin Agua',      color:'var(--agua)'},
+    presion_baja:{icon:'📉',label:'Presión Baja', color:'#5BC0DE'},
     calidad_agua:{icon:'⚠️',label:'Calidad del Agua',color:'#B8860B'},
-    agua:        {icon:'💧',label:'Fuga de Agua',  color:'var(--agua)'}
+    agua:       {icon:'💧',label:'Fuga de Agua',  color:'var(--agua)'}
   };
   const t=typeMap[r.type]||typeMap.agua;
   const colId='pp_col_'+r.id.slice(-6);
@@ -7404,36 +7384,18 @@ async function openBulletin(){
           <span style="font-size:11px;color:#F5B731;font-weight:800;width:28px;text-align:right">${z[1]}</span>
         </div>`;
       }).join('');
-      // Resolver nombres de colonias async
-      topZ.forEach(async(z,i)=>{
-        const el = document.getElementById('bz-name-'+i);
-        if(!el) return;
-        const centroid = getZoneCentroid(z[0]);
-        if(centroid){
-          try{
-            const col = await getColonia(centroid.lat, centroid.lng);
-            el.textContent = col || ('Zona '+z[0]);
-          }catch{ el.textContent = 'Zona '+z[0]; }
-        } else {
-          el.textContent = getZoneLabel(z[0]);
-        }
-      });
-      // Guardar nombres resueltos para shareBulletin
       bulletinData._topZNames = topZ.map(z=>getZoneLabel(z[0]));
       bulletinData._namesReady = false;
-      Promise.all(topZ.map(async(z,i)=>{
-        // getZoneCentroid primero (KML), luego coord-key como fallback
+      topZ.forEach(async(z,i)=>{
+        const el=document.getElementById('bz-name-'+i);
         let lat=null,lng=null;
         const c=typeof getZoneCentroid==='function'?getZoneCentroid(z[0]):null;
         if(c){lat=c.lat;lng=c.lng;}
         else if(z[0]&&z[0].includes('_')){const p=z[0].split('_');if(p.length===2){lat=parseFloat(p[0]);lng=parseFloat(p[1]);}}
-        if(lat&&lng){
-          try{
-            const col = await getColonia(lat, lng);
-            if(col) bulletinData._topZNames[i] = col;
-          }catch{}
-        }
-      })).then(()=>{ bulletinData._namesReady = true; });
+        if(lat&&lng){try{const col=await getColonia(lat,lng);if(col){bulletinData._topZNames[i]=col;if(el)el.textContent=col;}}catch{}}
+        else if(el) el.textContent=getZoneLabel(z[0]);
+      });
+      Promise.resolve().then(()=>{setTimeout(()=>{bulletinData._namesReady=true;},2500);});
     } else {
       zonesEl.innerHTML = '<div style="font-size:12px;color:#6B3D4F;text-align:center;padding:8px">Sin datos suficientes esta semana</div>';
     }
@@ -7445,15 +7407,11 @@ async function openBulletin(){
 
 async function shareBulletin(method){
   if(!bulletinData) return;
-  // Si los nombres de colonias aún no están resueltos, esperar hasta 3s
-  if(!bulletinData._namesReady){
-    toast('⏳ Preparando boletín…','i');
-    await new Promise(r=>setTimeout(r,2200));
-  }
+  if(!bulletinData._namesReady){toast('⏳ Preparando…','i');await new Promise(r=>setTimeout(r,2000));}
   const {elW, agW, total, topZ, fechaStr, active} = bulletinData;
   const APP_URL = 'https://apagonesmid.mx/';
   const topZtxt = topZ.length
-    ? topZ.map((z,i)=>` ${i+1}. ${(bulletinData._topZNames&&bulletinData._topZNames[i])||('Zona '+z[0])}: ${z[1]} reportes`).join('\n')
+    ? topZ.map((z,i)=>` ${i+1}. ${(bulletinData._topZNames&&bulletinData._topZNames[i])||getZoneLabel(z[0])}: ${z[1]} reportes`).join('\n')
     : ' Sin datos suficientes';
 
   const texto = `📊 *BOLETÍN SEMANAL — ApagonesMID*
@@ -7478,26 +7436,14 @@ _¿Sin luz o sin agua? Tu reporte es nuestra voz_`;
   if(method === 'whatsapp'){
     window.open('https://wa.me/?text='+encodeURIComponent(texto), '_blank');
   } else {
-    // Copia robusta: funciona en iOS Safari, Chrome y Firefox
-    const fallback = () => {
-      try{
-        const ta = document.createElement('textarea');
-        ta.value = texto;
-        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
-        document.body.appendChild(ta);
-        ta.focus(); ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
+    navigator.clipboard?.writeText(texto).then(()=>toast('📋 Boletín copiado','s'))
+      .catch(()=>{
+        const el=document.createElement('textarea');
+        el.value=texto; document.body.appendChild(el);
+        el.select(); document.execCommand('copy');
+        document.body.removeChild(el);
         toast('📋 Boletín copiado','s');
-      }catch(err){ toast('No se pudo copiar — usa WhatsApp','e'); }
-    };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(texto)
-        .then(()=>toast('📋 Boletín copiado','s'))
-        .catch(fallback);
-    } else {
-      fallback();
-    }
+      });
   }
 }
 
@@ -7524,17 +7470,14 @@ async function getColonia(lat, lng) {
     const col = d.address?.suburb || d.address?.neighbourhood
       || d.address?.residential || d.address?.quarter || '';
     const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || '';
-    const road = d.address?.road || d.address?.pedestrian || d.address?.footway || '';
+    const road = d.address?.road || d.address?.pedestrian || '';
     let name = col;
     if (!name) {
-      // Sin colonia: mostrar calle si está en Mérida, o municipio si es externo
-      const isExternal = city && city.toLowerCase() !== 'mérida' && city.toLowerCase() !== 'merida';
+      const isExternal = city && city.toLowerCase()!=='mérida' && city.toLowerCase()!=='merida';
       name = isExternal ? city : (road || city || '');
-    } else if (city && city.toLowerCase() !== 'mérida' && city.toLowerCase() !== 'merida') {
-      // Colonia en otro municipio → "Colonia, Municipio"
+    } else if (city && city.toLowerCase()!=='mérida' && city.toLowerCase()!=='merida') {
       name = `${col}, ${city}`;
     }
-    // Si solo tenemos calle, agregar contexto "Col. [calle]" no; dejar solo la calle
     const result = name || (road ? road : `${lat.toFixed(3)}, ${lng.toFixed(3)}`);
     geoCache[key] = result;
     return result;
@@ -8545,7 +8488,8 @@ function onSearchInput(e) {
 
 async function doSearch(q) {
   try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mérida, Yucatán')}&format=json&limit=8&accept-language=es&addressdetails=1&viewbox=-90.2,21.3,-89.2,20.5&bounded=1`;
+    // Nominatim bounded to Mérida + Yucatán region
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mérida, Yucatán')}&format=json&limit=6&accept-language=es&addressdetails=1&viewbox=-90.2,21.3,-89.2,20.5&bounded=1`;
     const res = await fetch(url, { headers: { 'User-Agent': 'ApagonesMID/1.0' } });
     const data = await res.json();
     renderSearchResults(data);
@@ -8561,15 +8505,12 @@ function renderSearchResults(results) {
     return;
   }
   el.innerHTML = results.map((r, i) => {
-    const colonia = r.address?.suburb || r.address?.neighbourhood || r.address?.quarter || r.address?.city_district || '';
-    const calle   = r.address?.road || r.address?.pedestrian || '';
-    const name = colonia || calle || r.display_name.split(',')[0];
-    // Sub-línea: si hay colonia Y calle, mostrar calle; si sólo colonia, mostrar delegación/municipio
-    const sub = colonia && calle ? calle
-               : colonia ? (r.display_name.split(',')[1]||'').trim()
-               : (r.display_name.split(',').slice(1,3).join(',')).trim();
-    const icon = colonia ? '🏘️' : calle ? '🛣️' : '📍';
-    return `<div class="search-item" onclick="goToSearchResult(${r.lat},${r.lon},'${name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">
+    const colonia=r.address?.suburb||r.address?.neighbourhood||r.address?.quarter||'';
+    const calle=r.address?.road||r.address?.pedestrian||'';
+    const name=colonia||calle||r.display_name.split(',')[0];
+    const sub=colonia&&calle?calle:colonia?(r.display_name.split(',')[1]||'').trim():(r.display_name.split(',').slice(1,3).join(',')).trim();
+    const icon=colonia?'🏘️':calle?'🛣️':'📍';
+    return `<div class="search-item" onclick="goToSearchResult(${r.lat},${r.lon},'${name.replace(/'/g,"\\'")}')">
       <div class="search-item-icon">${icon}</div>
       <div><div class="search-item-name">${name}</div>${sub?`<div class="search-item-type">${sub}</div>`:''}</div>
     </div>`;
@@ -9098,20 +9039,11 @@ async function openStats(){
       if(!el)return;
       let colonia='';
       try{
-        let lat=d.lat, lng=d.lng;
-        // 1. Usar centroide del polígono KML (más preciso para zonas numéricas)
-        if(typeof getZoneCentroid==='function'){
-          const c=getZoneCentroid(d.z);
-          if(c){lat=c.lat;lng=c.lng;}
-        }
-        // 2. Fallback: extraer del key coordinado ("20.977_-89.233")
-        if((!lat||!lng) && d.z && d.z.includes('_')){
-          const parts=d.z.split('_');
-          if(parts.length===2){lat=parseFloat(parts[0]);lng=parseFloat(parts[1]);}
-        }
-        if(lat&&lng&&typeof getColonia==='function'){
-          colonia=await getColonia(lat,lng);
-        }
+        let lat=d.lat,lng=d.lng;
+        const c=typeof getZoneCentroid==='function'?getZoneCentroid(d.z):null;
+        if(c){lat=c.lat;lng=c.lng;}
+        else if(d.z&&d.z.includes('_')){const p=d.z.split('_');if(p.length===2){lat=parseFloat(p[0]);lng=parseFloat(p[1]);}}
+        if(lat&&lng&&typeof getColonia==='function') colonia=await getColonia(lat,lng);
       }catch(e){}
       el.textContent = colonia || (typeof getZoneLabel==='function'?getZoneLabel(d.z):('Zona '+(i+1)));
     });
