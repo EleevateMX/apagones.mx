@@ -9848,40 +9848,80 @@ function backToCats(){
   },180);
 }
 
-function enviarTicket(){
+async function enviarTicket(){
+  const btn = document.querySelector('#contact-sheet button[onclick="enviarTicket()"]') ||
+              document.querySelector('#contact-sheet .gp-cta') ||
+              document.querySelector('#ct-step-2 button:last-of-type');
   const msg = document.getElementById('ct-msg').value.trim();
   if(msg.length < 10){ toast('Escribe al menos 10 caracteres','w'); return; }
   const zona = document.getElementById('ct-zona').value.trim();
+  const contactRef = document.getElementById('ct-contact-ref')?.value.trim()||'';
   const deviceId = getDeviceId();
   const ticketId = 'TKT-' + Date.now().toString(36).slice(-5).toUpperCase();
+  if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
   const ticket = {
     id: ticketId,
-    deviceId,
-    cat: _contactCat,
-    msg,
+    device_id: deviceId,
+    category: _contactCat||'otro',
+    message: msg,
     zona: zona||'',
-    ts: Date.now(),
-    status: 'open'
+    contact_ref: contactRef||'',
+    status: 'open',
+    created_at: new Date().toISOString()
   };
-  // Guardar localmente (para que el admin lo vea si es el mismo dispositivo)
+  // 1. Guardar en Supabase (tabla contact_tickets)
+  let savedCloud = false;
+  try{
+    const{error} = await db.from('contact_tickets').insert([ticket]);
+    if(!error) savedCloud = true;
+    else console.warn('ticket cloud save:', error.message);
+  }catch(e){ console.warn('ticket cloud:', e); }
+  // 2. Guardar localmente como fallback (compatible con renderTicketsTab)
+  const localTicket = {...ticket, ts: Date.now(), deviceId, cat: _contactCat||'otro', msg};
   const tickets = JSON.parse(lsGet('apx_tickets','[]'));
-  tickets.unshift(ticket);
+  tickets.unshift(localTicket);
   lsSet('apx_tickets', JSON.stringify(tickets.slice(0,50)));
-  // Cerrar modal y mostrar confirmación
   closeContacto();
   setTimeout(()=>{
     document.getElementById('ct-confirm-id').textContent = ticketId + ' · ' + deviceId;
     document.getElementById('contact-confirm').style.display='flex';
   },450);
-  toast('✉️ Ticket enviado','s');
+  toast(savedCloud ? '✉️ Mensaje enviado al equipo' : '✉️ Mensaje guardado (sin conexión)','s');
+  if(btn){ btn.disabled=false; btn.textContent='Enviar mensaje →'; }
 }
 
 // ── ADMIN TAB TICKETS ─────────────────────────────────────────────
-function renderTicketsTab(body){
-  const tickets = JSON.parse(lsGet('apx_tickets','[]'));
-  const catLabels = {falla:'🐛 Falla técnica',sugerencia:'💡 Sugerencia',reporte:'📢 Queja/Reporte',otro:'💬 Otro'};
+async function renderTicketsTab(body){
+  body.innerHTML='<div class="admin-empty"><span>⏳</span>Cargando mensajes…</div>';
+  // Merge: Supabase cloud + localStorage fallback
+  let tickets = [];
+  try{
+    const{data, error} = await db.from('contact_tickets')
+      .select('*').order('created_at',{ascending:false}).limit(200);
+    if(!error && data && data.length){
+      tickets = data.map(t=>({
+        id:t.id, deviceId:t.device_id, cat:t.category,
+        msg:t.message, zona:t.zona||'', contactRef:t.contact_ref||'',
+        ts:new Date(t.created_at).getTime(), status:t.status||'open'
+      }));
+    } else {
+      // Fallback to localStorage
+      tickets = JSON.parse(lsGet('apx_tickets','[]'));
+    }
+  }catch(e){
+    tickets = JSON.parse(lsGet('apx_tickets','[]'));
+  }
+  const catLabels = {falla:'Falla técnica',sugerencia:'Sugerencia',anuncio:'Quiero anunciarme',ayuda:'Ayuda/Soporte',otro:'Otro'};
+  const catColors = {falla:'rgba(255,80,80,.15)',sugerencia:'rgba(245,183,49,.15)',anuncio:'rgba(101,8,31,.2)',ayuda:'rgba(34,208,240,.15)',otro:'rgba(255,255,255,.08)'};
+  const catIcons = {
+    falla:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2L1 13h14Z"/><path d="M8 6v4"/><circle cx="8" cy="12" r=".5" fill="currentColor"/></svg>',
+    sugerencia:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="7" r="3"/><path d="M8 10v2"/><path d="M8 1v1M8 13v2M2 4l1 1M13 4l-1 1M1 7h1M14 7h1"/></svg>',
+    anuncio:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 6h2v4H2ZM4 6l8-3v10L4 10"/><path d="M6 10v2.5"/></svg>',
+    ayuda:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M5.5 5.5a2.5 2.5 0 0 1 5 0c0 2-2.5 2.5-2.5 4"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg>',
+    otro:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4" cy="8" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="12" cy="8" r="1"/></svg>'
+  };
   if(!tickets.length){
-    body.innerHTML=`<div class="admin-empty"><span>💬</span>No hay tickets aún.<br>Aparecerán aquí cuando los vecinos envíen mensajes.</div>`;
+    body.innerHTML=`<div class="admin-empty"><div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Sin mensajes aún.<br><span style="font-size:11px;color:rgba(255,255,255,.25)">Aparecerán aquí cuando los vecinos envíen mensajes desde el menú Contáctanos</span></div>`;
     return;
   }
   const statusBtns=(t)=>{
@@ -9898,31 +9938,65 @@ function renderTicketsTab(body){
     <div class="admin-kpi"><div class="admin-kpi-n ag">${tickets.filter(t=>t.status==='read').length}</div><div class="admin-kpi-l">Leídos</div></div>
     <div class="admin-kpi"><div class="admin-kpi-n ok">${tickets.filter(t=>t.status==='closed').length}</div><div class="admin-kpi-l">Cerrados</div></div>
   </div>`;
+  const statusBtnsSVG=(t)=>{
+    const s=t.status||'open';
+    const readBtn = s!=='read'&&s!=='closed'?`<button class="a-btn" onclick="updateTicketStatus('${t.id}','read')">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+      Leer
+    </button>`:'';
+    const closeBtn = s!=='closed'?`<button class="a-btn resolve" onclick="updateTicketStatus('${t.id}','closed')">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7l3 3 7-6"/></svg>
+      Cerrar
+    </button>`:'';
+    const delBtn = `<button class="a-btn danger" onclick="deleteTicket('${t.id}')">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h10M5 4V2h4v2M5 7v4M9 7v4M3 4l1 8h6l1-8"/></svg>
+    </button>`;
+    return [readBtn,closeBtn,delBtn].filter(Boolean).join('');
+  };
   body.innerHTML = statsHtml + tickets.map(t=>{
-    const ts = new Date(t.ts).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const ts = new Date(t.ts||t.created_at).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     const s = t.status||'open';
+    const catIcon = catIcons[t.cat]||catIcons.otro;
+    const catLabel = catLabels[t.cat]||t.cat;
+    const catColor = catColors[t.cat]||catColors.otro;
+    const contactRef = t.contactRef||t.contact_ref||'';
     return `<div class="ticket-card ${s}">
-      <div class="ticket-id">${t.id} · <span style="color:rgba(255,255,255,.25)">${t.deviceId}</span> · <span class="ticket-status ${s}">${s==='open'?'Abierto':s==='read'?'Leído':'Cerrado'}</span></div>
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:4px">${catLabels[t.cat]||t.cat}${t.zona?' · 📍 '+t.zona:''}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="width:24px;height:24px;border-radius:7px;background:${catColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,.7)">${catIcon}</div>
+        <div style="flex:1">
+          <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.5)">${catLabel}</span>
+          ${t.zona?`<span style="font-size:10px;color:rgba(255,255,255,.25);margin-left:6px">· ${t.zona}</span>`:''}
+        </div>
+        <span class="ticket-status ${s}">${s==='open'?'Nuevo':s==='read'?'Leído':'Cerrado'}</span>
+      </div>
       <div class="ticket-body">${t.msg}</div>
-      <div class="ticket-meta"><span>🕐 ${ts}</span></div>
-      <div class="a-report-acts" style="margin-top:8px">${statusBtns(t)}</div>
+      ${contactRef?`<div style="font-size:11px;color:rgba(34,208,240,.7);margin-top:5px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 9a5 5 0 0 1 10 0"/><circle cx="7" cy="6" r="2"/></svg> ${contactRef}</div>`:''}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div style="font-size:10px;color:rgba(255,255,255,.2);font-family:monospace">${t.id} · ${(t.deviceId||'').slice(0,10)}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.25)">${ts}</div>
+      </div>
+      <div class="a-report-acts" style="margin-top:8px">${statusBtnsSVG(t)}</div>
     </div>`;
   }).join('');
 }
 
-function updateTicketStatus(id,status){
+async function updateTicketStatus(id,status){
+  // Update in Supabase
+  try{ await db.from('contact_tickets').update({status}).eq('id',id); }catch(e){}
+  // Update in localStorage
   const tickets = JSON.parse(lsGet('apx_tickets','[]'));
   const t = tickets.find(x=>x.id===id);
   if(t){ t.status=status; lsSet('apx_tickets',JSON.stringify(tickets)); }
   switchAdminTab('tickets');
 }
 
-function deleteTicket(id){
+async function deleteTicket(id){
+  if(!confirm('¿Eliminar este mensaje?')) return;
+  try{ await db.from('contact_tickets').delete().eq('id',id); }catch(e){}
   const tickets = JSON.parse(lsGet('apx_tickets','[]')).filter(x=>x.id!==id);
   lsSet('apx_tickets',JSON.stringify(tickets));
   switchAdminTab('tickets');
-  toast('Ticket eliminado','b');
+  toast('Mensaje eliminado','b');
 }
 
 // ── BANNER EXAMPLE CANVAS ──────────────────────────────────────
