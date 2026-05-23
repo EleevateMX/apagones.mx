@@ -851,13 +851,25 @@ body.popup-open #search-wrap{opacity:.25;pointer-events:none;transition:opacity 
 /* ADMIN LOGIN */
 #admin-login{position:fixed;inset:0;z-index:2001;background:rgba(0,0,0,.8);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:16px}
 #admin-login.open{display:flex}
-.login-sheet{background:var(--surf);border:1px solid var(--brand-lt);border-radius:18px;padding:28px 24px;width:100%;max-width:320px;box-shadow:0 8px 60px rgba(101,8,31,.5);text-align:center}
-.login-icon{font-size:40px;margin-bottom:12px}.login-title{font-size:20px;font-weight:800;margin-bottom:4px}.login-sub{font-size:13px;color:var(--dim);margin-bottom:20px}
-.login-input{width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;color:var(--tx);font-family:var(--f);font-size:15px;text-align:center;letter-spacing:4px;outline:none;margin-bottom:12px;transition:border-color .18s}
-.login-input:focus{border-color:var(--brand-lt)}
-.login-input.err{border-color:#FF4B4B;animation:shake .3s}
+/* login sheet — glassmorphism bottom-sheet */
+#admin-login{position:fixed;inset:0;z-index:2000;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,3,8,0);pointer-events:none;transition:background .35s}
+#admin-login.open{background:rgba(6,3,8,.78);pointer-events:auto;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.login-sheet{width:100%;max-width:420px;background:linear-gradient(160deg,rgba(20,10,16,.97),rgba(10,5,8,.99));border:1px solid rgba(101,8,31,.5);border-bottom:none;border-radius:24px 24px 0 0;padding:10px 24px max(env(safe-area-inset-bottom,0px),28px);transform:translateY(110%);transition:transform .42s cubic-bezier(.32,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,.55)}
+#admin-login.open .login-sheet{transform:translateY(0)}
+.login-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 22px}
+.login-icon-wrap{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,rgba(101,8,31,.5),rgba(60,5,18,.4));border:1px solid rgba(150,20,50,.5);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 20px rgba(101,8,31,.3)}
+.login-title{font-size:21px;font-weight:800;color:#F0E8EC;text-align:center;letter-spacing:-.3px;margin-bottom:3px}
+.login-sub{font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:22px;letter-spacing:.3px}
+.login-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.04);border:1.5px solid rgba(101,8,31,.4);border-radius:13px;color:#F0E8EC;font-family:var(--f);font-size:16px;text-align:center;letter-spacing:.15em;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;margin-bottom:16px}
+.login-input:focus{border-color:rgba(220,80,80,.6);box-shadow:0 0 0 3px rgba(180,40,40,.12)}
+.login-input.err{border-color:#FF5555;animation:loginShake .3s ease}
+@keyframes loginShake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.login-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.login-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.btn-back{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);padding:13px;border-radius:13px;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer;-webkit-appearance:none;transition:background .18s}
+.btn-back:hover{background:rgba(255,255,255,.07)}
+.btn-brand{background:linear-gradient(135deg,#8B0E2A,#65081F);border:none;color:#FFD0D8;padding:13px;border-radius:13px;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;-webkit-appearance:none;box-shadow:0 4px 16px rgba(101,8,31,.4);transition:transform .15s}
+.btn-brand:active{transform:scale(.97)}
 
 /* TOASTS */
 #toasts{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:7px;pointer-events:none}
@@ -2413,41 +2425,55 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 <button id="fab" onclick="startFlow()" title="Reportar">＋</button>
 
 <div id="toasts"></div>
-<!-- PROMO BAR — non-invasive announcements -->
+<!-- PROMO BAR — non-invasive, only when admin enables -->
 <div id="promo-bar">
-  <div class="promo-close" onclick="dismissPromo()" title="Cerrar">✕</div>
+  <div class="promo-close" onclick="dismissPromo()" aria-label="Cerrar">
+    <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+  </div>
   <div class="promo-slides" id="promo-slides">
-    <!-- Slide 1: Instagram -->
-    <div class="promo-slide active" id="ps-0">
-      <a href="https://www.instagram.com/apagoncito_mid/" target="_blank" rel="noopener">
-        <div class="promo-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📸</div>
-        <div class="promo-text">
-          <div class="promo-label">@apagoncito_mid en Instagram</div>
-          <div class="promo-sub">Reportes en vivo · Mérida, Yucatán</div>
+    <!-- Slide 0: Imagen personalizada (desde admin) — se muestra si hay imagen activa -->
+    <div class="promo-slide" id="ps-img" style="display:none">
+      <a id="ps-img-link" href="#" target="_blank" rel="noopener" style="width:100%;height:44px;display:flex;align-items:center;overflow:hidden">
+        <img id="ps-img-src" src="" alt="" style="width:100%;height:44px;object-fit:cover;object-position:center"/>
+      </a>
+    </div>
+    <!-- Slide 1: Instagram (más peso — aparece 2x en rotación) -->
+    <div class="promo-slide active" id="ps-ig">
+      <a href="https://www.instagram.com/apagonesmid?igsh=ZXdxcjJuMWsyYmR6&utm_source=qr" target="_blank" rel="noopener">
+        <div class="promo-icon" style="background:linear-gradient(135deg,#405de6,#5851db,#833ab4,#c13584,#e1306c,#fd1d1d,#f56040,#f77737,#fcaf45,#ffdc80);flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </div>
-        <div class="promo-cta" style="background:rgba(253,29,29,.18);color:#fd8080;border:1px solid rgba(253,29,29,.3)">Seguir →</div>
+        <div class="promo-text">
+          <div class="promo-label">@apagonesmid — Síguenos en Instagram</div>
+          <div class="promo-sub">Reportes en tiempo real · Mérida, Yucatán</div>
+        </div>
+        <div class="promo-cta" style="background:linear-gradient(135deg,rgba(193,53,132,.25),rgba(253,29,29,.2));color:#fd8080;border:1px solid rgba(193,53,132,.4)">Seguir</div>
       </a>
     </div>
     <!-- Slide 2: Facebook -->
-    <div class="promo-slide" id="ps-1">
-      <a href="https://www.facebook.com/apagoncito" target="_blank" rel="noopener">
-        <div class="promo-icon" style="background:#1877F2">📘</div>
-        <div class="promo-text">
-          <div class="promo-label">Apagoncito en Facebook</div>
-          <div class="promo-sub">Únete a la comunidad · Comparte reportes</div>
+    <div class="promo-slide" id="ps-fb">
+      <a href="https://www.facebook.com/apagonesmid" target="_blank" rel="noopener">
+        <div class="promo-icon" style="background:#1877F2;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         </div>
-        <div class="promo-cta" style="background:rgba(24,119,242,.18);color:#6ab0ff;border:1px solid rgba(24,119,242,.3)">Seguir →</div>
+        <div class="promo-text">
+          <div class="promo-label">ApagonesMID en Facebook</div>
+          <div class="promo-sub">Únete · Comparte · Reporta con tu comunidad</div>
+        </div>
+        <div class="promo-cta" style="background:rgba(24,119,242,.18);color:#6ab0ff;border:1px solid rgba(24,119,242,.3)">Seguir</div>
       </a>
     </div>
-    <!-- Slide 3: WhatsApp -->
-    <div class="promo-slide" id="ps-2">
-      <a href="https://wa.me/529999000000" target="_blank" rel="noopener">
-        <div class="promo-icon" style="background:#25D366">💬</div>
-        <div class="promo-text">
-          <div class="promo-label">Canal de WhatsApp</div>
-          <div class="promo-sub">Alertas instantáneas de tu colonia</div>
+    <!-- Slide 3: Instagram otra vez (doble frecuencia = más peso) -->
+    <div class="promo-slide" id="ps-ig2">
+      <a href="https://www.instagram.com/apagonesmid?igsh=ZXdxcjJuMWsyYmR6&utm_source=qr" target="_blank" rel="noopener">
+        <div class="promo-icon" style="background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d,#fcaf45);flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </div>
-        <div class="promo-cta" style="background:rgba(37,211,102,.15);color:#25D366;border:1px solid rgba(37,211,102,.3)">Unirse →</div>
+        <div class="promo-text">
+          <div class="promo-label">¿Sin luz o sin agua? Repórtalo en vivo</div>
+          <div class="promo-sub">@apagonesmid · Instagram · Mérida</div>
+        </div>
+        <div class="promo-cta" style="background:linear-gradient(135deg,rgba(193,53,132,.25),rgba(253,29,29,.2));color:#fd8080;border:1px solid rgba(193,53,132,.4)">Ver más</div>
       </a>
     </div>
   </div>
@@ -3248,13 +3274,16 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 <!-- ADMIN LOGIN -->
 <div id="admin-login">
   <div class="login-sheet">
-    <div class="login-icon">🔐</div>
-    <div class="login-title">Panel Admin</div>
-    <div class="login-sub">Contraseña de administrador</div>
-    <input type="password" class="login-input" id="pw-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()"/>
+    <div class="login-handle"></div>
+    <div class="login-icon-wrap">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(240,100,100,.9)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="3"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <div class="login-title">Admin</div>
+    <div class="login-sub">Acceso restringido · ApagonesMID</div>
+    <input type="password" class="login-input" id="pw-input" placeholder="••••••••••" onkeydown="if(event.key==='Enter')checkPw()"/>
     <div class="login-btns">
-      <button class="btn btn-back" onclick="document.getElementById('admin-login').classList.remove('open')">Cancelar</button>
-      <button class="btn btn-brand" onclick="checkPw()">Entrar →</button>
+      <button class="btn-back" onclick="document.getElementById('admin-login').classList.remove('open')">Cancelar</button>
+      <button class="btn-brand" onclick="checkPw()">Ingresar →</button>
     </div>
   </div>
 </div>
@@ -3316,7 +3345,7 @@ const AGUA_TYPES = ['agua','corte_agua','presion_baja','calidad_agua'];
 const ELEC_TYPES = ['apagon','alumbrado'];
 const HEAT_THRESHOLD = 37;
 const HEAT_CRITICAL  = 40;
-const ADMIN_PASSWORD = 'alejandra2026'; // contraseña local de respaldo (modo degradado)
+const ADMIN_PASSWORD = 'ArtosdeMorena_2026'; // contraseña local de respaldo (modo degradado)
 const ADMIN_EMAIL = 'admin@apagones.mx';   // usuario de Supabase Auth para ver contactos
 const SB_URL = 'https://fybotuqwmzxsajedisus.supabase.co';
 const SB_KEY = 'sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
@@ -4824,27 +4853,89 @@ function renderAdminPanel(){
 
   // ──────────────────── TAB: ANUNCIOS ────────────────────
   else if(adminTab==='anuncios'){
+    const promoEnabled = lsGet('promo_enabled','1') === '1';
+    const promoImg = lsGet('promo_img_data','');
+    const promoImgLink = lsGet('promo_img_link','');
+    const promoImgActive = lsGet('promo_img_active','0') === '1';
     body.innerHTML = `
-      <div style="background:rgba(31,209,138,.06);border:1px solid rgba(31,209,138,.2);border-radius:10px;padding:11px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
-        📢 Publica avisos públicos que verán todos los vecinos en la sección "Consejos y Cuidados".
+    <!-- Toggle global -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;margin-bottom:14px">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:var(--tx)">Barra de anuncios</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:2px">Aparece encima del ticker · No invasiva</div>
       </div>
-      <div class="fld"><label>Categoría</label>
-        <select id="an-tab" style="width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px 12px;color:var(--tx);font-family:var(--f);font-size:13px;outline:none;margin-bottom:8px">
-          <option value="avisos">📢 Avisos importantes</option>
-          <option value="apagones">⚡ Tips de apagones</option>
-          <option value="agua">💧 Tips de agua</option>
-          <option value="calor">☀️ Calor extremo</option>
-          <option value="hogar">🏠 Cuidados del hogar</option>
-        </select>
+      <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0">
+        <input type="checkbox" id="an-global-toggle" ${promoEnabled?'checked':''} onchange="togglePromoGlobal(this.checked)" style="opacity:0;width:0;height:0"/>
+        <span style="position:absolute;inset:0;border-radius:12px;background:${promoEnabled?'var(--grn)':'rgba(255,255,255,.1)'};transition:background .2s;cursor:pointer;display:block">
+          <span style="position:absolute;top:3px;left:${promoEnabled?'23px':'3px'};width:18px;height:18px;border-radius:50%;background:white;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)"></span>
+        </span>
+      </label>
+    </div>
+
+    <!-- Sección: imagen personalizada -->
+    <div style="background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.15);border-radius:14px;padding:14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--agua)">📸 Imagen personalizada</div>
+          <div style="font-size:10.5px;color:var(--dim);margin-top:2px">Tamaño recomendado: <strong style="color:var(--tx)">720 × 88 px</strong> · JPG/PNG · Max 300 KB</div>
+        </div>
+        <label style="position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0">
+          <input type="checkbox" id="an-img-active" ${promoImgActive&&promoImg?'checked':''} ${!promoImg?'disabled':''} onchange="togglePromoImg(this.checked)" style="opacity:0;width:0;height:0"/>
+          <span style="position:absolute;inset:0;border-radius:11px;background:${promoImgActive&&promoImg?'var(--agua)':'rgba(255,255,255,.1)'};transition:background .2s;cursor:pointer;display:block">
+            <span style="position:absolute;top:3px;left:${promoImgActive&&promoImg?'21px':'3px'};width:16px;height:16px;border-radius:50%;background:white;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></span>
+          </span>
+        </label>
       </div>
-      <div class="fld"><label>Título</label><input type="text" id="an-title" placeholder="Ej. Alerta de calor extremo este viernes"/></div>
-      <div class="fld"><label>Contenido</label><textarea id="an-body" rows="3" placeholder="Descripción del aviso…" style="width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px 12px;color:var(--tx);font-family:var(--f);font-size:13px;outline:none;resize:vertical"></textarea></div>
-      <button onclick="publishAnuncio()" style="width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;margin-bottom:14px">📢 Publicar aviso</button>
-      <div class="admin-section">
-        <div class="admin-section-title">Anuncios publicados</div>
-        <div id="anuncios-list"></div>
-      </div>`;
-    renderAnunciosList();
+      ${promoImg ? `<div style="border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(34,208,240,.2)"><img src="${promoImg}" style="width:100%;height:44px;object-fit:cover;display:block"/></div>` : '<div style="width:100%;height:44px;border-radius:10px;border:1.5px dashed rgba(34,208,240,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim);margin-bottom:10px">Sin imagen cargada</div>'}
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <label style="flex:1;min-width:120px;padding:9px 12px;background:rgba(34,208,240,.08);border:1px solid rgba(34,208,240,.25);border-radius:10px;font-size:12px;font-weight:700;color:var(--agua);text-align:center;cursor:pointer">
+          📁 Cargar imagen
+          <input type="file" accept="image/*" onchange="loadPromoImage(this)" style="display:none"/>
+        </label>
+        <input type="url" id="an-img-link" placeholder="URL de destino (opcional)" value="${promoImgLink}" style="flex:2;min-width:150px;background:var(--card2);border:1px solid var(--bdr2);border-radius:10px;padding:9px 12px;color:var(--tx);font-family:var(--f);font-size:12px;outline:none" oninput="lsSet('promo_img_link',this.value);refreshPromoImgSlide()"/>
+        ${promoImg ? `<button onclick="clearPromoImage()" style="padding:9px 12px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.2);border-radius:10px;font-family:var(--f);font-size:12px;font-weight:700;color:#FF9090;cursor:pointer;white-space:nowrap">🗑 Quitar</button>` : ''}
+      </div>
+    </div>
+
+    <!-- Preview en vivo -->
+    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Vista previa del anuncio activo</div>
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(101,8,31,.3)">
+        <div id="an-preview-live" style="height:44px;background:rgba(8,5,10,.95);display:flex;align-items:center;padding:0 8px;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--grn);flex-shrink:0;box-shadow:0 0 6px var(--grn)"></div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5)">Rotando: Instagram → Facebook → Instagram</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--dim);margin-top:6px;line-height:1.4">La barra aparece 3s después de entrar a la app. Al cerrarla se guarda por sesión.</div>
+    </div>
+
+    <!-- Slides de redes -->
+    <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Slides de redes sociales</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(193,53,132,.07);border:1px solid rgba(193,53,132,.2);border-radius:11px">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:#fd8080">@apagonesmid · Instagram</div>
+          <div style="font-size:10px;color:var(--dim)">Aparece 2× por rotación (mayor peso)</div>
+        </div>
+        <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(193,53,132,.2);color:#fd8080;font-weight:700">Activo</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(24,119,242,.07);border:1px solid rgba(24,119,242,.2);border-radius:11px">
+        <div style="width:32px;height:32px;border-radius:9px;background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:#6ab0ff">ApagonesMID · Facebook</div>
+          <div style="font-size:10px;color:var(--dim)">Aparece 1× por rotación</div>
+        </div>
+        <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(24,119,242,.18);color:#6ab0ff;font-weight:700">Activo</div>
+      </div>
+    </div>`;
+
+    // Re-render preview con imagen si existe
+    refreshPromoPreview();
   }
 
   // ──────────────────── TAB: AUDIT ────────────────────
@@ -9181,17 +9272,33 @@ window.addEventListener('DOMContentLoaded',async()=>{
 
 // ── PROMO BAR ──────────────────────────────────────────────
 (function initPromoBar(){
+  // Respetar toggle de admin
+  if(lsGet('promo_enabled','1') !== '1') return;
   const key = 'promo_dismissed_v1';
-  if(localStorage.getItem(key)) return; // ya cerrado hoy
+  if(localStorage.getItem(key)) return;
+
+  // Activar imagen si el admin la habilitó
+  const imgData = lsGet('promo_img_data','');
+  const imgLink = lsGet('promo_img_link','');
+  const imgActive = lsGet('promo_img_active','0') === '1';
+  if(imgData && imgActive){
+    const slide = document.getElementById('ps-img');
+    const imgEl = document.getElementById('ps-img-src');
+    const linkEl = document.getElementById('ps-img-link');
+    if(slide && imgEl){ imgEl.src = imgData; slide.style.display=''; }
+    if(linkEl && imgLink) linkEl.href = imgLink;
+  }
+
   let current = 0;
-  const slides = document.querySelectorAll('.promo-slide');
+  // Obtener solo slides visibles (display != none)
+  const getAllSlides = ()=>Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
   const bar = document.getElementById('promo-bar');
-  if(!bar||!slides.length) return;
-  // Mostrar después de 3s
+  if(!bar) return;
   setTimeout(()=>{ bar.classList.add('visible'); document.body.classList.add('promo-on'); }, 3000);
-  // Rotar slides cada 6s
   const rot = setInterval(()=>{
-    slides[current].classList.remove('active');
+    const slides = getAllSlides();
+    if(!slides.length) return;
+    slides[current % slides.length].classList.remove('active');
     current = (current+1) % slides.length;
     slides[current].classList.add('active');
   }, 6000);
@@ -9214,6 +9321,85 @@ function dismissPromo(){
   if(apgFab) apgFab.style.bottom='';
   if(zoom) zoom.style.bottom='';
   try{ localStorage.setItem('promo_dismissed_v1', '1'); }catch{}
+}
+
+// ── ADMIN ANUNCIOS HELPERS ──────────────────────────────
+function togglePromoGlobal(on){
+  lsSet('promo_enabled', on ? '1' : '0');
+  const bar = document.getElementById('promo-bar');
+  if(on){
+    bar?.classList.remove('hidden');
+    bar?.classList.add('visible');
+    document.body.classList.add('promo-on');
+  } else {
+    bar?.classList.remove('visible');
+    bar?.classList.add('hidden');
+    document.body.classList.remove('promo-on');
+  }
+  toast(on ? '📢 Barra activada' : '🔕 Barra desactivada', 'b');
+  // Re-render el toggle sin recargar la tab completa
+  const toggle = document.getElementById('an-global-toggle');
+  if(toggle){ toggle.checked = on; }
+}
+
+function togglePromoImg(on){
+  lsSet('promo_img_active', on ? '1' : '0');
+  refreshPromoImgSlide();
+  toast(on ? '🖼 Imagen activada en el banner' : '🖼 Imagen desactivada', 'b');
+}
+
+function loadPromoImage(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 500000){ toast('Imagen demasiado grande (máx 300 KB)','e'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    lsSet('promo_img_data', e.target.result);
+    lsSet('promo_img_active','1');
+    toast('✅ Imagen cargada y activada','s');
+    // Re-render tab
+    switchAdminTab('anuncios');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPromoImage(){
+  lsSet('promo_img_data','');
+  lsSet('promo_img_active','0');
+  refreshPromoImgSlide();
+  toast('🗑 Imagen eliminada','b');
+  switchAdminTab('anuncios');
+}
+
+function refreshPromoImgSlide(){
+  const slide = document.getElementById('ps-img');
+  const imgEl = document.getElementById('ps-img-src');
+  const linkEl = document.getElementById('ps-img-link');
+  if(!slide) return;
+  const imgData = lsGet('promo_img_data','');
+  const imgLink = lsGet('promo_img_link','');
+  const active = lsGet('promo_img_active','0') === '1';
+  if(imgData && active){
+    if(imgEl) imgEl.src = imgData;
+    if(linkEl) linkEl.href = imgLink || '#';
+    slide.style.display = '';
+  } else {
+    slide.style.display = 'none';
+  }
+}
+
+function refreshPromoPreview(){
+  const el = document.getElementById('an-preview-live');
+  if(!el) return;
+  const imgData = lsGet('promo_img_data','');
+  const imgActive = lsGet('promo_img_active','0') === '1';
+  if(imgData && imgActive){
+    el.innerHTML = `<img src="${imgData}" style="width:100%;height:44px;object-fit:cover;border-radius:0"/>`;
+  } else {
+    el.innerHTML = `
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--grn);flex-shrink:0;box-shadow:0 0 6px var(--grn)"></div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5)">Rotando: Instagram → Facebook → Instagram (2:1)</div>`;
+  }
 }
 </script>
 
