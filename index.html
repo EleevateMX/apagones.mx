@@ -148,8 +148,12 @@ html.light.pwa-standalone #topbar{background:#F4F0F2}
 @media (display-mode: standalone){html.light #topbar{background:#F4F0F2}}
 html.light #layer-panel,html.light #sidebar{background:rgba(244,240,242,.97)}
 html.light .mm-sheet{background:#fff}
+html.light #contact-sheet{background:#0D0610!important}
+html.light #contact-modal .ct-cat-card{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.12)}
+html.light #admin-login .login-sheet{background:linear-gradient(160deg,#100810,#0C060A)!important}
 html.light .sheet{background:#fff;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-html.light .admin-sheet{background:#fff}
+html.light .login-sheet{background:linear-gradient(160deg,#100810,#0C060A)!important}
+html.light .admin-sheet{background:linear-gradient(180deg,#100810 0%,#0C060A 100%)}
 html.light .ob-screen{background:var(--bg)}
 html.light #onboarding{background:var(--bg)}
 html.skip-ob #onboarding{display:none !important}
@@ -910,9 +914,25 @@ html.pwa-standalone #topbar{background:#0C0608}
 .a-report-badge.urgent{background:rgba(255,61,61,.15);border:1px solid rgba(255,61,61,.3);color:#FF7A7A}
 .a-report-badge.repair{background:rgba(34,208,240,.15);border:1px solid rgba(34,208,240,.3);color:var(--agua)}
 .a-report-acts{display:flex;gap:6px;margin-top:9px}
-.a-btn{padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;-webkit-appearance:none}
-.a-btn.resolve{border-color:rgba(31,209,138,.4);color:var(--grn)}.a-btn.resolve:hover{background:rgba(31,209,138,.1)}
-.a-btn.danger{border-color:rgba(255,61,61,.4);color:#FF7A7A}.a-btn.danger:hover{background:rgba(255,61,61,.1)}
+.a-btn{
+  padding:8px 12px;
+  min-height:36px;
+  border-radius:9px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.55);
+  font-family:var(--f);font-size:11px;font-weight:700;
+  cursor:pointer;transition:background .18s,transform .1s;
+  white-space:nowrap;-webkit-appearance:none;
+  display:inline-flex;align-items:center;gap:5px;
+  touch-action:manipulation;
+}
+.a-btn:active{transform:scale(.96)}
+.a-btn.resolve{border-color:rgba(31,209,138,.35);color:#1FD18A;background:rgba(31,209,138,.06)}
+.a-btn.resolve:hover{background:rgba(31,209,138,.12)}
+.a-btn.danger{border-color:rgba(255,80,80,.3);color:#FF8080;background:rgba(255,80,80,.05)}
+.a-btn.danger:hover{background:rgba(255,80,80,.1)}
+.a-btn:hover{background:rgba(255,255,255,.09)}
 .a-btn.fly{}.a-btn.fly:hover{color:#F0E8EC}
 .a-photo-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1);display:none}
 .admin-section{margin-bottom:10px}
@@ -3507,7 +3527,7 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
         <span>Mensaje anónimo. Solo usamos zona horaria, idioma y resolución de pantalla para generar tu ID de dispositivo.</span>
       </div>
 
-      <button onclick="enviarTicket()" style="width:100%;padding:15px;background:linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12));border:1.5px solid rgba(34,208,240,.35);border-radius:15px;color:#22D0F0;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;-webkit-appearance:none;transition:all .2s;letter-spacing:.02em" onmouseover="this.style.background='linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.18))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12))'">Enviar mensaje →</button>
+      <button id="ct-send-btn" onclick="enviarTicket()" style="width:100%;padding:15px;background:linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12));border:1.5px solid rgba(34,208,240,.35);border-radius:15px;color:#22D0F0;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;-webkit-appearance:none;transition:all .2s;letter-spacing:.02em;touch-action:manipulation" onmouseover="this.style.background='linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.18))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12))'">Enviar mensaje →</button>
     </div>
 
     <!-- Espacio inferior -->
@@ -5864,22 +5884,25 @@ async function exportPDFFiltered(type){
 /* Contáctanos v2 */
 .ct-cat-card{
   width:100%;display:flex;align-items:center;gap:14px;
-  padding:13px 14px;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.07);
+  padding:13px 14px;min-height:64px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
   border-radius:16px;
   cursor:pointer;text-align:left;
   font-family:var(--f);
-  transition:background .18s, border-color .18s, transform .12s;
-  -webkit-appearance:none;
+  transition:background .18s, border-color .18s, transform .1s;
+  -webkit-appearance:none;touch-action:manipulation;
 }
-.ct-cat-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.13)}
-.ct-cat-card:active{transform:scale(.98)}
+.ct-cat-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+.ct-cat-card:active{transform:scale(.98);background:rgba(255,255,255,.06)}
 .ct-cat-card.ct-cat-highlight{
-  background:rgba(101,8,31,.12);
-  border-color:rgba(180,40,70,.2);
+  background:rgba(101,8,31,.18);
+  border-color:rgba(180,40,70,.3);
 }
-.ct-cat-card.ct-cat-highlight:hover{background:rgba(101,8,31,.2);border-color:rgba(200,60,90,.35)}
+.ct-cat-card.ct-cat-highlight:hover{background:rgba(101,8,31,.25);border-color:rgba(200,60,90,.45)}
+html.light .ct-cat-card{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.09);color:#1A0E14}
+html.light .ct-cat-card:hover{background:rgba(0,0,0,.07)}
+html.light .ct-cat-card.ct-cat-highlight{background:rgba(101,8,31,.08);border-color:rgba(101,8,31,.2)}
 .ct-cat-icon{
   width:40px;height:40px;border-radius:12px;
   border:1px solid;
@@ -5887,7 +5910,9 @@ async function exportPDFFiltered(type){
 }
 .ct-cat-text{flex:1;min-width:0}
 .ct-cat-name{font-size:14px;font-weight:700;color:#F4EFFE;margin-bottom:2px}
+html.light .ct-cat-name{color:#1A0E14}
 .ct-cat-sub{font-size:11.5px;color:rgba(255,255,255,.35);line-height:1.3}
+html.light .ct-cat-sub{color:rgba(0,0,0,.45)}
 .ct-cat-arrow{flex-shrink:0;transition:transform .18s}
 .ct-cat-card:hover .ct-cat-arrow{transform:translateX(3px)}
 
@@ -9849,45 +9874,64 @@ function backToCats(){
 }
 
 async function enviarTicket(){
-  const btn = document.querySelector('#contact-sheet button[onclick="enviarTicket()"]') ||
-              document.querySelector('#contact-sheet .gp-cta') ||
-              document.querySelector('#ct-step-2 button:last-of-type');
-  const msg = document.getElementById('ct-msg').value.trim();
+  // Validaciones
+  const msg = (document.getElementById('ct-msg')?.value||'').trim();
   if(msg.length < 10){ toast('Escribe al menos 10 caracteres','w'); return; }
-  const zona = document.getElementById('ct-zona').value.trim();
-  const contactRef = document.getElementById('ct-contact-ref')?.value.trim()||'';
+  if(!_contactCat){ toast('Selecciona el tipo de mensaje','w'); return; }
+
+  const VALID_CATS = ['falla','sugerencia','ayuda','anuncio','otro'];
+  const category = VALID_CATS.includes(_contactCat) ? _contactCat : 'otro';
+
+  const zona = (document.getElementById('ct-zona')?.value||'').trim();
+  const contactRef = (document.getElementById('ct-contact-ref')?.value||'').trim();
   const deviceId = getDeviceId();
-  const ticketId = 'TKT-' + Date.now().toString(36).slice(-5).toUpperCase();
-  if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
+  const ticketId = 'TKT-' + Date.now().toString(36).slice(-6).toUpperCase();
+
+  // UI: deshabilitar botón mientras se envía
+  const btn = document.getElementById('ct-send-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Enviando…'; btn.style.opacity='.6'; }
+
   const ticket = {
     id: ticketId,
     device_id: deviceId,
-    category: _contactCat||'otro',
+    category,
     message: msg,
-    zona: zona||'',
-    contact_ref: contactRef||'',
-    status: 'open',
-    created_at: new Date().toISOString()
+    zona: zona || '',
+    contact_ref: contactRef || '',
+    status: 'open'
   };
-  // 1. Guardar en Supabase (tabla contact_tickets)
+
   let savedCloud = false;
   try{
-    const{error} = await db.from('contact_tickets').insert([ticket]);
-    if(!error) savedCloud = true;
-    else console.warn('ticket cloud save:', error.message);
-  }catch(e){ console.warn('ticket cloud:', e); }
-  // 2. Guardar localmente como fallback (compatible con renderTicketsTab)
-  const localTicket = {...ticket, ts: Date.now(), deviceId, cat: _contactCat||'otro', msg};
-  const tickets = JSON.parse(lsGet('apx_tickets','[]'));
-  tickets.unshift(localTicket);
-  lsSet('apx_tickets', JSON.stringify(tickets.slice(0,50)));
+    const { data, error } = await db.from('contact_tickets').insert([ticket]).select();
+    if(error){
+      console.error('Supabase ticket error:', error.code, error.message, error.details);
+    } else {
+      savedCloud = true;
+    }
+  }catch(e){
+    console.error('Supabase ticket exception:', e);
+  }
+
+  // Guardar en localStorage siempre como respaldo
+  try{
+    const local = { id:ticketId, deviceId, cat:category, msg, zona, ts:Date.now(), status:'open' };
+    const arr = JSON.parse(lsGet('apx_tickets','[]'));
+    arr.unshift(local);
+    lsSet('apx_tickets', JSON.stringify(arr.slice(0,50)));
+  }catch(e){}
+
+  if(btn){ btn.disabled=false; btn.textContent='Enviar mensaje →'; btn.style.opacity=''; }
+
   closeContacto();
   setTimeout(()=>{
-    document.getElementById('ct-confirm-id').textContent = ticketId + ' · ' + deviceId;
-    document.getElementById('contact-confirm').style.display='flex';
-  },450);
-  toast(savedCloud ? '✉️ Mensaje enviado al equipo' : '✉️ Mensaje guardado (sin conexión)','s');
-  if(btn){ btn.disabled=false; btn.textContent='Enviar mensaje →'; }
+    const confirmEl = document.getElementById('ct-confirm-id');
+    if(confirmEl) confirmEl.textContent = ticketId + ' · ' + deviceId;
+    const confirmModal = document.getElementById('contact-confirm');
+    if(confirmModal) confirmModal.style.display='flex';
+  }, 460);
+
+  toast(savedCloud ? '✉️ Mensaje recibido — gracias' : '✉️ Guardado localmente (sin conexión)', savedCloud ? 's' : 'i');
 }
 
 // ── ADMIN TAB TICKETS ─────────────────────────────────────────────
@@ -9926,10 +9970,13 @@ async function renderTicketsTab(body){
   }
   const statusBtns=(t)=>{
     const s=t.status||'open';
+    const readSVG=`<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>`;
+    const checkSVG=`<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7l3 3 7-6"/></svg>`;
+    const trashSVG=`<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h10M5 4V2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V4M3.5 4l.7 7h5.6l.7-7"/></svg>`;
     const actions=[
-      s!=='read'?`<button class="a-btn" onclick="updateTicketStatus('${t.id}','read')">👁 Leer</button>`:'',
-      s!=='closed'?`<button class="a-btn resolve" onclick="updateTicketStatus('${t.id}','closed')">✓ Cerrar</button>`:'',
-      `<button class="a-btn danger" onclick="deleteTicket('${t.id}')">Eliminar</button>`
+      s==='open'?`<button class="a-btn" onclick="updateTicketStatus('${t.id}','read')" aria-label="Marcar como leído">${readSVG} Leer</button>`:'',
+      s!=='closed'?`<button class="a-btn resolve" onclick="updateTicketStatus('${t.id}','closed')" aria-label="Cerrar ticket">${checkSVG} Cerrar</button>`:'',
+      `<button class="a-btn danger" onclick="deleteTicket('${t.id}')" aria-label="Eliminar ticket">${trashSVG}</button>`
     ].filter(Boolean).join('');
     return actions;
   };
