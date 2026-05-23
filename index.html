@@ -585,11 +585,12 @@ html.pwa-standalone #topbar{background:#0C0608}
 #layer-panel{
   position:fixed;left:0;top:62px;bottom:0;
   width:220px;z-index:850;
-  background:rgba(12,6,8,.95);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  background:rgba(12,6,8,.97);
   border-right:1px solid var(--bdr);
   display:flex;flex-direction:column;
   transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
 }
+#layer-panel.open{-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 #layer-panel.open{transform:translateX(0)}
 #layer-toggle-btn{
   position:fixed;left:0;top:50%;transform:translateY(-50%);
@@ -752,7 +753,8 @@ html.pwa-standalone #topbar{background:#0C0608}
 .pbtn.adm{border-color:rgba(101,8,31,.5);color:#FFD0D8;background:var(--brand-sub)}.pbtn.adm:hover{background:rgba(101,8,31,.2)}
 
 /* ── RIGHT SIDEBAR ─────────────────────────── */
-#sidebar{position:fixed;top:62px;right:0;bottom:0;width:290px;background:rgba(12,6,8,.94);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-left:1px solid var(--bdr);z-index:850;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+#sidebar{position:fixed;top:62px;right:0;bottom:0;width:290px;background:rgba(12,6,8,.97);border-left:1px solid var(--bdr);z-index:850;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+#sidebar.open{-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 #sidebar.open{transform:translateX(0)}
 @media(min-width:1100px){#sidebar{transform:translateX(0)}}
 #sidebar.open{transform:translateX(0)}
@@ -774,86 +776,184 @@ html.pwa-standalone #topbar{background:#0C0608}
 /* ── ADMIN ─────────────────────────────────── */
 #admin-panel{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px}
 #admin-panel.open{display:flex}
-.admin-sheet{background:var(--surf);border:1px solid var(--brand-lt);border-radius:18px;width:100%;max-width:640px;height:88vh;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 60px rgba(101,8,31,.5)}
-.admin-head{padding:18px 22px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
-.admin-head-title{font-size:18px;font-weight:800;letter-spacing:-.3px;flex:1}
-.admin-badge{background:var(--brand-sub);border:1px solid var(--brand-lt);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#FFD0D8}
-.admin-close{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--dim);font-size:13px;font-weight:700;transition:all .2s}
-.admin-close:hover{color:var(--tx)}
-/* Ensure Leaflet popups appear above search bar */
-.leaflet-popup-pane{z-index:700!important}
-.leaflet-popup{z-index:700!important}
-/* Fade search bar when popup is open to avoid overlap */
-body.popup-open #search-wrap{opacity:.25;pointer-events:none;transition:opacity .2s}
-
-.admin-tabs{
-  display:flex;gap:0;border-bottom:1px solid var(--bdr);padding:0 16px;
-  overflow-x:auto;overflow-y:hidden;
-  scrollbar-width:thin;scrollbar-color:var(--bdr) transparent;
-  -webkit-overflow-scrolling:touch;
-  flex-wrap:nowrap;
-  position:sticky;top:0;z-index:5;
-  background:var(--surf);
-  flex-shrink:0;
-  /* Visual scroll hint shadow on right edge */
-  background-image:linear-gradient(to right,transparent calc(100% - 24px),rgba(101,8,31,.4));
-  background-repeat:no-repeat;
-  background-attachment:local,scroll;
+.admin-sheet{
+  background:linear-gradient(180deg,#100810 0%,#0C060A 100%);
+  border:1px solid rgba(101,8,31,.4);
+  border-radius:20px;
+  width:100%;max-width:680px;
+  height:92vh;max-height:92vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 20px 80px rgba(0,0,0,.7),0 0 0 1px rgba(101,8,31,.2);
 }
-.admin-tabs::-webkit-scrollbar{height:4px}
-.admin-tabs::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
-.admin-tab{flex-shrink:0;white-space:nowrap}
-.admin-tab{
-  padding:11px 14px;
-  font-family:var(--f);font-size:11px;font-weight:700;
-  letter-spacing:.5px;text-transform:uppercase;
-  color:var(--mut);
-  cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:all .18s;
-  letter-spacing:.2px;
-  white-space:nowrap;
+/* Admin header — dashboard style */
+.admin-head{
+  padding:16px 20px 0;
   flex-shrink:0;
+}
+.admin-head-bar{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.admin-head-logo{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,#8B0E2A,#65081F);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 2px 10px rgba(101,8,31,.5);
+}
+.admin-head-title{font-size:17px;font-weight:800;letter-spacing:-.3px;flex:1;color:#F0E8EC}
+.admin-badge{
+  background:rgba(101,8,31,.35);
+  border:1px solid rgba(200,40,70,.4);
+  border-radius:20px;padding:3px 10px;
+  font-size:10px;font-weight:800;color:#FFB0C0;
+  letter-spacing:.5px;text-transform:uppercase;
+}
+.admin-close{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;flex-shrink:0;
+}
+.admin-close:hover{background:rgba(255,80,80,.12);border-color:rgba(255,80,80,.3);color:#FF9090}
+/* KPI strip */
+.admin-kpi-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  padding:0 20px 14px;border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+}
+.admin-kpi{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:10px;text-align:center;
+}
+.admin-kpi-n{font-size:22px;font-weight:900;line-height:1;margin-bottom:2px}
+.admin-kpi-n.el{color:#F5B731}.admin-kpi-n.ag{color:#22D0F0}.admin-kpi-n.rd{color:#FF6B6B}.admin-kpi-n.ok{color:#1FD18A}
+.admin-kpi-l{font-size:9px;color:rgba(255,255,255,.35);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+/* Tabs — pill style */
+.admin-tabs{
+  display:flex;gap:4px;padding:10px 16px;
+  overflow-x:auto;overflow-y:hidden;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  flex-wrap:nowrap;flex-shrink:0;
+}
+.admin-tabs::-webkit-scrollbar{display:none}
+.admin-tab{
+  flex-shrink:0;white-space:nowrap;
+  padding:7px 13px;
+  font-family:var(--f);font-size:11px;font-weight:700;
+  color:rgba(255,255,255,.35);
+  cursor:pointer;
+  border-radius:20px;
+  border:1px solid transparent;
+  transition:all .18s;
   user-select:none;
 }
-.admin-tab:hover{color:var(--dim);background:rgba(255,255,255,.02)}
+.admin-tab:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.04)}
 .admin-tab.active{
   color:#FFD0D8;
-  border-color:var(--brand-lt);
-  background:linear-gradient(180deg,transparent 0%,rgba(139,14,42,.18) 100%);
+  background:linear-gradient(135deg,rgba(139,14,42,.4),rgba(101,8,31,.3));
+  border-color:rgba(180,30,60,.4);
+  box-shadow:0 2px 10px rgba(101,8,31,.25);
 }
-.admin-body{flex:1 1 auto;overflow-y:auto;padding:14px 16px 24px;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent;-webkit-overflow-scrolling:touch;min-height:0}
-.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.a-stat{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center}
-.a-stat-n{font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.admin-body{
+  flex:1 1 auto;overflow-y:auto;padding:14px 18px 28px;
+  scrollbar-width:thin;scrollbar-color:rgba(101,8,31,.3) transparent;
+  -webkit-overflow-scrolling:touch;min-height:0;
+}
+.admin-body::-webkit-scrollbar{width:4px}
+.admin-body::-webkit-scrollbar-thumb{background:rgba(101,8,31,.3);border-radius:2px}
+/* Cards universales dentro del admin */
+.adm-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:14px 16px;margin-bottom:10px;
+}
+.adm-card-title{font-size:12px;font-weight:800;color:#F0E8EC;margin-bottom:10px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.4px}
+.adm-divider{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
+/* Toggle switch reutilizable */
+.adm-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:2px 0}
+.adm-toggle-label{font-size:13px;font-weight:700;color:#F0E8EC}
+.adm-toggle-sub{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:2px}
+.adm-switch{position:relative;width:44px;height:24px;flex-shrink:0;cursor:pointer}
+.adm-switch input{opacity:0;width:0;height:0;position:absolute}
+.adm-switch-track{
+  position:absolute;inset:0;border-radius:12px;
+  background:rgba(255,255,255,.1);
+  transition:background .2s;
+}
+.adm-switch input:checked ~ .adm-switch-track{background:#1FD18A}
+.adm-switch-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:white;
+  transition:left .2s;
+  box-shadow:0 1px 4px rgba(0,0,0,.35);
+}
+.adm-switch input:checked ~ .adm-switch-thumb{left:23px}
+/* Stats grid */
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.a-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center}
+.a-stat-n{font-size:26px;font-weight:800;line-height:1;margin-bottom:4px}
 .a-stat-n.el{color:var(--elec)}.a-stat-n.ag{color:var(--agua)}.a-stat-n.all{color:#FFD0D8}
-.a-stat-l{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
-.a-report{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
-.a-report-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.a-stat-l{font-size:10px;color:rgba(255,255,255,.3);font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+/* Report cards */
+.a-report{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
+.a-report-icon{font-size:20px;flex-shrink:0;margin-top:1px}
 .a-report-info{flex:1;min-width:0}
 .a-report-head{font-size:13px;font-weight:800;margin-bottom:3px;display:flex;align-items:center;gap:7px}
 .a-report-head.el{color:var(--elec)}.a-report-head.ag{color:var(--agua)}
-.a-report-meta{font-size:11px;color:var(--dim);line-height:1.5}
+.a-report-meta{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
 .a-report-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;flex-shrink:0}
 .a-report-badge.urgent{background:rgba(255,61,61,.15);border:1px solid rgba(255,61,61,.3);color:#FF7A7A}
 .a-report-badge.repair{background:rgba(34,208,240,.15);border:1px solid rgba(34,208,240,.3);color:var(--agua)}
 .a-report-acts{display:flex;gap:6px;margin-top:9px}
-.a-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--bdr);background:var(--card2);color:var(--dim);font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap}
+.a-btn{padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;-webkit-appearance:none}
 .a-btn.resolve{border-color:rgba(31,209,138,.4);color:var(--grn)}.a-btn.resolve:hover{background:rgba(31,209,138,.1)}
 .a-btn.danger{border-color:rgba(255,61,61,.4);color:#FF7A7A}.a-btn.danger:hover{background:rgba(255,61,61,.1)}
-.a-btn.fly{border-color:var(--bdr2)}.a-btn.fly:hover{color:var(--tx)}
-.a-photo-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--bdr);display:none}
-.admin-section{margin-bottom:8px}
-.admin-section-title{font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:7px}
-.admin-empty{padding:30px 0;text-align:center;color:var(--mut);font-size:13px;line-height:1.7}
-.admin-empty span{font-size:32px;display:block;margin-bottom:8px}
+.a-btn.fly{}.a-btn.fly:hover{color:#F0E8EC}
+.a-photo-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1);display:none}
+.admin-section{margin-bottom:10px}
+.admin-section-title{font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.admin-empty{padding:28px 0;text-align:center;color:rgba(255,255,255,.25);font-size:13px;line-height:1.7}
+.admin-empty span{font-size:30px;display:block;margin-bottom:8px}
+/* Ticket cards para Contáctanos */
+.ticket-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-left:3px solid;
+  border-radius:12px;padding:12px 14px;margin-bottom:8px;
+}
+.ticket-card.open{border-left-color:#F5B731}
+.ticket-card.read{border-left-color:#22D0F0}
+.ticket-card.closed{border-left-color:#1FD18A}
+.ticket-id{font-size:10px;font-weight:800;color:rgba(255,255,255,.3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.ticket-body{font-size:12.5px;color:#F0E8EC;line-height:1.5;margin-bottom:6px}
+.ticket-meta{font-size:10.5px;color:rgba(255,255,255,.3);display:flex;gap:10px;flex-wrap:wrap}
+.ticket-status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.ticket-status.open{background:rgba(245,183,49,.15);color:#F5B731}
+.ticket-status.read{background:rgba(34,208,240,.15);color:#22D0F0}
+.ticket-status.closed{background:rgba(31,209,138,.15);color:#1FD18A}
+/* Hist stat */
+.hist-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px;text-align:center}
+.hist-stat-n{font-size:20px;font-weight:800;color:#F0E8EC;line-height:1;margin-bottom:3px}
+.hist-stat-l{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
 
 /* ADMIN LOGIN */
-#admin-login{position:fixed;inset:0;z-index:2001;background:rgba(0,0,0,.8);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:16px}
-#admin-login.open{display:flex}
+/* admin-login old rule removed */
 /* login sheet — glassmorphism bottom-sheet */
-#admin-login{position:fixed;inset:0;z-index:2000;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,3,8,0);pointer-events:none;transition:background .35s}
-#admin-login.open{background:rgba(6,3,8,.78);pointer-events:auto;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#admin-login{
+  position:fixed;inset:0;z-index:2000;
+  display:none;align-items:flex-end;justify-content:center;
+  background:rgba(6,3,8,.82);
+  pointer-events:none;
+}
+#admin-login.open{
+  display:flex;
+  pointer-events:auto;
+}
 .login-sheet{width:100%;max-width:420px;background:linear-gradient(160deg,rgba(20,10,16,.97),rgba(10,5,8,.99));border:1px solid rgba(101,8,31,.5);border-bottom:none;border-radius:24px 24px 0 0;padding:10px 24px max(env(safe-area-inset-bottom,0px),28px);transform:translateY(110%);transition:transform .42s cubic-bezier(.32,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,.55)}
 #admin-login.open .login-sheet{transform:translateY(0)}
 .login-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 22px}
@@ -1786,13 +1886,17 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   height:calc(44px + env(safe-area-inset-bottom,0px));
   padding-bottom:env(safe-area-inset-bottom,0px);
   z-index:798;
-  background:rgba(8,5,10,.95);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  background:rgba(8,5,10,.97);
   border-top:1px solid rgba(101,8,31,.4);
   display:flex;align-items:center;
   overflow:hidden;
   transform:translateY(100%);
   transition:transform .45s cubic-bezier(.4,0,.2,1);
+  /* No backdrop-filter when off-screen — avoids iOS blur bleed */
+}
+#promo-bar.visible{
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
 }
 #promo-bar.visible{transform:translateY(0)}
 body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
@@ -2235,6 +2339,16 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
           <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--elec)"><rect x="2" y="14" width="4" height="8" rx="2"/><rect x="9" y="9" width="4" height="13" rx="2"/><rect x="16" y="4" width="4" height="18" rx="2"/><path d="M4 8l5-5 4 4 7-7" stroke="var(--elec)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
         </div>
         <div><div class="mm-btn-name" data-i18n="menu_rankings">Ranking de zonas</div><div class="mm-btn-sub" data-i18n="menu_rankings_sub">Las más activas este mes</div></div>
+        <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </button>
+      <button class="mm-btn" onclick="openContacto();closeMenu()">
+        <div class="mm-btn-icon" style="background:linear-gradient(135deg,rgba(34,208,240,.15),rgba(34,208,240,.05));border-color:rgba(34,208,240,.25)">
+          <svg viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="mm-btn-content">
+          <div class="mm-btn-name">Contáctanos</div>
+          <div class="mm-btn-sub">Envía un mensaje o reporte al equipo</div>
+        </div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
       <button class="mm-btn" onclick="toggleLayerPanel();toggleMobileMenu()">
@@ -3271,6 +3385,64 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   </div>
 </div>
 
+
+<!-- MODAL CONTÁCTANOS -->
+<div id="contact-modal" style="position:fixed;inset:0;z-index:1900;display:none;align-items:flex-end;justify-content:center;background:rgba(6,3,8,.82)">
+  <div id="contact-sheet" style="width:100%;max-width:480px;background:linear-gradient(160deg,rgba(16,8,16,.98),rgba(8,4,10,.99));border:1px solid rgba(34,208,240,.2);border-bottom:none;border-radius:22px 22px 0 0;padding:10px 22px max(env(safe-area-inset-bottom,0px),32px);transform:translateY(110%);transition:transform .42s cubic-bezier(.32,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,.5)">
+    <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 18px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(34,208,240,.2),rgba(34,208,240,.08));border:1px solid rgba(34,208,240,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 22 22" width="18" height="18" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div>
+        <div style="font-size:17px;font-weight:800;color:#F0E8EC;letter-spacing:-.3px">Contáctanos</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px">Tu mensaje llega como ticket al equipo</div>
+      </div>
+      <button onclick="closeContacto()" style="margin-left:auto;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);cursor:pointer;color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+      </button>
+    </div>
+    <!-- Categoría -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Tipo de mensaje</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="ct-cat-btns">
+        <button class="ct-cat active" data-cat="falla" onclick="setCat(this)">🐛 Falla técnica</button>
+        <button class="ct-cat" data-cat="sugerencia" onclick="setCat(this)">💡 Sugerencia</button>
+        <button class="ct-cat" data-cat="reporte" onclick="setCat(this)">📢 Queja/Reporte</button>
+        <button class="ct-cat" data-cat="otro" onclick="setCat(this)">💬 Otro</button>
+      </div>
+    </div>
+    <!-- Mensaje -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Mensaje</div>
+      <textarea id="ct-msg" placeholder="Describe tu problema, sugerencia o comentario con el mayor detalle posible…" style="width:100%;min-height:100px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:#F0E8EC;font-family:var(--f);font-size:14px;resize:vertical;outline:none;line-height:1.5;-webkit-appearance:none;box-sizing:border-box" oninput="this.style.borderColor=this.value.length>10?'rgba(34,208,240,.4)':'rgba(255,255,255,.1)'"></textarea>
+    </div>
+    <!-- Colonia/Zona (opcional) -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Colonia o zona (opcional)</div>
+      <input type="text" id="ct-zona" placeholder="Ej. García Ginerés, Mérida" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:11px 14px;color:#F0E8EC;font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none;box-sizing:border-box"/>
+    </div>
+    <!-- Info privacidad -->
+    <div style="background:rgba(34,208,240,.05);border:1px solid rgba(34,208,240,.12);border-radius:10px;padding:9px 12px;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:14px;line-height:1.5">
+      🔒 Tu mensaje es anónimo. Se genera un ID de dispositivo para agrupar conversaciones — no recopilamos nombre, correo ni teléfono. Solo usamos: modelo de pantalla, zona horaria e idioma del navegador.
+    </div>
+    <button onclick="enviarTicket()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.15));border:1px solid rgba(34,208,240,.4);border-radius:13px;color:#22D0F0;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;-webkit-appearance:none;transition:all .18s;box-shadow:0 4px 20px rgba(34,208,240,.15)">Enviar mensaje →</button>
+  </div>
+</div>
+<!-- Confirmación ticket -->
+<div id="contact-confirm" style="position:fixed;inset:0;z-index:1901;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(6,3,8,.85)">
+  <div style="background:linear-gradient(160deg,rgba(16,8,16,.98),rgba(8,4,10,.99));border:1px solid rgba(31,209,138,.3);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <div style="width:56px;height:56px;border-radius:16px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#1FD18A" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div style="font-size:19px;font-weight:800;color:#F0E8EC;margin-bottom:6px">¡Mensaje enviado!</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:6px">Tu ticket fue registrado con el ID:</div>
+    <div id="ct-confirm-id" style="font-size:13px;font-weight:800;color:#1FD18A;background:rgba(31,209,138,.1);border:1px solid rgba(31,209,138,.2);border-radius:8px;padding:6px 14px;display:inline-block;margin-bottom:16px;letter-spacing:.5px"></div>
+    <div style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;margin-bottom:20px">Revisamos los tickets periódicamente. Gracias por ayudar a mejorar ApagonesMID.</div>
+    <button onclick="document.getElementById('contact-confirm').style.display='none'" style="width:100%;padding:12px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.3);border-radius:12px;color:#1FD18A;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;-webkit-appearance:none">Listo ✓</button>
+  </div>
+</div>
+
 <!-- ADMIN LOGIN -->
 <div id="admin-login">
   <div class="login-sheet">
@@ -3292,10 +3464,23 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 <div id="admin-panel">
   <div class="admin-sheet">
     <div class="admin-head">
-      <div style="font-size:20px">🔐</div>
-      <div class="admin-head-title">Panel de Administración</div>
-      <span class="admin-badge">ADMIN</span>
-      <button class="admin-close" onclick="closeAdmin()">Cerrar ✕</button>
+      <div class="admin-head-bar">
+        <div class="admin-head-logo">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg>
+        </div>
+        <div class="admin-head-title">Dashboard Admin</div>
+        <span class="admin-badge">Admin</span>
+        <button class="admin-close" onclick="closeAdmin()" title="Cerrar">
+          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+        </button>
+      </div>
+      <!-- KPI strip — se llena en renderAdminPanel() -->
+      <div class="admin-kpi-strip" id="admin-kpi-strip">
+        <div class="admin-kpi"><div class="admin-kpi-n el" id="kpi-el">—</div><div class="admin-kpi-l">Eléctricos</div></div>
+        <div class="admin-kpi"><div class="admin-kpi-n ag" id="kpi-ag">—</div><div class="admin-kpi-l">Agua</div></div>
+        <div class="admin-kpi"><div class="admin-kpi-n rd" id="kpi-ac">—</div><div class="admin-kpi-l">Activos</div></div>
+        <div class="admin-kpi"><div class="admin-kpi-n ok" id="kpi-rs">—</div><div class="admin-kpi-l">Resueltos</div></div>
+      </div>
     </div>
     <div class="admin-tabs">
       <div class="admin-tab active" id="atab-apagones" onclick="switchAdminTab('apagones')">⚡ Apagones</div>
@@ -3306,6 +3491,7 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
       <div class="admin-tab" id="atab-trends" onclick="switchAdminTab('trends')">📈 Tendencias</div>
       <div class="admin-tab" id="atab-sched" onclick="switchAdminTab('sched')">📅 Programar</div>
       <div class="admin-tab" id="atab-anuncios" onclick="switchAdminTab('anuncios')">📢 Anuncios</div>
+      <div class="admin-tab" id="atab-tickets" onclick="switchAdminTab('tickets')">💬 Tickets</div>
       <div class="admin-tab" id="atab-historico" onclick="switchAdminTab('historico')">📚 Histórico</div>
       <div class="admin-tab" id="atab-audit" onclick="switchAdminTab('audit')">📝 Auditoría</div>
       <div class="admin-tab" id="atab-settings" onclick="switchAdminTab('settings')">⚙️ Ajustes</div>
@@ -4500,7 +4686,7 @@ async function unlockContacts(){
     if(btn){ btn.disabled=false; btn.textContent='🔓 Desbloquear contactos'; }
   }
 }
-async function openAdminPanel(){
+async function openAdminPanel(){updateAdminKPIs();
   document.getElementById('admin-panel').classList.add('open');
   if(adminAuthed && typeof loadContacts==='function'){ await loadContacts(); }
   renderAdminPanel();
@@ -4678,7 +4864,7 @@ function filterHistorico(){
 
 function switchAdminTab(tab){
   adminTab=tab;
-  ['apagones','agua','alumbrado','critical','heatmap','trends','sched','anuncios','historico','audit','settings'].forEach(t=>{
+  ['apagones','agua','alumbrado','critical','heatmap','trends','sched','anuncios','tickets','historico','audit','settings'].forEach(t=>{
     const el=document.getElementById('atab-'+t);
     if(el) el.classList.toggle('active',t===tab);
   });
@@ -4702,6 +4888,21 @@ function handleLogoClick(){
   checkAdminHash();
   window.addEventListener('hashchange', checkAdminHash);
 })();
+function updateAdminKPIs(){
+  if(!cachedReports||!cachedReports.length) return;
+  const el=cachedReports.filter(r=>ELEC_TYPES.includes(r.type));
+  const ag=cachedReports.filter(r=>AGUA_TYPES.includes(r.type));
+  const active=cachedReports.filter(r=>r.active);
+  const resolved=cachedReports.filter(r=>r.resolved);
+  const kpiEl=document.getElementById('kpi-el');
+  const kpiAg=document.getElementById('kpi-ag');
+  const kpiAc=document.getElementById('kpi-ac');
+  const kpiRs=document.getElementById('kpi-rs');
+  if(kpiEl) kpiEl.textContent=el.length;
+  if(kpiAg) kpiAg.textContent=ag.length;
+  if(kpiAc) kpiAc.textContent=active.length||cachedReports.filter(r=>!r.resolved).length;
+  if(kpiRs) kpiRs.textContent=resolved.length;
+}
 function renderAdminPanel(){
   const body = document.getElementById('admin-body');
   // El banner de desbloqueo solo aparece en pestañas que muestran contactos
@@ -4859,113 +5060,85 @@ function renderAdminPanel(){
     const promoImgActive = lsGet('promo_img_active','0') === '1';
     body.innerHTML = `
     <!-- Toggle global -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;margin-bottom:14px">
-      <div>
-        <div style="font-size:14px;font-weight:800;color:var(--tx)">Barra de anuncios</div>
-        <div style="font-size:11px;color:var(--dim);margin-top:2px">Aparece encima del ticker · No invasiva</div>
-      </div>
-      <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0">
-        <input type="checkbox" id="an-global-toggle" ${promoEnabled?'checked':''} onchange="togglePromoGlobal(this.checked)" style="opacity:0;width:0;height:0"/>
-        <span style="position:absolute;inset:0;border-radius:12px;background:${promoEnabled?'var(--grn)':'rgba(255,255,255,.1)'};transition:background .2s;cursor:pointer;display:block">
-          <span style="position:absolute;top:3px;left:${promoEnabled?'23px':'3px'};width:18px;height:18px;border-radius:50%;background:white;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)"></span>
-        </span>
-      </label>
-    </div>
-
-    <!-- Sección: imagen personalizada -->
-    <div style="background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.15);border-radius:14px;padding:14px;margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div class="adm-card">
+      <div class="adm-toggle-row">
         <div>
-          <div style="font-size:13px;font-weight:800;color:var(--agua)">📸 Imagen personalizada</div>
-          <div style="font-size:10.5px;color:var(--dim);margin-top:2px">Tamaño recomendado: <strong style="color:var(--tx)">720 × 88 px</strong> · JPG/PNG · Max 300 KB</div>
+          <div class="adm-toggle-label">Barra de anuncios</div>
+          <div class="adm-toggle-sub">Aparece encima del ticker · No interrumpe el uso</div>
         </div>
-        <label style="position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0">
-          <input type="checkbox" id="an-img-active" ${promoImgActive&&promoImg?'checked':''} ${!promoImg?'disabled':''} onchange="togglePromoImg(this.checked)" style="opacity:0;width:0;height:0"/>
-          <span style="position:absolute;inset:0;border-radius:11px;background:${promoImgActive&&promoImg?'var(--agua)':'rgba(255,255,255,.1)'};transition:background .2s;cursor:pointer;display:block">
-            <span style="position:absolute;top:3px;left:${promoImgActive&&promoImg?'21px':'3px'};width:16px;height:16px;border-radius:50%;background:white;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></span>
-          </span>
+        <label class="adm-switch">
+          <input type="checkbox" ${promoEnabled?'checked':''} onchange="togglePromoGlobal(this.checked)"/>
+          <span class="adm-switch-track"></span>
+          <span class="adm-switch-thumb"></span>
         </label>
       </div>
-      ${promoImg ? `<div style="border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(34,208,240,.2)"><img src="${promoImg}" style="width:100%;height:44px;object-fit:cover;display:block"/></div>` : '<div style="width:100%;height:44px;border-radius:10px;border:1.5px dashed rgba(34,208,240,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim);margin-bottom:10px">Sin imagen cargada</div>'}
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <label style="flex:1;min-width:120px;padding:9px 12px;background:rgba(34,208,240,.08);border:1px solid rgba(34,208,240,.25);border-radius:10px;font-size:12px;font-weight:700;color:var(--agua);text-align:center;cursor:pointer">
+    </div>
+
+    <!-- Imagen personalizada -->
+    <div class="adm-card">
+      <div class="adm-card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="rgba(34,208,240,.8)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="7.5" cy="7.5" r="1.5" fill="rgba(34,208,240,.8)" stroke="none"/><path d="M3 13l4-4 3 3 2-2 5 5"/></svg>
+        Imagen personalizada
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.5">Tamaño ideal: <strong style="color:#22D0F0">720 × 88 px</strong><br/>JPG o PNG · Max 400 KB</div>
+        </div>
+        <label class="adm-switch" style="opacity:${promoImg?1:.4}">
+          <input type="checkbox" ${promoImgActive&&promoImg?'checked':''} ${!promoImg?'disabled':''} onchange="togglePromoImg(this.checked)"/>
+          <span class="adm-switch-track"></span>
+          <span class="adm-switch-thumb"></span>
+        </label>
+      </div>
+      ${promoImg ? `<div style="border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(34,208,240,.2)"><img src="${promoImg}" style="width:100%;height:44px;object-fit:cover;display:block"/></div>` : ''}
+      <!-- Canvas de ejemplo de medidas -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Ejemplo de cómo se ve</div>
+        <canvas id="banner-example-canvas" style="width:100%;height:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08);display:block"></canvas>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <label style="flex:1;min-width:120px;padding:10px 14px;background:rgba(34,208,240,.08);border:1.5px dashed rgba(34,208,240,.3);border-radius:11px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(34,208,240,.14)'" onmouseout="this.style.background='rgba(34,208,240,.08)'">
           📁 Cargar imagen
           <input type="file" accept="image/*" onchange="loadPromoImage(this)" style="display:none"/>
         </label>
-        <input type="url" id="an-img-link" placeholder="URL de destino (opcional)" value="${promoImgLink}" style="flex:2;min-width:150px;background:var(--card2);border:1px solid var(--bdr2);border-radius:10px;padding:9px 12px;color:var(--tx);font-family:var(--f);font-size:12px;outline:none" oninput="lsSet('promo_img_link',this.value);refreshPromoImgSlide()"/>
-        ${promoImg ? `<button onclick="clearPromoImage()" style="padding:9px 12px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.2);border-radius:10px;font-family:var(--f);font-size:12px;font-weight:700;color:#FF9090;cursor:pointer;white-space:nowrap">🗑 Quitar</button>` : ''}
+        <input type="url" id="an-img-link" placeholder="URL destino (opcional)" value="${promoImgLink}" style="flex:2;min-width:150px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:10px 12px;color:#F0E8EC;font-family:var(--f);font-size:12px;outline:none;transition:border-color .18s" oninput="lsSet('promo_img_link',this.value)" onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'"/>
+        ${promoImg ? `<button onclick="clearPromoImage()" style="padding:10px 14px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.2);border-radius:11px;font-family:var(--f);font-size:12px;font-weight:700;color:#FF9090;cursor:pointer;white-space:nowrap;-webkit-appearance:none;transition:background .18s" onmouseover="this.style.background='rgba(255,80,80,.15)'" onmouseout="this.style.background='rgba(255,80,80,.08)'">🗑 Quitar</button>` : ''}
       </div>
-    </div>
-
-    <!-- Preview en vivo -->
-    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px;margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Vista previa del anuncio activo</div>
-      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(101,8,31,.3)">
-        <div id="an-preview-live" style="height:44px;background:rgba(8,5,10,.95);display:flex;align-items:center;padding:0 8px;gap:8px">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--grn);flex-shrink:0;box-shadow:0 0 6px var(--grn)"></div>
-          <div style="font-size:11px;color:rgba(255,255,255,.5)">Rotando: Instagram → Facebook → Instagram</div>
-        </div>
-      </div>
-      <div style="font-size:10px;color:var(--dim);margin-top:6px;line-height:1.4">La barra aparece 3s después de entrar a la app. Al cerrarla se guarda por sesión.</div>
     </div>
 
     <!-- Slides de redes -->
-    <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Slides de redes sociales</div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(193,53,132,.07);border:1px solid rgba(193,53,132,.2);border-radius:11px">
-        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
-        </div>
-        <div style="flex:1">
-          <div style="font-size:12px;font-weight:700;color:#fd8080">@apagonesmid · Instagram</div>
-          <div style="font-size:10px;color:var(--dim)">Aparece 2× por rotación (mayor peso)</div>
-        </div>
-        <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(193,53,132,.2);color:#fd8080;font-weight:700">Activo</div>
+    <div class="adm-card">
+      <div class="adm-card-title">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="rgba(255,180,200,.7)" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg>
+        Rotación de redes sociales
       </div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(24,119,242,.07);border:1px solid rgba(24,119,242,.2);border-radius:11px">
-        <div style="width:32px;height:32px;border-radius:9px;background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:10px;line-height:1.5">Instagram aparece 2× por cada rotación completa para mayor visibilidad.</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(193,53,132,.06);border:1px solid rgba(193,53,132,.18);border-radius:10px">
+          <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
+          </div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fd8080">@apagonesmid · Instagram</div><div style="font-size:10px;color:rgba(255,255,255,.3)">Peso: 2× (aparece el doble)</div></div>
+          <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(31,209,138,.15);color:#1FD18A;font-weight:700;border:1px solid rgba(31,209,138,.25)">Activo</div>
         </div>
-        <div style="flex:1">
-          <div style="font-size:12px;font-weight:700;color:#6ab0ff">ApagonesMID · Facebook</div>
-          <div style="font-size:10px;color:var(--dim)">Aparece 1× por rotación</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(24,119,242,.06);border:1px solid rgba(24,119,242,.18);border-radius:10px">
+          <div style="width:30px;height:30px;border-radius:8px;background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#6ab0ff">ApagonesMID · Facebook</div><div style="font-size:10px;color:rgba(255,255,255,.3)">Peso: 1×</div></div>
+          <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(31,209,138,.15);color:#1FD18A;font-weight:700;border:1px solid rgba(31,209,138,.25)">Activo</div>
         </div>
-        <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(24,119,242,.18);color:#6ab0ff;font-weight:700">Activo</div>
       </div>
     </div>`;
 
-    // Re-render preview con imagen si existe
-    refreshPromoPreview();
+    // Generar el canvas de ejemplo después de renderizar
+    setTimeout(drawBannerExample, 50);
   }
 
-  // ──────────────────── TAB: AUDIT ────────────────────
-  // ──────────────────── TAB: HISTÓRICO ────────────────────
-  else if(adminTab==='historico'){
-    const lockH = adminAuthed ? '' : '🔒 ';
-    const hintH = adminAuthed ? '' : '<div style="font-size:10.5px;color:var(--mut);margin-bottom:8px;font-family:var(--f)">🔒 Desbloquea contactos para exportar con nombres y teléfonos.</div>';
-    body.innerHTML = `
-      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
-        📚 Reportes <strong style="color:var(--grn)">resueltos</strong>. Los datos de contacto aquí son privados — solo visibles para administradores.
-      </div>
-      <div id="hist-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
-        <div class="hist-stat"><div class="hist-stat-n" id="hs-total">—</div><div class="hist-stat-l">Resueltos</div></div>
-        <div class="hist-stat"><div class="hist-stat-n" id="hs-avg">—</div><div class="hist-stat-l">Tiempo prom.</div></div>
-        <div class="hist-stat"><div class="hist-stat-n" id="hs-month">—</div><div class="hist-stat-l">Este mes</div></div>
-      </div>
-      ${hintH}
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        <button onclick="exportHistFiltered('csv')" style="flex:1;min-width:90px;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.25);border-radius:9px;padding:8px 10px;cursor:pointer;font-family:var(--f);font-size:11px;font-weight:700;color:var(--grn)">${lockH}📄 CSV</button>
-        <button onclick="exportHistFiltered('xlsx')" style="flex:1;min-width:90px;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(34,208,240,.08);border:1px solid rgba(34,208,240,.25);border-radius:9px;padding:8px 10px;cursor:pointer;font-family:var(--f);font-size:11px;font-weight:700;color:var(--agua)">${lockH}📊 Excel</button>
-        <button onclick="exportHistFiltered('pdf')" style="flex:1;min-width:90px;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(255,61,61,.08);border:1px solid rgba(255,61,61,.25);border-radius:9px;padding:8px 10px;cursor:pointer;font-family:var(--f);font-size:11px;font-weight:700;color:#FF9090">${lockH}📑 PDF</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <input id="hist-search" placeholder="Buscar por nombre, zona o teléfono…" oninput="filterHistorico()" style="flex:1;background:var(--card2);border:1px solid var(--bdr2);border-radius:9px;padding:9px 12px;color:var(--tx);font-family:var(--f);font-size:13px"/>
-      </div>
-      <div id="hist-list" style="font-size:12px"><div style="text-align:center;color:var(--mut);padding:20px">Cargando histórico…</div></div>`;
-    renderHistorico();
+  else if(adminTab==='tickets'){
+    renderTicketsTab(body);
   }
-
-  else if(adminTab==='audit'){
+    else if(adminTab==='audit'){
     body.innerHTML = `
       <div style="background:rgba(101,8,31,.1);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
         📝 Registro de acciones admin: resoluciones, folios añadidos, anuncios publicados.
@@ -5549,7 +5722,18 @@ async function exportPDFFiltered(type){
       tr:nth-child(even){background:#fafafa}
       .footer{margin-top:30px;padding-top:14px;border-top:1px solid #ddd;font-size:9px;color:#999;text-align:center}
       @media print{ body{padding:15px} }
-    </style></head><body>
+    
+/* Contáctanos modal */
+.ct-cat{
+  padding:7px 12px;font-family:var(--f);font-size:12px;font-weight:700;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;color:rgba(255,255,255,.45);cursor:pointer;-webkit-appearance:none;
+  transition:all .18s;white-space:nowrap;
+}
+.ct-cat.active{
+  background:rgba(34,208,240,.15);border-color:rgba(34,208,240,.4);color:#22D0F0;
+}
+</style></head><body>
     <h1>ApagonesMID — ${typeLbl}</h1>
     <div class="meta">Reporte generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
     <div class="summary">
@@ -9400,6 +9584,219 @@ function refreshPromoPreview(){
       <div style="width:8px;height:8px;border-radius:50%;background:var(--grn);flex-shrink:0;box-shadow:0 0 6px var(--grn)"></div>
       <div style="font-size:11px;color:rgba(255,255,255,.5)">Rotando: Instagram → Facebook → Instagram (2:1)</div>`;
   }
+}
+
+// ── DEVICE ID ANÓNIMO ──────────────────────────────────────────
+function getDeviceId(){
+  let did = lsGet('apx_device_id','');
+  if(!did){
+    // Fingerprint ligero: timezone + lang + screen + colorDepth + platform snippet
+    const fp = [
+      Intl.DateTimeFormat().resolvedOptions().timeZone||'',
+      navigator.language||'',
+      screen.width+'x'+screen.height,
+      screen.colorDepth||'',
+      (navigator.platform||'').slice(0,5),
+      (navigator.hardwareConcurrency||0)
+    ].join('|');
+    // Hash simple (djb2)
+    let hash = 5381;
+    for(let i=0;i<fp.length;i++) hash=((hash<<5)+hash)+fp.charCodeAt(i);
+    did = 'DEV-' + Math.abs(hash).toString(36).toUpperCase().padStart(6,'0');
+    lsSet('apx_device_id', did);
+  }
+  return did;
+}
+
+// ── CONTÁCTANOS ──────────────────────────────────────────────────
+let _contactCat = 'falla';
+
+function openContacto(){
+  const m = document.getElementById('contact-modal');
+  const s = document.getElementById('contact-sheet');
+  if(!m||!s) return;
+  m.style.display='flex';
+  setTimeout(()=>{ s.style.transform='translateY(0)'; },20);
+  document.getElementById('ct-msg').value='';
+  document.getElementById('ct-zona').value='';
+  // Reset categoría
+  document.querySelectorAll('.ct-cat').forEach(b=>b.classList.remove('active'));
+  const firstCat = document.querySelector('.ct-cat[data-cat="falla"]');
+  if(firstCat){ firstCat.classList.add('active'); _contactCat='falla'; }
+}
+
+function closeContacto(){
+  const s = document.getElementById('contact-sheet');
+  const m = document.getElementById('contact-modal');
+  if(s) s.style.transform='translateY(110%)';
+  setTimeout(()=>{ if(m) m.style.display='none'; },430);
+}
+
+function setCat(btn){
+  document.querySelectorAll('.ct-cat').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  _contactCat = btn.dataset.cat;
+}
+
+function enviarTicket(){
+  const msg = document.getElementById('ct-msg').value.trim();
+  if(msg.length < 10){ toast('Escribe al menos 10 caracteres','w'); return; }
+  const zona = document.getElementById('ct-zona').value.trim();
+  const deviceId = getDeviceId();
+  const ticketId = 'TKT-' + Date.now().toString(36).slice(-5).toUpperCase();
+  const ticket = {
+    id: ticketId,
+    deviceId,
+    cat: _contactCat,
+    msg,
+    zona: zona||'',
+    ts: Date.now(),
+    status: 'open'
+  };
+  // Guardar localmente (para que el admin lo vea si es el mismo dispositivo)
+  const tickets = JSON.parse(lsGet('apx_tickets','[]'));
+  tickets.unshift(ticket);
+  lsSet('apx_tickets', JSON.stringify(tickets.slice(0,50)));
+  // Cerrar modal y mostrar confirmación
+  closeContacto();
+  setTimeout(()=>{
+    document.getElementById('ct-confirm-id').textContent = ticketId + ' · ' + deviceId;
+    document.getElementById('contact-confirm').style.display='flex';
+  },450);
+  toast('✉️ Ticket enviado','s');
+}
+
+// ── ADMIN TAB TICKETS ─────────────────────────────────────────────
+function renderTicketsTab(body){
+  const tickets = JSON.parse(lsGet('apx_tickets','[]'));
+  const catLabels = {falla:'🐛 Falla técnica',sugerencia:'💡 Sugerencia',reporte:'📢 Queja/Reporte',otro:'💬 Otro'};
+  if(!tickets.length){
+    body.innerHTML=`<div class="admin-empty"><span>💬</span>No hay tickets aún.<br>Aparecerán aquí cuando los vecinos envíen mensajes.</div>`;
+    return;
+  }
+  const statusBtns=(t)=>{
+    const s=t.status||'open';
+    const actions=[
+      s!=='read'?`<button class="a-btn" onclick="updateTicketStatus('${t.id}','read')">👁 Leer</button>`:'',
+      s!=='closed'?`<button class="a-btn resolve" onclick="updateTicketStatus('${t.id}','closed')">✓ Cerrar</button>`:'',
+      `<button class="a-btn danger" onclick="deleteTicket('${t.id}')">Eliminar</button>`
+    ].filter(Boolean).join('');
+    return actions;
+  };
+  const statsHtml=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+    <div class="admin-kpi"><div class="admin-kpi-n rd">${tickets.filter(t=>t.status==='open'||!t.status).length}</div><div class="admin-kpi-l">Abiertos</div></div>
+    <div class="admin-kpi"><div class="admin-kpi-n ag">${tickets.filter(t=>t.status==='read').length}</div><div class="admin-kpi-l">Leídos</div></div>
+    <div class="admin-kpi"><div class="admin-kpi-n ok">${tickets.filter(t=>t.status==='closed').length}</div><div class="admin-kpi-l">Cerrados</div></div>
+  </div>`;
+  body.innerHTML = statsHtml + tickets.map(t=>{
+    const ts = new Date(t.ts).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const s = t.status||'open';
+    return `<div class="ticket-card ${s}">
+      <div class="ticket-id">${t.id} · <span style="color:rgba(255,255,255,.25)">${t.deviceId}</span> · <span class="ticket-status ${s}">${s==='open'?'Abierto':s==='read'?'Leído':'Cerrado'}</span></div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:4px">${catLabels[t.cat]||t.cat}${t.zona?' · 📍 '+t.zona:''}</div>
+      <div class="ticket-body">${t.msg}</div>
+      <div class="ticket-meta"><span>🕐 ${ts}</span></div>
+      <div class="a-report-acts" style="margin-top:8px">${statusBtns(t)}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateTicketStatus(id,status){
+  const tickets = JSON.parse(lsGet('apx_tickets','[]'));
+  const t = tickets.find(x=>x.id===id);
+  if(t){ t.status=status; lsSet('apx_tickets',JSON.stringify(tickets)); }
+  switchAdminTab('tickets');
+}
+
+function deleteTicket(id){
+  const tickets = JSON.parse(lsGet('apx_tickets','[]')).filter(x=>x.id!==id);
+  lsSet('apx_tickets',JSON.stringify(tickets));
+  switchAdminTab('tickets');
+  toast('Ticket eliminado','b');
+}
+
+// ── BANNER EXAMPLE CANVAS ──────────────────────────────────────
+function drawBannerExample(){
+  const canvas = document.getElementById('banner-example-canvas');
+  if(!canvas) return;
+  // Canvas resolution: 720×88 (ratio 720:88 ≈ 8.18:1)
+  const W = 720, H = 88;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  // Background
+  ctx.fillStyle = '#0C060A';
+  ctx.fillRect(0,0,W,H);
+  // Subtle gradient overlay
+  const grad = ctx.createLinearGradient(0,0,W,0);
+  grad.addColorStop(0,'rgba(101,8,31,.3)');
+  grad.addColorStop(.5,'rgba(0,0,0,0)');
+  grad.addColorStop(1,'rgba(34,208,240,.15)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+  // Brand stripe left
+  ctx.fillStyle = '#65081F';
+  ctx.fillRect(0,0,4,H);
+  // Icon circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(46, H/2, 22, 0, Math.PI*2);
+  const igGrad = ctx.createRadialGradient(46,H/2,2,46,H/2,22);
+  igGrad.addColorStop(0,'#c13584');
+  igGrad.addColorStop(1,'#fd1d1d');
+  ctx.fillStyle = igGrad;
+  ctx.fill();
+  ctx.restore();
+  // Instagram icon (simplified)
+  ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.lineCap='round';
+  ctx.strokeRect(39,H/2-8,14,14);
+  ctx.beginPath(); ctx.arc(46,H/2,3.5,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(50,H/2-5.5,1.5,0,Math.PI*2); ctx.fillStyle='white'; ctx.fill();
+  // Main text
+  ctx.fillStyle='rgba(255,255,255,.95)';
+  ctx.font='800 15px -apple-system,BlinkMacSystemFont,sans-serif';
+  ctx.fillText('@apagonesmid — Síguenos', 82, H/2 - 4);
+  // Sub text
+  ctx.fillStyle='rgba(255,255,255,.4)';
+  ctx.font='400 11px -apple-system,BlinkMacSystemFont,sans-serif';
+  ctx.fillText('Reportes en tiempo real · Mérida, Yucatán', 82, H/2 + 12);
+  // CTA pill
+  const ctaX=W-110, ctaY=H/2-13, ctaW=96, ctaH=26;
+  ctx.save();
+  ctx.beginPath();
+  const r=13;
+  ctx.moveTo(ctaX+r,ctaY); ctx.lineTo(ctaX+ctaW-r,ctaY);
+  ctx.arcTo(ctaX+ctaW,ctaY,ctaX+ctaW,ctaY+r,r);
+  ctx.lineTo(ctaX+ctaW,ctaY+ctaH-r);
+  ctx.arcTo(ctaX+ctaW,ctaY+ctaH,ctaX+ctaW-r,ctaY+ctaH,r);
+  ctx.lineTo(ctaX+r,ctaY+ctaH);
+  ctx.arcTo(ctaX,ctaY+ctaH,ctaX,ctaY+ctaH-r,r);
+  ctx.lineTo(ctaX,ctaY+r);
+  ctx.arcTo(ctaX,ctaY,ctaX+r,ctaY,r);
+  ctx.closePath();
+  ctx.fillStyle='rgba(193,53,132,.35)';
+  ctx.strokeStyle='rgba(193,53,132,.6)';
+  ctx.lineWidth=1.5;
+  ctx.fill(); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle='#fd8080';
+  ctx.font='700 11px -apple-system,BlinkMacSystemFont,sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('Seguir →', ctaX+ctaW/2, H/2+4);
+  // Dimension labels
+  ctx.fillStyle='rgba(34,208,240,.7)';
+  ctx.font='600 10px monospace';
+  ctx.textAlign='left';
+  ctx.fillText('720 px', W/2-20, 14);
+  ctx.fillText('88 px', 8, H/2+3);
+  // Dimension lines
+  ctx.strokeStyle='rgba(34,208,240,.35)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(0,4); ctx.lineTo(W,4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(4,0); ctx.lineTo(4,H); ctx.stroke();
+  ctx.setLineDash([]);
+  // Border
+  ctx.strokeStyle='rgba(34,208,240,.2)'; ctx.lineWidth=1;
+  ctx.strokeRect(.5,.5,W-1,H-1);
 }
 </script>
 
