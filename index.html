@@ -2473,7 +2473,7 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   </div>
   <div class="hl-bar" style="margin-top:6px">
     <div class="hl-grad-ag"></div>
-    <div class="hl-labels"><span style="color:var(--agua)">💧 Agua</span></div>
+    <div class="hl-labels"><span style="color:var(--agua)"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2C5 6 3 9 3 11a5 5 0 0 0 10 0c0-2-2-5-5-9Z"/></svg> Agua</span></span></div>
   </div>
 </div>
 
@@ -2649,7 +2649,7 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   </div>
   <div class="lp-info">
     <strong>⚡ Luz</strong>: apagones y alumbrado público. Expiran en 8h o cuando vecinos confirman.<br/><br/>
-    <strong>💧 Agua</strong>: cortes, fugas, presión y calidad. Permanecen hasta confirmar reparación.<br/><br/>
+    <strong><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2C5 6 3 9 3 11a5 5 0 0 0 10 0c0-2-2-5-5-9Z"/></svg> Agua</span></strong>: cortes, fugas, presión y calidad. Permanecen hasta confirmar reparación.<br/><br/>
     Toca cada categoría para mostrar/ocultar tipos individuales.
   </div>
 </div>
@@ -3060,7 +3060,7 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
           <label class="alert-type-opt" style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px;cursor:pointer">
             <input type="checkbox" id="alert-el" checked style="accent-color:var(--brand-lt);width:14px;height:14px"/>
-            <span style="font-size:12px;font-weight:700;color:var(--elec)">⚡ Apagones</span>
+            <span style="font-size:12px;font-weight:700;color:var(--elec)"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 9h4l-1 5 6-7H9Z"/></svg> Apagones</span></span>
           </label>
           <label class="alert-type-opt" style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px;cursor:pointer">
             <input type="checkbox" id="alert-ag" checked style="accent-color:var(--brand-lt);width:14px;height:14px"/>
@@ -3100,7 +3100,7 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
             <div style="background:#1A0E14;border-radius:8px;padding:8px;border:1px solid rgba(245,183,49,.2);text-align:center">
               <div style="font-size:22px;font-weight:800;color:#F5B731;line-height:1" id="wpreview-el">—</div>
-              <div style="font-size:9px;color:rgba(245,183,49,.6)">⚡ Apagones</div>
+              <div style="font-size:9px;color:rgba(245,183,49,.6)"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 9h4l-1 5 6-7H9Z"/></svg> Apagones</span></div>
             </div>
             <div style="background:#1A0E14;border-radius:8px;padding:8px;border:1px solid rgba(34,208,240,.2);text-align:center">
               <div style="font-size:22px;font-weight:800;color:#22D0F0;line-height:1" id="wpreview-ag">—</div>
@@ -3160,8 +3160,8 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
         <button onclick="document.getElementById('tips-modal').style.display='none'" style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700">✕</button>
       </div>
       <div style="display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:0" id="tips-tabs">
-        <button class="tips-tab active" data-cat="apagon" onclick="switchTipsTab('apagon')">⚡ Apagones</button>
-        <button class="tips-tab" data-cat="agua" onclick="switchTipsTab('agua')">💧 Agua</button>
+        <button class="tips-tab active" data-cat="apagon" onclick="switchTipsTab('apagon')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 9h4l-1 5 6-7H9Z"/></svg> Apagones</span></button>
+        <button class="tips-tab" data-cat="agua" onclick="switchTipsTab('agua')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2C5 6 3 9 3 11a5 5 0 0 0 10 0c0-2-2-5-5-9Z"/></svg> Agua</span></button>
         <button class="tips-tab" data-cat="calor" onclick="switchTipsTab('calor')">🌡️ Calor</button>
         <button class="tips-tab" data-cat="hogar" onclick="switchTipsTab('hogar')">🏠 Hogar</button>
         <button class="tips-tab" data-cat="avisos" onclick="switchTipsTab('avisos')">📢 Avisos</button>
@@ -3194,11 +3194,11 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
           <div style="background:#1A0E14;border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(245,183,49,.2)">
             <div style="font-size:28px;font-weight:800;color:#F5B731;line-height:1" id="bul-n-el">—</div>
-            <div style="font-size:9px;color:rgba(245,183,49,.6);text-transform:uppercase;margin-top:3px">⚡ Apagones</div>
+            <div style="font-size:9px;color:rgba(245,183,49,.6);text-transform:uppercase;margin-top:3px"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 9h4l-1 5 6-7H9Z"/></svg> Apagones</span></div>
           </div>
           <div style="background:#1A0E14;border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(34,208,240,.2)">
             <div style="font-size:28px;font-weight:800;color:#22D0F0;line-height:1" id="bul-n-ag">—</div>
-            <div style="font-size:9px;color:rgba(34,208,240,.6);text-transform:uppercase;margin-top:3px">💧 Agua</div>
+            <div style="font-size:9px;color:rgba(34,208,240,.6);text-transform:uppercase;margin-top:3px"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2C5 6 3 9 3 11a5 5 0 0 0 10 0c0-2-2-5-5-9Z"/></svg> Agua</span></div>
           </div>
           <div style="background:#1A0E14;border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(255,75,31,.2)">
             <div style="font-size:28px;font-weight:800;color:#FFD0D8;line-height:1" id="bul-n-total">—</div>
@@ -3386,60 +3386,146 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 </div>
 
 
-<!-- MODAL CONTÁCTANOS -->
-<div id="contact-modal" style="position:fixed;inset:0;z-index:1900;display:none;align-items:flex-end;justify-content:center;background:rgba(6,3,8,.82)">
-  <div id="contact-sheet" style="width:100%;max-width:480px;background:linear-gradient(160deg,rgba(16,8,16,.98),rgba(8,4,10,.99));border:1px solid rgba(34,208,240,.2);border-bottom:none;border-radius:22px 22px 0 0;padding:10px 22px max(env(safe-area-inset-bottom,0px),32px);transform:translateY(110%);transition:transform .42s cubic-bezier(.32,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,.5)">
-    <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 18px"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(34,208,240,.2),rgba(34,208,240,.08));border:1px solid rgba(34,208,240,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 22 22" width="18" height="18" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<!-- MODAL CONTÁCTANOS — v2 -->
+<div id="contact-modal" style="position:fixed;inset:0;z-index:1900;display:none;align-items:flex-end;justify-content:center">
+  <!-- Backdrop separado para animar -->
+  <div id="ct-backdrop" onclick="closeContacto()" style="position:absolute;inset:0;background:rgba(4,2,6,.84);opacity:0;transition:opacity .35s"></div>
+  <!-- Sheet -->
+  <div id="contact-sheet" style="position:relative;width:100%;max-width:500px;background:#0D0610;border:1px solid rgba(255,255,255,.09);border-bottom:none;border-radius:26px 26px 0 0;padding:0 0 max(env(safe-area-inset-bottom,0px),28px);transform:translateY(100%);transition:transform .44s cubic-bezier(.22,1,.36,1);box-shadow:0 -12px 60px rgba(0,0,0,.6);overflow:hidden;max-height:92vh;overflow-y:auto">
+    <!-- Handle bar -->
+    <div style="width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.1);margin:12px auto 0"></div>
+    <!-- Header -->
+    <div style="padding:18px 22px 0;display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(34,208,240,.2),rgba(34,208,240,.06));border:1px solid rgba(34,208,240,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
-      <div>
-        <div style="font-size:17px;font-weight:800;color:#F0E8EC;letter-spacing:-.3px">Contáctanos</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:1px">Tu mensaje llega como ticket al equipo</div>
+      <div style="flex:1">
+        <div style="font-size:18px;font-weight:800;color:#F4EFFE;letter-spacing:-.4px">Contáctanos</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.3);margin-top:2px">Anónimo · Sin registro</div>
       </div>
-      <button onclick="closeContacto()" style="margin-left:auto;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);cursor:pointer;color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
+      <button onclick="closeContacto()" style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+        <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-linecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
       </button>
     </div>
-    <!-- Categoría -->
-    <div style="margin-bottom:10px">
-      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Tipo de mensaje</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap" id="ct-cat-btns">
-        <button class="ct-cat active" data-cat="falla" onclick="setCat(this)">🐛 Falla técnica</button>
-        <button class="ct-cat" data-cat="sugerencia" onclick="setCat(this)">💡 Sugerencia</button>
-        <button class="ct-cat" data-cat="reporte" onclick="setCat(this)">📢 Queja/Reporte</button>
-        <button class="ct-cat" data-cat="otro" onclick="setCat(this)">💬 Otro</button>
+
+    <!-- PASO 1: Selección de categoría -->
+    <div id="ct-step-1" style="padding:20px 22px 0">
+      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px">¿Cómo podemos ayudarte?</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="ct-cat-list">
+
+        <button class="ct-cat-card" data-cat="sugerencia" onclick="selectCat(this)">
+          <div class="ct-cat-icon" style="background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.25)">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#F5B731" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="8" r="5"/><path d="M10 13v2M7 17h6"/><path d="M8 8c0-1.1.9-2 2-2s2 .9 2 2a2 2 0 0 1-1 1.73V12"/></svg>
+          </div>
+          <div class="ct-cat-text">
+            <div class="ct-cat-name">Sugerencia o idea</div>
+            <div class="ct-cat-sub">Propón mejoras para la aplicación</div>
+          </div>
+          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+        </button>
+
+        <button class="ct-cat-card" data-cat="ayuda" onclick="selectCat(this)">
+          <div class="ct-cat-icon" style="background:rgba(34,208,240,.1);border-color:rgba(34,208,240,.2)">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M7.5 7.5a2.5 2.5 0 0 1 5 0c0 2-2.5 2.5-2.5 4"/><circle cx="10" cy="15.5" r=".5" fill="#22D0F0"/></svg>
+          </div>
+          <div class="ct-cat-text">
+            <div class="ct-cat-name">Ayuda o soporte</div>
+            <div class="ct-cat-sub">¿Algo no funciona como esperas?</div>
+          </div>
+          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+        </button>
+
+        <button class="ct-cat-card ct-cat-highlight" data-cat="anuncio" onclick="selectCat(this)">
+          <div class="ct-cat-icon" style="background:rgba(101,8,31,.25);border-color:rgba(200,60,90,.35)">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#FF9EC0" stroke-width="2" stroke-linecap="round"><path d="M3 7h2v4H3ZM5 7l9-3.5v11L5 11"/><path d="M7 11v3.5"/><circle cx="16" cy="10" r="1" fill="#FF9EC0"/></svg>
+          </div>
+          <div class="ct-cat-text">
+            <div class="ct-cat-name" style="color:#FFB8CC">Quiero anunciarme aquí</div>
+            <div class="ct-cat-sub">Coloca tu anuncio en la barra de la app</div>
+          </div>
+          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,150,180,.35)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+        </button>
+
+        <button class="ct-cat-card" data-cat="falla" onclick="selectCat(this)">
+          <div class="ct-cat-icon" style="background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.2)">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#FF8080" stroke-width="2" stroke-linecap="round"><path d="M10 2L2 17h16Z"/><path d="M10 8v4"/><circle cx="10" cy="14.5" r=".5" fill="#FF8080"/></svg>
+          </div>
+          <div class="ct-cat-text">
+            <div class="ct-cat-name">Reportar falla</div>
+            <div class="ct-cat-sub">Error, bug o problema técnico</div>
+          </div>
+          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+        </button>
+
+        <button class="ct-cat-card" data-cat="otro" onclick="selectCat(this)">
+          <div class="ct-cat-icon" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="1"/><circle cx="4" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg>
+          </div>
+          <div class="ct-cat-text">
+            <div class="ct-cat-name">Otro</div>
+            <div class="ct-cat-sub">Cualquier otro tipo de mensaje</div>
+          </div>
+          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+        </button>
       </div>
     </div>
-    <!-- Mensaje -->
-    <div style="margin-bottom:10px">
-      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Mensaje</div>
-      <textarea id="ct-msg" placeholder="Describe tu problema, sugerencia o comentario con el mayor detalle posible…" style="width:100%;min-height:100px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:#F0E8EC;font-family:var(--f);font-size:14px;resize:vertical;outline:none;line-height:1.5;-webkit-appearance:none;box-sizing:border-box" oninput="this.style.borderColor=this.value.length>10?'rgba(34,208,240,.4)':'rgba(255,255,255,.1)'"></textarea>
+
+    <!-- PASO 2: Formulario (oculto hasta seleccionar categoría) -->
+    <div id="ct-step-2" style="display:none;padding:20px 22px 0">
+      <!-- Breadcrumb -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+        <button onclick="backToCats()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--f);font-size:12px;font-weight:700;color:rgba(255,255,255,.45)">
+          <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 1L2 6l6 5"/></svg>
+          Volver
+        </button>
+        <div id="ct-breadcrumb" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.5)"></div>
+      </div>
+
+      <!-- Mensaje -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px" id="ct-msg-label">Mensaje</div>
+        <textarea id="ct-msg" rows="4" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:13px 15px;color:#F4EFFE;font-family:var(--f);font-size:14px;resize:none;outline:none;line-height:1.6;-webkit-appearance:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'" placeholder="Escribe aquí…"></textarea>
+      </div>
+
+      <!-- Campos extra (solo para anuncio) -->
+      <div id="ct-anuncio-fields" style="display:none;margin-bottom:12px">
+        <div style="background:rgba(101,8,31,.15);border:1px solid rgba(200,60,90,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:rgba(255,180,200,.7);line-height:1.6">
+          Dinos qué quieres anunciar, tu página o red social y presupuesto aproximado. Te contactaremos por ese medio.
+        </div>
+        <input type="text" id="ct-contact-ref" placeholder="Instagram, Facebook o sitio web (para contactarte)" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 14px;color:#F4EFFE;font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none;box-sizing:border-box;margin-bottom:8px;transition:border-color .2s" onfocus="this.style.borderColor='rgba(101,8,31,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"/>
+      </div>
+
+      <!-- Colonia -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Colonia o zona (opcional)</div>
+        <input type="text" id="ct-zona" placeholder="Ej. García Ginerés, Mérida" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 14px;color:#F4EFFE;font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='rgba(34,208,240,.3)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"/>
+      </div>
+
+      <!-- Privacidad -->
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 14px;font-size:11px;color:rgba(255,255,255,.3);margin-bottom:16px;line-height:1.6;display:flex;gap:10px">
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.8" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><rect x="5" y="9" width="10" height="8" rx="2"/><path d="M7 9V6a3 3 0 0 1 6 0v3"/></svg>
+        <span>Mensaje anónimo. Solo usamos zona horaria, idioma y resolución de pantalla para generar tu ID de dispositivo.</span>
+      </div>
+
+      <button onclick="enviarTicket()" style="width:100%;padding:15px;background:linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12));border:1.5px solid rgba(34,208,240,.35);border-radius:15px;color:#22D0F0;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;-webkit-appearance:none;transition:all .2s;letter-spacing:.02em" onmouseover="this.style.background='linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.18))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12))'">Enviar mensaje →</button>
     </div>
-    <!-- Colonia/Zona (opcional) -->
-    <div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Colonia o zona (opcional)</div>
-      <input type="text" id="ct-zona" placeholder="Ej. García Ginerés, Mérida" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:11px 14px;color:#F0E8EC;font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none;box-sizing:border-box"/>
-    </div>
-    <!-- Info privacidad -->
-    <div style="background:rgba(34,208,240,.05);border:1px solid rgba(34,208,240,.12);border-radius:10px;padding:9px 12px;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:14px;line-height:1.5">
-      🔒 Tu mensaje es anónimo. Se genera un ID de dispositivo para agrupar conversaciones — no recopilamos nombre, correo ni teléfono. Solo usamos: modelo de pantalla, zona horaria e idioma del navegador.
-    </div>
-    <button onclick="enviarTicket()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.15));border:1px solid rgba(34,208,240,.4);border-radius:13px;color:#22D0F0;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;-webkit-appearance:none;transition:all .18s;box-shadow:0 4px 20px rgba(34,208,240,.15)">Enviar mensaje →</button>
+
+    <!-- Espacio inferior -->
+    <div style="height:4px"></div>
   </div>
 </div>
+
 <!-- Confirmación ticket -->
-<div id="contact-confirm" style="position:fixed;inset:0;z-index:1901;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(6,3,8,.85)">
-  <div style="background:linear-gradient(160deg,rgba(16,8,16,.98),rgba(8,4,10,.99));border:1px solid rgba(31,209,138,.3);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)">
-    <div style="width:56px;height:56px;border-radius:16px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#1FD18A" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+<div id="contact-confirm" style="position:fixed;inset:0;z-index:1901;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,2,6,.88)">
+  <div style="background:#0D0610;border:1px solid rgba(31,209,138,.25);border-radius:22px;padding:30px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.7)">
+    <div style="width:60px;height:60px;border-radius:18px;background:rgba(31,209,138,.12);border:1px solid rgba(31,209,138,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#1FD18A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <div style="font-size:19px;font-weight:800;color:#F0E8EC;margin-bottom:6px">¡Mensaje enviado!</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:6px">Tu ticket fue registrado con el ID:</div>
-    <div id="ct-confirm-id" style="font-size:13px;font-weight:800;color:#1FD18A;background:rgba(31,209,138,.1);border:1px solid rgba(31,209,138,.2);border-radius:8px;padding:6px 14px;display:inline-block;margin-bottom:16px;letter-spacing:.5px"></div>
-    <div style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;margin-bottom:20px">Revisamos los tickets periódicamente. Gracias por ayudar a mejorar ApagonesMID.</div>
-    <button onclick="document.getElementById('contact-confirm').style.display='none'" style="width:100%;padding:12px;background:rgba(31,209,138,.15);border:1px solid rgba(31,209,138,.3);border-radius:12px;color:#1FD18A;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;-webkit-appearance:none">Listo ✓</button>
+    <div style="font-size:20px;font-weight:800;color:#F4EFFE;margin-bottom:6px;letter-spacing:-.3px">¡Recibido!</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:8px">Ticket generado:</div>
+    <div id="ct-confirm-id" style="font-size:12px;font-weight:800;color:#1FD18A;background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.18);border-radius:10px;padding:8px 16px;display:inline-block;margin-bottom:16px;letter-spacing:.5px;font-family:monospace"></div>
+    <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.7;margin-bottom:22px">Revisamos los mensajes periódicamente. Gracias por contribuir a mejorar ApagonesMID.</div>
+    <button onclick="document.getElementById('contact-confirm').style.display='none'" style="width:100%;padding:13px;background:rgba(31,209,138,.12);border:1.5px solid rgba(31,209,138,.25);border-radius:13px;color:#1FD18A;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;-webkit-appearance:none">Listo ✓</button>
   </div>
 </div>
 
@@ -3483,18 +3569,18 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
       </div>
     </div>
     <div class="admin-tabs">
-      <div class="admin-tab active" id="atab-apagones" onclick="switchAdminTab('apagones')">⚡ Apagones</div>
-      <div class="admin-tab" id="atab-agua" onclick="switchAdminTab('agua')">💧 Agua</div>
-      <div class="admin-tab" id="atab-alumbrado" onclick="switchAdminTab('alumbrado')">💡 Alumbrado</div>
-      <div class="admin-tab" id="atab-critical" onclick="switchAdminTab('critical')">🚨 Críticos</div>
-      <div class="admin-tab" id="atab-heatmap" onclick="switchAdminTab('heatmap')">🗺️ Heatmap</div>
-      <div class="admin-tab" id="atab-trends" onclick="switchAdminTab('trends')">📈 Tendencias</div>
-      <div class="admin-tab" id="atab-sched" onclick="switchAdminTab('sched')">📅 Programar</div>
-      <div class="admin-tab" id="atab-anuncios" onclick="switchAdminTab('anuncios')">📢 Anuncios</div>
-      <div class="admin-tab" id="atab-tickets" onclick="switchAdminTab('tickets')">💬 Tickets</div>
-      <div class="admin-tab" id="atab-historico" onclick="switchAdminTab('historico')">📚 Histórico</div>
-      <div class="admin-tab" id="atab-audit" onclick="switchAdminTab('audit')">📝 Auditoría</div>
-      <div class="admin-tab" id="atab-settings" onclick="switchAdminTab('settings')">⚙️ Ajustes</div>
+      <div class="admin-tab active" id="atab-apagones" onclick="switchAdminTab('apagones')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 9h4l-1 5 6-7H9Z"/></svg> Apagones</span></div>
+      <div class="admin-tab" id="atab-agua" onclick="switchAdminTab('agua')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2C5 6 3 9 3 11a5 5 0 0 0 10 0c0-2-2-5-5-9Z"/></svg> Agua</span></div>
+      <div class="admin-tab" id="atab-alumbrado" onclick="switchAdminTab('alumbrado')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="7" r="3"/><path d="M8 1v1M8 13v2M3 3l1 1M12 3l-1 1M1 7h2M13 7h2M6 13h4"/></svg> Alumbrado</span></div>
+      <div class="admin-tab" id="atab-critical" onclick="switchAdminTab('critical')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2L1 14h14Z"/><path d="M8 6v4M8 12v1"/></svg> Críticos</span></div>
+      <div class="admin-tab" id="atab-heatmap" onclick="switchAdminTab('heatmap')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2C6 5 6 11 8 14M8 2c2 3 2 9 0 12M2 8h12"/></svg> Mapa</span></div>
+      <div class="admin-tab" id="atab-trends" onclick="switchAdminTab('trends')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="2,12 6,7 9,9 14,4"/><polyline points="11,4 14,4 14,7"/></svg> Tendencias</span></div>
+      <div class="admin-tab" id="atab-sched" onclick="switchAdminTab('sched')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg> Programar</span></div>
+      <div class="admin-tab" id="atab-anuncios" onclick="switchAdminTab('anuncios')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 6h2v4H2ZM4 6l8-3v10L4 10"/><path d="M6 10v3"/></svg> Anuncios</span></div>
+      <div class="admin-tab" id="atab-tickets" onclick="switchAdminTab('tickets')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 10a2 2 0 0 1-2 2H5l-3 3V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6Z"/></svg> Tickets</span></div>
+      <div class="admin-tab" id="atab-historico" onclick="switchAdminTab('historico')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 2h8a1 1 0 0 1 1 1v11l-4-2-4 2V3a1 1 0 0 1 1-1Z"/></svg> Histórico</span></div>
+      <div class="admin-tab" id="atab-audit" onclick="switchAdminTab('audit')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 2H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6Z"/><path d="M10 2v4h4M5 9h6M5 12h4"/></svg> Auditoría</span></div>
+      <div class="admin-tab" id="atab-settings" onclick="switchAdminTab('settings')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5 13 13M3 13l1.5-1.5M11.5 4.5 13 3"/></svg> Ajustes</span></div>
     </div>
     <div id="unlock-banner" style="display:none;margin:10px 14px 0;padding:12px 14px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.35);border-radius:11px">
       <div style="display:flex;align-items:center;gap:8px;font-family:var(--f);font-size:12.5px;font-weight:700;color:#F5C84B;margin-bottom:8px">
@@ -5058,81 +5144,122 @@ function renderAdminPanel(){
     const promoImg = lsGet('promo_img_data','');
     const promoImgLink = lsGet('promo_img_link','');
     const promoImgActive = lsGet('promo_img_active','0') === '1';
+    const igActive = lsGet('promo_ig_active','1') === '1';
+    const fbActive = lsGet('promo_fb_active','1') === '1';
+    const igPaused = lsGet('promo_ig_paused','0') === '1';
+    const fbPaused = lsGet('promo_fb_paused','0') === '1';
+    const imgPaused = lsGet('promo_img_paused','0') === '1';
+
+    const slideStatusBadge=(active,paused)=>{
+      if(!active) return `<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(255,80,80,.1);color:#FF8080;border:1px solid rgba(255,80,80,.2);font-weight:700">Inactivo</span>`;
+      if(paused)  return `<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(245,183,49,.1);color:#F5B731;border:1px solid rgba(245,183,49,.2);font-weight:700">Pausado</span>`;
+      return `<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(31,209,138,.1);color:#1FD18A;border:1px solid rgba(31,209,138,.2);font-weight:700">Activo</span>`;
+    };
+
     body.innerHTML = `
     <!-- Toggle global -->
-    <div class="adm-card">
+    <div class="adm-card" style="border-color:${promoEnabled?'rgba(31,209,138,.15)':'rgba(255,255,255,.07)'}">
       <div class="adm-toggle-row">
         <div>
-          <div class="adm-toggle-label">Barra de anuncios</div>
-          <div class="adm-toggle-sub">Aparece encima del ticker · No interrumpe el uso</div>
+          <div class="adm-toggle-label" style="display:flex;align-items:center;gap:8px">
+            <svg viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="${promoEnabled?'#1FD18A':'rgba(255,255,255,.3)'}" stroke-width="2" stroke-linecap="round"><rect x="1" y="5" width="4" height="8" rx="1"/><path d="M5 6l9-4v12L5 10"/><path d="M7 10v4"/></svg>
+            Barra de anuncios
+          </div>
+          <div class="adm-toggle-sub">Aparece sobre el ticker en tiempo real</div>
         </div>
         <label class="adm-switch">
           <input type="checkbox" ${promoEnabled?'checked':''} onchange="togglePromoGlobal(this.checked)"/>
-          <span class="adm-switch-track"></span>
-          <span class="adm-switch-thumb"></span>
+          <span class="adm-switch-track"></span><span class="adm-switch-thumb"></span>
         </label>
+      </div>
+    </div>
+
+    <!-- Slides de redes con controles individuales -->
+    <div class="adm-card">
+      <div class="adm-card-title">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(255,200,220,.7)" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Rotación de slides
+      </div>
+
+      <!-- Instagram -->
+      <div class="adm-slide-row">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12.5px;font-weight:700;color:#F0E8EC">Instagram · 2× peso</div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">@apagonesmid</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+          ${slideStatusBadge(igActive,igPaused)}
+          <div style="display:flex;gap:5px">
+            <button onclick="toggleSlide('ig','pause')" class="adm-slide-btn" style="border-color:${igPaused?'rgba(245,183,49,.4)':'rgba(255,255,255,.12)'};color:${igPaused?'#F5B731':'rgba(255,255,255,.35)'}">
+              ${igPaused?'<svg viewBox="0 0 14 14" width="11" height="11" fill="currentColor"><path d="M3 2l8 5-8 5V2z"/></svg>':'<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 2v10M9 2v10"/></svg>'}
+              ${igPaused?'Reanudar':'Pausar'}
+            </button>
+            <button onclick="toggleSlide('ig','active')" class="adm-slide-btn" style="border-color:${!igActive?'rgba(31,209,138,.35)':'rgba(255,80,80,.25)'};color:${!igActive?'#1FD18A':'#FF8080'}">
+              ${igActive?'Quitar':'Activar'}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="adm-divider"></div>
+
+      <!-- Facebook -->
+      <div class="adm-slide-row">
+        <div style="width:32px;height:32px;border-radius:9px;background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12.5px;font-weight:700;color:#F0E8EC">Facebook</div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">ApagonesMID</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+          ${slideStatusBadge(fbActive,fbPaused)}
+          <div style="display:flex;gap:5px">
+            <button onclick="toggleSlide('fb','pause')" class="adm-slide-btn" style="border-color:${fbPaused?'rgba(245,183,49,.4)':'rgba(255,255,255,.12)'};color:${fbPaused?'#F5B731':'rgba(255,255,255,.35)'}">
+              ${fbPaused?'<svg viewBox="0 0 14 14" width="11" height="11" fill="currentColor"><path d="M3 2l8 5-8 5V2z"/></svg>':'<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 2v10M9 2v10"/></svg>'}
+              ${fbPaused?'Reanudar':'Pausar'}
+            </button>
+            <button onclick="toggleSlide('fb','active')" class="adm-slide-btn" style="border-color:${!fbActive?'rgba(31,209,138,.35)':'rgba(255,80,80,.25)'};color:${!fbActive?'#1FD18A':'#FF8080'}">
+              ${fbActive?'Quitar':'Activar'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Imagen personalizada -->
     <div class="adm-card">
       <div class="adm-card-title">
-        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="rgba(34,208,240,.8)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="7.5" cy="7.5" r="1.5" fill="rgba(34,208,240,.8)" stroke="none"/><path d="M3 13l4-4 3 3 2-2 5 5"/></svg>
-        Imagen personalizada
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(34,208,240,.8)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2" fill="rgba(34,208,240,.8)" stroke="none"/><path d="M2 11l3.5-3.5 2.5 2.5L10 8l4 4"/></svg>
+        Banner personalizado
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div>
-          <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.5">Tamaño ideal: <strong style="color:#22D0F0">720 × 88 px</strong><br/>JPG o PNG · Max 400 KB</div>
-        </div>
-        <label class="adm-switch" style="opacity:${promoImg?1:.4}">
-          <input type="checkbox" ${promoImgActive&&promoImg?'checked':''} ${!promoImg?'disabled':''} onchange="togglePromoImg(this.checked)"/>
-          <span class="adm-switch-track"></span>
-          <span class="adm-switch-thumb"></span>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:12px;line-height:1.5">Tamaño recomendado: <strong style="color:rgba(34,208,240,.8)">720 × 88 px</strong> · JPG/PNG · Max 400 KB</div>
+      ${promoImg?`
+      <div style="border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(34,208,240,.15)"><img src="${promoImg}" style="width:100%;height:44px;object-fit:cover;display:block"/></div>
+      <div class="adm-toggle-row" style="margin-bottom:8px">
+        <div><div class="adm-toggle-label" style="font-size:12px">Mostrar banner</div></div>
+        <label class="adm-switch">
+          <input type="checkbox" ${promoImgActive&&!imgPaused?'checked':''} onchange="togglePromoImg(this.checked)"/>
+          <span class="adm-switch-track"></span><span class="adm-switch-thumb"></span>
         </label>
       </div>
-      ${promoImg ? `<div style="border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(34,208,240,.2)"><img src="${promoImg}" style="width:100%;height:44px;object-fit:cover;display:block"/></div>` : ''}
-      <!-- Canvas de ejemplo de medidas -->
-      <div style="margin-bottom:12px">
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Ejemplo de cómo se ve</div>
-        <canvas id="banner-example-canvas" style="width:100%;height:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08);display:block"></canvas>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <label style="flex:1;min-width:120px;padding:10px 14px;background:rgba(34,208,240,.08);border:1.5px dashed rgba(34,208,240,.3);border-radius:11px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(34,208,240,.14)'" onmouseout="this.style.background='rgba(34,208,240,.08)'">
-          📁 Cargar imagen
+      <div style="display:flex;gap:6px">
+        <label style="flex:1;padding:9px 12px;background:rgba(34,208,240,.07);border:1px solid rgba(34,208,240,.2);border-radius:10px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer">
+          Cambiar imagen
           <input type="file" accept="image/*" onchange="loadPromoImage(this)" style="display:none"/>
         </label>
-        <input type="url" id="an-img-link" placeholder="URL destino (opcional)" value="${promoImgLink}" style="flex:2;min-width:150px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:10px 12px;color:#F0E8EC;font-family:var(--f);font-size:12px;outline:none;transition:border-color .18s" oninput="lsSet('promo_img_link',this.value)" onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'"/>
-        ${promoImg ? `<button onclick="clearPromoImage()" style="padding:10px 14px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.2);border-radius:11px;font-family:var(--f);font-size:12px;font-weight:700;color:#FF9090;cursor:pointer;white-space:nowrap;-webkit-appearance:none;transition:background .18s" onmouseover="this.style.background='rgba(255,80,80,.15)'" onmouseout="this.style.background='rgba(255,80,80,.08)'">🗑 Quitar</button>` : ''}
-      </div>
-    </div>
-
-    <!-- Slides de redes -->
-    <div class="adm-card">
-      <div class="adm-card-title">
-        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="rgba(255,180,200,.7)" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg>
-        Rotación de redes sociales
-      </div>
-      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:10px;line-height:1.5">Instagram aparece 2× por cada rotación completa para mayor visibilidad.</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(193,53,132,.06);border:1px solid rgba(193,53,132,.18);border-radius:10px">
-          <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
-          </div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fd8080">@apagonesmid · Instagram</div><div style="font-size:10px;color:rgba(255,255,255,.3)">Peso: 2× (aparece el doble)</div></div>
-          <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(31,209,138,.15);color:#1FD18A;font-weight:700;border:1px solid rgba(31,209,138,.25)">Activo</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(24,119,242,.06);border:1px solid rgba(24,119,242,.18);border-radius:10px">
-          <div style="width:30px;height:30px;border-radius:8px;background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          </div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#6ab0ff">ApagonesMID · Facebook</div><div style="font-size:10px;color:rgba(255,255,255,.3)">Peso: 1×</div></div>
-          <div style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(31,209,138,.15);color:#1FD18A;font-weight:700;border:1px solid rgba(31,209,138,.25)">Activo</div>
-        </div>
-      </div>
+        <button onclick="clearPromoImage()" style="padding:9px 14px;background:rgba(255,80,80,.07);border:1px solid rgba(255,80,80,.18);border-radius:10px;font-family:var(--f);font-size:12px;font-weight:700;color:#FF8080;cursor:pointer;-webkit-appearance:none">Eliminar</button>
+      </div>` : `
+      <canvas id="banner-example-canvas" style="width:100%;height:auto;border-radius:10px;border:1px solid rgba(255,255,255,.07);display:block;margin-bottom:12px"></canvas>
+      <label style="width:100%;display:block;padding:11px;background:rgba(34,208,240,.07);border:1.5px dashed rgba(34,208,240,.25);border-radius:12px;font-size:13px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;box-sizing:border-box">
+        Cargar imagen
+        <input type="file" accept="image/*" onchange="loadPromoImage(this)" style="display:none"/>
+      </label>`}
     </div>`;
-
-    // Generar el canvas de ejemplo después de renderizar
     setTimeout(drawBannerExample, 50);
+    applySlideStates();
   }
 
   else if(adminTab==='tickets'){
@@ -5733,6 +5860,46 @@ async function exportPDFFiltered(type){
 .ct-cat.active{
   background:rgba(34,208,240,.15);border-color:rgba(34,208,240,.4);color:#22D0F0;
 }
+
+/* Contáctanos v2 */
+.ct-cat-card{
+  width:100%;display:flex;align-items:center;gap:14px;
+  padding:13px 14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  cursor:pointer;text-align:left;
+  font-family:var(--f);
+  transition:background .18s, border-color .18s, transform .12s;
+  -webkit-appearance:none;
+}
+.ct-cat-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.13)}
+.ct-cat-card:active{transform:scale(.98)}
+.ct-cat-card.ct-cat-highlight{
+  background:rgba(101,8,31,.12);
+  border-color:rgba(180,40,70,.2);
+}
+.ct-cat-card.ct-cat-highlight:hover{background:rgba(101,8,31,.2);border-color:rgba(200,60,90,.35)}
+.ct-cat-icon{
+  width:40px;height:40px;border-radius:12px;
+  border:1px solid;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ct-cat-text{flex:1;min-width:0}
+.ct-cat-name{font-size:14px;font-weight:700;color:#F4EFFE;margin-bottom:2px}
+.ct-cat-sub{font-size:11.5px;color:rgba(255,255,255,.35);line-height:1.3}
+.ct-cat-arrow{flex-shrink:0;transition:transform .18s}
+.ct-cat-card:hover .ct-cat-arrow{transform:translateX(3px)}
+
+.adm-slide-row{display:flex;align-items:center;gap:10px;padding:4px 0}
+.adm-slide-btn{
+  padding:5px 10px;font-family:var(--f);font-size:11px;font-weight:700;
+  border-radius:8px;border:1px solid;background:rgba(255,255,255,.03);
+  cursor:pointer;-webkit-appearance:none;
+  display:inline-flex;align-items:center;gap:4px;
+  white-space:nowrap;transition:background .18s;
+}
+.adm-slide-btn:hover{background:rgba(255,255,255,.06)}
 </style></head><body>
     <h1>ApagonesMID — ${typeLbl}</h1>
     <div class="meta">Reporte generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
@@ -9473,6 +9640,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
     if(linkEl && imgLink) linkEl.href = imgLink;
   }
 
+  applySlideStates(); // aplicar estados pause/active de cada slide
   let current = 0;
   // Obtener solo slides visibles (display != none)
   const getAllSlides = ()=>Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
@@ -9613,29 +9781,71 @@ let _contactCat = 'falla';
 
 function openContacto(){
   const m = document.getElementById('contact-modal');
+  const bd = document.getElementById('ct-backdrop');
   const s = document.getElementById('contact-sheet');
   if(!m||!s) return;
   m.style.display='flex';
-  setTimeout(()=>{ s.style.transform='translateY(0)'; },20);
-  document.getElementById('ct-msg').value='';
-  document.getElementById('ct-zona').value='';
-  // Reset categoría
-  document.querySelectorAll('.ct-cat').forEach(b=>b.classList.remove('active'));
-  const firstCat = document.querySelector('.ct-cat[data-cat="falla"]');
-  if(firstCat){ firstCat.classList.add('active'); _contactCat='falla'; }
+  // Reset to step 1
+  document.getElementById('ct-step-1').style.display='block';
+  document.getElementById('ct-step-2').style.display='none';
+  if(document.getElementById('ct-msg')) document.getElementById('ct-msg').value='';
+  if(document.getElementById('ct-zona')) document.getElementById('ct-zona').value='';
+  if(document.getElementById('ct-contact-ref')) document.getElementById('ct-contact-ref').value='';
+  _contactCat='';
+  requestAnimationFrame(()=>{
+    if(bd) bd.style.opacity='1';
+    s.style.transform='translateY(0)';
+  });
 }
 
 function closeContacto(){
+  const bd = document.getElementById('ct-backdrop');
   const s = document.getElementById('contact-sheet');
   const m = document.getElementById('contact-modal');
-  if(s) s.style.transform='translateY(110%)';
-  setTimeout(()=>{ if(m) m.style.display='none'; },430);
+  if(bd) bd.style.opacity='0';
+  if(s) s.style.transform='translateY(100%)';
+  setTimeout(()=>{ if(m) m.style.display='none'; },440);
 }
 
-function setCat(btn){
-  document.querySelectorAll('.ct-cat').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function selectCat(btn){
   _contactCat = btn.dataset.cat;
+  const catNames={sugerencia:'Sugerencia o idea',ayuda:'Ayuda y soporte',anuncio:'Quiero anunciarme',falla:'Reportar falla',otro:'Otro'};
+  const msgPlaceholders={
+    sugerencia:'¿Qué mejorarías de la aplicación? Tu sugerencia es valiosa…',
+    ayuda:'Describe el problema o lo que necesitas. Intenta ser específico…',
+    anuncio:'Cuéntanos qué quieres anunciar y a qué audiencia va dirigido…',
+    falla:'¿Qué pasó? ¿En qué pantalla ocurrió? ¿Qué esperabas que pasara?',
+    otro:'Escribe tu mensaje aquí…'
+  };
+  document.getElementById('ct-breadcrumb').textContent=catNames[_contactCat]||_contactCat;
+  document.getElementById('ct-msg').placeholder=msgPlaceholders[_contactCat]||'Escribe aquí…';
+  const anuncioFields=document.getElementById('ct-anuncio-fields');
+  if(anuncioFields) anuncioFields.style.display=_contactCat==='anuncio'?'block':'none';
+  // Transición de paso 1 → 2
+  const s1=document.getElementById('ct-step-1');
+  const s2=document.getElementById('ct-step-2');
+  s1.style.opacity='0';s1.style.transform='translateX(-20px)';s1.style.transition='opacity .2s,transform .2s';
+  setTimeout(()=>{
+    s1.style.display='none';s1.style.opacity='';s1.style.transform='';s1.style.transition='';
+    s2.style.display='block';s2.style.opacity='0';s2.style.transform='translateX(20px)';s2.style.transition='opacity .2s,transform .2s';
+    requestAnimationFrame(()=>{s2.style.opacity='1';s2.style.transform='translateX(0)';});
+    setTimeout(()=>{
+      s2.style.transition='';
+      const ta=document.getElementById('ct-msg'); if(ta) ta.focus();
+    },200);
+  },200);
+}
+
+function backToCats(){
+  const s1=document.getElementById('ct-step-1');
+  const s2=document.getElementById('ct-step-2');
+  s2.style.opacity='0';s2.style.transform='translateX(20px)';s2.style.transition='opacity .18s,transform .18s';
+  setTimeout(()=>{
+    s2.style.display='none';s2.style.opacity='';s2.style.transform='';s2.style.transition='';
+    s1.style.display='block';s1.style.opacity='0';s1.style.transform='translateX(-20px)';s1.style.transition='opacity .18s,transform .18s';
+    requestAnimationFrame(()=>{s1.style.opacity='1';s1.style.transform='translateX(0)';});
+    setTimeout(()=>{ s1.style.transition=''; },180);
+  },180);
 }
 
 function enviarTicket(){
@@ -9797,6 +10007,47 @@ function drawBannerExample(){
   // Border
   ctx.strokeStyle='rgba(34,208,240,.2)'; ctx.lineWidth=1;
   ctx.strokeRect(.5,.5,W-1,H-1);
+}
+
+// ── SLIDE CONTROLS ─────────────────────────────────────────────
+function toggleSlide(id, action){
+  // id: 'ig' | 'fb' | 'img'  |  action: 'pause' | 'active'
+  const pauseKey = 'promo_'+id+'_paused';
+  const activeKey = 'promo_'+id+'_active';
+  if(action === 'pause'){
+    const cur = lsGet(pauseKey,'0')==='1';
+    lsSet(pauseKey, cur ? '0' : '1');
+    toast(cur ? '▶ Slide reanudado' : '⏸ Slide pausado', 'b');
+  } else {
+    const cur = lsGet(activeKey,'1')==='1';
+    lsSet(activeKey, cur ? '0' : '1');
+    toast(cur ? 'Slide eliminado de la rotación' : '✅ Slide activado', 'b');
+  }
+  applySlideStates();
+  switchAdminTab('anuncios'); // re-render
+}
+
+function applySlideStates(){
+  // Aplicar estados pause/active a los slides del DOM
+  const map = {
+    ig: ['ps-ig','ps-ig2'],
+    fb: ['ps-fb'],
+    img: ['ps-img']
+  };
+  ['ig','fb','img'].forEach(id=>{
+    const paused = lsGet('promo_'+id+'_paused','0')==='1';
+    const active = lsGet('promo_'+id+'_active','1')==='1';
+    (map[id]||[]).forEach(slideId=>{
+      const el=document.getElementById(slideId);
+      if(!el) return;
+      if(!active || paused){
+        el.style.display='none';
+        el.classList.remove('active');
+      } else {
+        el.style.display='';
+      }
+    });
+  });
 }
 </script>
 
