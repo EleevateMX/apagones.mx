@@ -5021,137 +5021,199 @@ function renderAdminPanel(){
   // ──────────────────── TAB: ANUNCIOS ────────────────────
   else if(adminTab==='anuncios'){
     const promoEnabled = lsGet('promo_enabled','1') === '1';
-    const promoImg = lsGet('promo_img_data','');
-    const promoImgLink = lsGet('promo_img_link','');
-    const promoImgActive = lsGet('promo_img_active','0') === '1';
-    const igActive = lsGet('promo_ig_active','1') === '1';
-    const fbActive = lsGet('promo_fb_active','1') === '1';
-    const igPaused = lsGet('promo_ig_paused','0') === '1';
-    const fbPaused = lsGet('promo_fb_paused','0') === '1';
-    const imgPaused = lsGet('promo_img_paused','0') === '1';
+    const adSlots = JSON.parse(lsGet('apx_ad_slots','[]'));
+    const igPaused  = lsGet('promo_ig_paused','0')==='1';
+    const fbPaused  = lsGet('promo_fb_paused','0')==='1';
+    const igOff     = lsGet('promo_ig_active','1')==='0';
+    const fbOff     = lsGet('promo_fb_active','1')==='0';
 
-    const slideStatusBadge=(active,paused)=>{
-      if(!active) return `<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(255,80,80,.1);color:#FF8080;border:1px solid rgba(255,80,80,.2);font-weight:700">Inactivo</span>`;
-      if(paused)  return `<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(245,183,49,.1);color:#F5B731;border:1px solid rgba(245,183,49,.2);font-weight:700">Pausado</span>`;
-      return `<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(31,209,138,.1);color:#1FD18A;border:1px solid rgba(31,209,138,.2);font-weight:700">Activo</span>`;
-    };
+    // Helper: badge de estado
+    const statusBadge = (active, paused) => active && !paused
+      ? `<span class="adm-badge-on">Activo</span>`
+      : paused
+        ? `<span class="adm-badge-warn">Pausado</span>`
+        : `<span class="adm-badge-off">Inactivo</span>`;
+
+    // Lista de todos los slots activos (redes + custom)
+    const activeCount = [
+      !igOff && !igPaused,
+      !fbOff && !fbPaused,
+      ...adSlots.map(s=>s.active)
+    ].filter(Boolean).length;
 
     body.innerHTML = `
-    <!-- Toggle global -->
-    <div class="adm-card" style="border-color:${promoEnabled?'rgba(31,209,138,.15)':'rgba(255,255,255,.07)'}">
-      <div class="adm-toggle-row">
+    <!-- Toggle global + resumen -->
+    <div class="adm-card" style="border-color:${promoEnabled?'rgba(31,209,138,.2)':'rgba(255,255,255,.07)'}">
+      <div style="display:flex;align-items:center;gap:12px">
         <div>
-          <div class="adm-toggle-label" style="display:flex;align-items:center;gap:8px">
-            <svg viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="${promoEnabled?'#1FD18A':'rgba(255,255,255,.3)'}" stroke-width="2" stroke-linecap="round"><rect x="1" y="5" width="4" height="8" rx="1"/><path d="M5 6l9-4v12L5 10"/><path d="M7 10v4"/></svg>
+          <div style="font-size:13px;font-weight:800;color:#F0E8EC;display:flex;align-items:center;gap:6px">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="${promoEnabled?'#1FD18A':'rgba(255,255,255,.3)'}" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="5" width="4" height="8" rx="1"/><path d="M5 6l9-4v12L5 10"/><path d="M7 10v3"/></svg>
             Barra de anuncios
           </div>
-          <div class="adm-toggle-sub">Aparece sobre el ticker en tiempo real</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${activeCount} slide${activeCount!==1?'s':''} activo${activeCount!==1?'s':''} · No invasiva · Aparece sobre el ticker</div>
         </div>
-        <label class="adm-switch">
+        <label class="adm-switch" style="margin-left:auto;flex-shrink:0">
           <input type="checkbox" ${promoEnabled?'checked':''} onchange="togglePromoGlobal(this.checked)"/>
           <span class="adm-switch-track"></span><span class="adm-switch-thumb"></span>
         </label>
       </div>
     </div>
 
-    <!-- Slides de redes con controles individuales -->
+    <!-- Lista de slides con numeración -->
     <div class="adm-card">
       <div class="adm-card-title">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(255,200,220,.7)" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
-        Rotación de slides
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(255,200,220,.65)" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Slides en rotación (${activeCount} activos)
       </div>
 
-      <!-- Instagram -->
-      <div class="adm-slide-row">
-        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <!-- Slide 1: Instagram -->
+      <div class="adm-slide-item">
+        <div class="adm-slide-num">1</div>
+        <div class="adm-slide-preview" style="background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
         </div>
-        <div style="flex:1">
-          <div style="font-size:12.5px;font-weight:700;color:#F0E8EC">Instagram · 2× peso</div>
-          <div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">@apagonesmid</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;color:#F0E8EC">Instagram <span style="font-size:10px;color:rgba(245,183,49,.8);font-weight:600">2×</span></div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">@apagonesmid · instagram.com</div>
+          ${statusBadge(!igOff, igPaused)}
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-          ${slideStatusBadge(igActive,igPaused)}
-          <div style="display:flex;gap:5px">
-            <button onclick="toggleSlide('ig','pause')" class="adm-slide-btn" style="border-color:${igPaused?'rgba(245,183,49,.4)':'rgba(255,255,255,.12)'};color:${igPaused?'#F5B731':'rgba(255,255,255,.35)'}">
-              ${igPaused?'<svg viewBox="0 0 14 14" width="11" height="11" fill="currentColor"><path d="M3 2l8 5-8 5V2z"/></svg>':'<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 2v10M9 2v10"/></svg>'}
-              ${igPaused?'Reanudar':'Pausar'}
-            </button>
-            <button onclick="toggleSlide('ig','active')" class="adm-slide-btn" style="border-color:${!igActive?'rgba(31,209,138,.35)':'rgba(255,80,80,.25)'};color:${!igActive?'#1FD18A':'#FF8080'}">
-              ${igActive?'Quitar':'Activar'}
-            </button>
-          </div>
+        <div class="adm-slide-actions">
+          <button onclick="toggleSlide('ig','pause')" class="adm-tag ${igPaused?'adm-tag-warn':'adm-tag-dim'}" title="${igPaused?'Reanudar':'Pausar'}">
+            ${igPaused?`<svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M2 2l8 4-8 4V2z"/></svg>`:`<svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 2v8M8 2v8"/></svg>`}
+            ${igPaused?'Reanudar':'Pausar'}
+          </button>
+          <button onclick="toggleSlide('ig','active')" class="adm-tag ${igOff?'adm-tag-on':'adm-tag-off'}" title="${igOff?'Activar':'Quitar'}">
+            ${igOff?'Activar':'Quitar'}
+          </button>
         </div>
       </div>
       <div class="adm-divider"></div>
 
-      <!-- Facebook -->
-      <div class="adm-slide-row">
-        <div style="width:32px;height:32px;border-radius:9px;background:#1877F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <!-- Slide 2: Instagram (2da aparición) -->
+      <div class="adm-slide-item">
+        <div class="adm-slide-num">2</div>
+        <div class="adm-slide-preview" style="background:linear-gradient(135deg,#833ab4,#e1306c,#fcb045)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;color:#F0E8EC">Instagram <span style="font-size:10px;color:rgba(245,183,49,.8);font-weight:600">2×</span></div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">@apagonesmid · variante 2</div>
+          ${statusBadge(!igOff, igPaused)}
+        </div>
+        <div class="adm-slide-actions">
+          <button onclick="toggleSlide('ig','pause')" class="adm-tag ${igPaused?'adm-tag-warn':'adm-tag-dim'}">
+            ${igPaused?`<svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M2 2l8 4-8 4V2z"/></svg>`:`<svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 2v8M8 2v8"/></svg>`}
+            ${igPaused?'Reanudar':'Pausar'}
+          </button>
+          <button onclick="toggleSlide('ig','active')" class="adm-tag ${igOff?'adm-tag-on':'adm-tag-off'}">${igOff?'Activar':'Quitar'}</button>
+        </div>
+      </div>
+      <div class="adm-divider"></div>
+
+      <!-- Slide 3: Facebook -->
+      <div class="adm-slide-item">
+        <div class="adm-slide-num">3</div>
+        <div class="adm-slide-preview" style="background:#1877F2">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         </div>
-        <div style="flex:1">
-          <div style="font-size:12.5px;font-weight:700;color:#F0E8EC">Facebook</div>
-          <div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">ApagonesMID</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;color:#F0E8EC">Facebook</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">ApagonesMID · facebook.com</div>
+          ${statusBadge(!fbOff, fbPaused)}
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-          ${slideStatusBadge(fbActive,fbPaused)}
-          <div style="display:flex;gap:5px">
-            <button onclick="toggleSlide('fb','pause')" class="adm-slide-btn" style="border-color:${fbPaused?'rgba(245,183,49,.4)':'rgba(255,255,255,.12)'};color:${fbPaused?'#F5B731':'rgba(255,255,255,.35)'}">
-              ${fbPaused?'<svg viewBox="0 0 14 14" width="11" height="11" fill="currentColor"><path d="M3 2l8 5-8 5V2z"/></svg>':'<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 2v10M9 2v10"/></svg>'}
-              ${fbPaused?'Reanudar':'Pausar'}
+        <div class="adm-slide-actions">
+          <button onclick="toggleSlide('fb','pause')" class="adm-tag ${fbPaused?'adm-tag-warn':'adm-tag-dim'}">
+            ${fbPaused?`<svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M2 2l8 4-8 4V2z"/></svg>`:`<svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 2v8M8 2v8"/></svg>`}
+            ${fbPaused?'Reanudar':'Pausar'}
+          </button>
+          <button onclick="toggleSlide('fb','active')" class="adm-tag ${fbOff?'adm-tag-on':'adm-tag-off'}">${fbOff?'Activar':'Quitar'}</button>
+        </div>
+      </div>
+
+      <!-- Slots de anuncios custom -->
+      ${adSlots.length ? '<div class="adm-divider"></div>' : ''}
+      ${adSlots.map((ad, i) => {
+        const slotNum = 4 + i;
+        return `<div class="adm-slide-item" id="adslot-${ad.id}">
+          <div class="adm-slide-num">${slotNum}</div>
+          <div class="adm-slide-preview" style="background:#1A0E14;overflow:hidden;padding:0">
+            ${ad.imgData ? `<img src="${ad.imgData}" style="width:100%;height:100%;object-fit:cover"/>` : `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/><circle cx="5.5" cy="5.5" r="1.5" fill="rgba(255,255,255,.3)" stroke="none"/></svg>`}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:700;color:#F0E8EC;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.title||'Sin título'}</div>
+            <div style="font-size:10px;color:rgba(34,208,240,.7);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.url||'Sin URL'}</div>
+            ${statusBadge(ad.active, false)}
+          </div>
+          <div class="adm-slide-actions">
+            <button onclick="editAdSlot('${ad.id}')" class="adm-tag adm-tag-dim">
+              <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2l2 2-6 6H2V8z"/></svg>
+              Editar
             </button>
-            <button onclick="toggleSlide('fb','active')" class="adm-slide-btn" style="border-color:${!fbActive?'rgba(31,209,138,.35)':'rgba(255,80,80,.25)'};color:${!fbActive?'#1FD18A':'#FF8080'}">
-              ${fbActive?'Quitar':'Activar'}
+            <button onclick="toggleAdSlot('${ad.id}')" class="adm-tag ${ad.active?'adm-tag-off':'adm-tag-on'}">${ad.active?'Pausar':'Activar'}</button>
+            <button onclick="deleteAdSlot('${ad.id}')" class="adm-tag adm-tag-off" style="padding:5px 7px">
+              <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7"/></svg>
             </button>
           </div>
-        </div>
-      </div>
+        </div>${i < adSlots.length-1 ? '<div class="adm-divider"></div>' : ''}`;
+      }).join('')}
     </div>
 
-    <!-- Imagen personalizada -->
-    <div class="adm-card">
-      <div class="adm-card-title">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(34,208,240,.8)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2" fill="rgba(34,208,240,.8)" stroke="none"/><path d="M2 11l3.5-3.5 2.5 2.5L10 8l4 4"/></svg>
-        Banner personalizado
+    <!-- Agregar nuevo anuncio -->
+    <div class="adm-card" id="new-ad-form-card">
+      <div class="adm-card-title" style="cursor:pointer" onclick="document.getElementById('new-ad-form').style.display=document.getElementById('new-ad-form').style.display==='none'?'block':'none'">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(34,208,240,.75)" stroke-width="2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
+        Agregar nuevo anuncio
+        <span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.3)">Toca para expandir</span>
       </div>
-      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:12px;line-height:1.5">Tamaño recomendado: <strong style="color:rgba(34,208,240,.8)">720 × 88 px</strong> · JPG/PNG · Max 400 KB</div>
-      ${promoImg?`
-      <div style="border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(34,208,240,.2)"><img src="${promoImg}" style="width:100%;height:44px;object-fit:cover;display:block"/></div>
-      <!-- Estado y URL -->
-      <div class="adm-toggle-row" style="margin-bottom:10px">
-        <div><div class="adm-toggle-label" style="font-size:12px">Mostrar banner imagen</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:1px">Aparece como primer slide</div></div>
-        <label class="adm-switch">
-          <input type="checkbox" ${promoImgActive&&!imgPaused?'checked':''} onchange="togglePromoImg(this.checked)"/>
-          <span class="adm-switch-track"></span><span class="adm-switch-thumb"></span>
-        </label>
+      <div id="new-ad-form" style="display:none;margin-top:10px">
+        <!-- Preview en vivo -->
+        <div id="new-ad-preview-wrap" style="border-radius:10px;overflow:hidden;margin-bottom:12px;display:none;border:1px solid rgba(34,208,240,.15)">
+          <img id="new-ad-preview-img" style="width:100%;height:44px;object-fit:cover;display:block"/>
+        </div>
+        <!-- Campos -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Título del anuncio</div>
+            <input type="text" id="new-ad-title" placeholder="Ej. Panadería El Buen Pan" maxlength="40"
+              style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:10px;padding:10px 13px;color:#F0E8EC;font-family:var(--f);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s"
+              onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"
+            />
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">URL al tocar</div>
+            <input type="url" id="new-ad-url" placeholder="https://ejemplo.com"
+              style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:10px;padding:10px 13px;color:#F0E8EC;font-family:var(--f);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s"
+              onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"
+            />
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Imagen del banner <span style="color:rgba(34,208,240,.7);font-weight:600">720 × 88 px</span></div>
+            <label style="width:100%;display:block;padding:11px;background:rgba(34,208,240,.07);border:1.5px dashed rgba(34,208,240,.25);border-radius:11px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;box-sizing:border-box" id="new-ad-img-label">
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
+              Seleccionar imagen
+              <input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>
+            </label>
+          </div>
+        </div>
+        <!-- Nota de medidas -->
+        <div style="background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.1);border-radius:10px;padding:9px 12px;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:12px;line-height:1.5">
+          💡 La imagen debe medir <strong style="color:#22D0F0">720 × 88 px</strong> para verse perfecta. El banner se mostrará sobre el ticker de reportes. Máx 400 KB.
+        </div>
+        <button onclick="saveNewAdSlot()" class="adm-action-btn" style="width:100%;background:linear-gradient(135deg,rgba(34,208,240,.25),rgba(34,208,240,.12));border-color:rgba(34,208,240,.4);color:#22D0F0;font-size:13px;font-weight:800;padding:12px">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><path d="M13 5l-6 6-3-3"/></svg>
+          Publicar anuncio
+        </button>
       </div>
-      <!-- URL de destino -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">URL al tocar el banner</div>
-        <input type="url" id="an-img-link" placeholder="https://apagonesmid.mx" value="${promoImgLink}"
-          style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:10px;padding:10px 13px;color:#F0E8EC;font-family:var(--f);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s"
-          oninput="lsSet('promo_img_link',this.value);refreshPromoImgSlide()"
-          onfocus="this.style.borderColor='rgba(34,208,240,.45)'"
-          onblur="this.style.borderColor='rgba(255,255,255,.09)'"
-        />
-      </div>
-      <!-- Acciones -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <label class="adm-action-btn" style="flex:1;min-width:100px;background:rgba(34,208,240,.07);border-color:rgba(34,208,240,.2);color:#22D0F0;cursor:pointer;text-align:center">
-          Cambiar
-          <input type="file" accept="image/*" onchange="loadPromoImage(this)" style="display:none"/>
-        </label>
-        <button onclick="clearPromoImage()" class="adm-action-btn" style="flex:1;min-width:80px;background:rgba(255,80,80,.06);border-color:rgba(255,80,80,.18);color:#FF8080">Eliminar</button>
-      </div>` : `
-      <canvas id="banner-example-canvas" style="width:100%;height:auto;border-radius:10px;border:1px solid rgba(255,255,255,.07);display:block;margin-bottom:12px"></canvas>
-      <label style="width:100%;display:block;padding:11px;background:rgba(34,208,240,.07);border:1.5px dashed rgba(34,208,240,.25);border-radius:12px;font-size:13px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;box-sizing:border-box">
-        Cargar imagen
-        <input type="file" accept="image/*" onchange="loadPromoImage(this)" style="display:none"/>
-      </label>`}
     </div>`;
-    setTimeout(drawBannerExample, 50);
-    applySlideStates();
+
+    setTimeout(()=>{
+      // Si no hay imagen cargada, dibujar canvas de referencia en el campo vacío
+      // (no hay canvas aquí pero sí queremos mostrar el adm-slide-preview correcto)
+    }, 30);
+  }
+
+  else if(adminTab==='historico'){
+    renderHistoricoTab(body);
   }
 
     else if(adminTab==='audit'){
@@ -9546,6 +9608,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
   }
 
   applySlideStates(); // aplicar estados pause/active de cada slide
+  refreshAllAdSlides(); // añadir slots de anuncios custom al promo bar
   let current = 0;
   // Obtener solo slides visibles (display != none)
   const getAllSlides = ()=>Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
@@ -9783,6 +9846,205 @@ function applySlideStates(){
     });
   });
 }
+
+// ── HISTÓRICO TAB ──────────────────────────────────────────
+async function renderHistoricoTab(body){
+  body.innerHTML='<div class="admin-empty"><div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>Cargando histórico…</div>';
+  try{
+    const since30=Date.now()-30*24*3600000;
+    const{data:hist,error}=await db.from('reports_historico').select('type,seccion,lat,lng,timestamp,resolved_at,severity').gt('resolved_at',since30).order('resolved_at',{ascending:false}).limit(200);
+    if(error) throw error;
+    const reports=hist||[];
+    if(!reports.length){
+      body.innerHTML='<div class="admin-empty"><div style="font-size:32px;margin-bottom:10px">📭</div>Sin reportes resueltos en los últimos 30 días</div>';
+      return;
+    }
+    const elN=reports.filter(r=>ELEC_TYPES.includes(r.type)).length;
+    const agN=reports.filter(r=>AGUA_TYPES.includes(r.type)).length;
+    const avg=reports.filter(r=>r.resolved_at&&r.timestamp).reduce((s,r,_,a)=>s+(r.resolved_at-r.timestamp)/a.length,0);
+    const avgH=avg?(avg/3600000).toFixed(1):'—';
+    body.innerHTML=`
+      <div class="admin-kpi-strip" style="padding:0 0 14px;margin-bottom:10px">
+        <div class="admin-kpi"><div class="admin-kpi-n all" style="color:#FFD0D8">${reports.length}</div><div class="admin-kpi-l">Total 30d</div></div>
+        <div class="admin-kpi"><div class="admin-kpi-n el">${elN}</div><div class="admin-kpi-l">Eléctricos</div></div>
+        <div class="admin-kpi"><div class="admin-kpi-n ag">${agN}</div><div class="admin-kpi-l">Agua</div></div>
+        <div class="admin-kpi"><div class="admin-kpi-n ok">${avgH}h</div><div class="admin-kpi-l">Prom. resoluc.</div></div>
+      </div>
+      <div id="hist-list"></div>`;
+    // Poblar lista async
+    const listEl=document.getElementById('hist-list');
+    const typeIcon={apagon:'⚡',alumbrado:'💡',agua:'💧',corte_agua:'🚰',presion_baja:'💧',calidad_agua:'⚠️'};
+    const typeColor={apagon:'var(--elec)',alumbrado:'#F5B731',agua:'var(--agua)',corte_agua:'var(--agua)',presion_baja:'var(--agua)',calidad_agua:'#F5B731'};
+    reports.slice(0,60).forEach(async(r,i)=>{
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:6px';
+      const when=new Date(r.resolved_at||r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+      const dur=r.resolved_at&&r.timestamp?((r.resolved_at-r.timestamp)/3600000).toFixed(1)+'h':'—';
+      div.innerHTML=`
+        <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px">${typeIcon[r.type]||'📋'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;color:${typeColor[r.type]||'#F0E8EC'}" id="hcol-${i}">Cargando…</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3)">${when}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:11px;font-weight:700;color:#1FD18A">${dur}</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.25)">resolución</div>
+        </div>`;
+      listEl.appendChild(div);
+      if(r.lat&&r.lng){
+        try{const col=await getColonia(r.lat,r.lng);const el=document.getElementById('hcol-'+i);if(el)el.textContent=col;}catch{}
+      } else {
+        const el=document.getElementById('hcol-'+i);
+        if(el)el.textContent=r.seccion?('Sec. '+r.seccion):'Sin ubicación';
+      }
+    });
+    if(reports.length>60){
+      const more=document.createElement('div');
+      more.style.cssText='text-align:center;padding:10px;font-size:11px;color:rgba(255,255,255,.3)';
+      more.textContent=`+ ${reports.length-60} reportes más. Exporta CSV para el listado completo.`;
+      listEl.appendChild(more);
+    }
+  }catch(e){
+    body.innerHTML='<div class="admin-empty">Error cargando histórico: '+e.message+'</div>';
+  }
+}
+
+// ── AD SLOTS ──────────────────────────────────────────────
+function getAdSlots(){
+  try{return JSON.parse(lsGet('apx_ad_slots','[]'));}catch{return[];}
+}
+function saveAdSlots(slots){
+  lsSet('apx_ad_slots',JSON.stringify(slots));
+}
+
+function previewNewAd(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size>500000){toast('Imagen muy grande (máx 400 KB)','e');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const preview=document.getElementById('new-ad-preview-img');
+    const wrap=document.getElementById('new-ad-preview-wrap');
+    const label=document.getElementById('new-ad-img-label');
+    if(preview){preview.src=e.target.result;if(wrap)wrap.style.display='';}
+    if(label) label.innerHTML='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M13 5l-6 6-3-3"/></svg> Imagen cargada — toca para cambiar<input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveNewAdSlot(){
+  const title=(document.getElementById('new-ad-title')?.value||'').trim();
+  const url=(document.getElementById('new-ad-url')?.value||'').trim();
+  const imgEl=document.getElementById('new-ad-preview-img');
+  const imgData=imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'';
+  if(!title){toast('Escribe un título para el anuncio','w');return;}
+  if(!imgData){toast('Carga una imagen primero','w');return;}
+  const slots=getAdSlots();
+  const id='ad_'+Date.now().toString(36);
+  slots.push({id,title,url:url||'',imgData,active:true,created_at:Date.now()});
+  saveAdSlots(slots);
+  // Actualizar la promo bar con el nuevo slot
+  refreshAllAdSlides();
+  toast('✅ Anuncio publicado','s');
+  switchAdminTab('anuncios');
+}
+
+function toggleAdSlot(id){
+  const slots=getAdSlots();
+  const s=slots.find(x=>x.id===id);
+  if(s){s.active=!s.active;saveAdSlots(slots);}
+  refreshAllAdSlides();
+  switchAdminTab('anuncios');
+}
+
+function deleteAdSlot(id){
+  if(!confirm('¿Eliminar este anuncio?'))return;
+  const slots=getAdSlots().filter(x=>x.id!==id);
+  saveAdSlots(slots);
+  refreshAllAdSlides();
+  toast('Anuncio eliminado','b');
+  switchAdminTab('anuncios');
+}
+
+function editAdSlot(id){
+  const slots=getAdSlots();
+  const s=slots.find(x=>x.id===id);
+  if(!s) return;
+  // Abrir el formulario de nuevo anuncio con los datos del slot
+  const form=document.getElementById('new-ad-form');
+  if(form){
+    form.style.display='block';
+    const titleEl=document.getElementById('new-ad-title');
+    const urlEl=document.getElementById('new-ad-url');
+    const preview=document.getElementById('new-ad-preview-img');
+    const wrap=document.getElementById('new-ad-preview-wrap');
+    if(titleEl) titleEl.value=s.title;
+    if(urlEl) urlEl.value=s.url||'';
+    if(s.imgData&&preview){preview.src=s.imgData;if(wrap)wrap.style.display='';}
+    // Cambiar botón guardar a "actualizar"
+    const btn=document.querySelector('#new-ad-form button[onclick="saveNewAdSlot()"]');
+    if(btn){
+      btn.setAttribute('onclick',`updateAdSlot('${id}')`);
+      btn.innerHTML='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><path d="M13 5l-6 6-3-3"/></svg> Actualizar anuncio';
+    }
+    form.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+function updateAdSlot(id){
+  const title=(document.getElementById('new-ad-title')?.value||'').trim();
+  const url=(document.getElementById('new-ad-url')?.value||'').trim();
+  const imgEl=document.getElementById('new-ad-preview-img');
+  const imgData=imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'';
+  if(!title){toast('El título no puede estar vacío','w');return;}
+  const slots=getAdSlots();
+  const s=slots.find(x=>x.id===id);
+  if(s){
+    s.title=title;
+    s.url=url||'';
+    if(imgData) s.imgData=imgData;
+    saveAdSlots(slots);
+    refreshAllAdSlides();
+    toast('✅ Anuncio actualizado','s');
+    switchAdminTab('anuncios');
+  }
+}
+
+function refreshAllAdSlides(){
+  // Actualizar los slides custom en el DOM del promo-bar
+  const slots=getAdSlots();
+  const bar=document.getElementById('promo-slides');
+  if(!bar) return;
+  // Eliminar slides custom anteriores
+  bar.querySelectorAll('[id^="ps-custom-"]').forEach(el=>el.remove());
+  // Añadir los activos
+  slots.filter(s=>s.active).forEach(s=>{
+    const div=document.createElement('div');
+    div.className='promo-slide';
+    div.id='ps-custom-'+s.id;
+    div.innerHTML=`<a href="${s.url||'#'}" target="_blank" rel="noopener" style="width:100%;height:44px;display:flex;align-items:center;overflow:hidden">
+      <img src="${s.imgData}" alt="${s.title}" style="width:100%;height:44px;object-fit:cover;object-position:center"/>
+    </a>`;
+    bar.appendChild(div);
+  });
+}
+
+// CSS extra para los nuevos componentes del tab anuncios
+(function injectAdCSS(){
+  if(document.getElementById('ad-slots-css')) return;
+  const style=document.createElement('style');
+  style.id='ad-slots-css';
+  style.textContent=`
+    .adm-badge-on{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(31,209,138,.12);border:1px solid rgba(31,209,138,.25);color:#1FD18A;margin-top:3px}
+    .adm-badge-warn{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.25);color:#F5B731;margin-top:3px}
+    .adm-badge-off{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#FF8080;margin-top:3px}
+    .adm-slide-item{display:flex;align-items:center;gap:10px;padding:6px 0}
+    .adm-slide-num{width:18px;height:18px;border-radius:6px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(255,255,255,.4);flex-shrink:0}
+    .adm-slide-preview{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+    .adm-slide-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}
+  `;
+  document.head.appendChild(style);
+})();
 </script>
 
 <!-- ═══════════════ HELP MODAL: ¿Cómo reportar? ═══════════════ -->
