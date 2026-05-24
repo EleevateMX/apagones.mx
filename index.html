@@ -725,11 +725,7 @@ html.pwa-standalone #topbar{background:#0C0608}
 #photo-prev{width:100%;height:140px;border-radius:10px;object-fit:cover;border:1px solid var(--bdr);display:none}
 
 .btn-row{display:grid;grid-template-columns:auto 1fr;gap:8px;margin-top:4px}
-.btn{padding:14px 20px;border-radius:12px;border:none;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
-.btn-back{background:var(--card);border:1px solid var(--bdr);color:var(--dim)}.btn-back:hover{border-color:var(--bdr2);color:var(--tx)}
-.btn-brand{background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;box-shadow:0 3px 16px var(--brand-gl)}
-.btn-brand:hover{transform:translateY(-1px);box-shadow:0 5px 22px rgba(101,8,31,.65)}
-.btn-brand:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn{padding:14px 20px;border-radius:12px;border:none;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}.btn-back:hover{border-color:var(--bdr2);color:var(--tx)}
 .btn-agua{background:linear-gradient(135deg,var(--agua),var(--agua-dk));color:#fff;box-shadow:0 3px 16px var(--agua-gl)}
 .btn-agua:hover{transform:translateY(-1px)}.btn-agua:disabled{opacity:.35;cursor:not-allowed;transform:none}
 
@@ -777,139 +773,13 @@ html.pwa-standalone #topbar{background:#0C0608}
 .sb-ei{font-size:34px;display:block;margin-bottom:8px}
 
 /* ── ADMIN ─────────────────────────────────── */
-#admin-panel{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px}
 #admin-panel.open{display:flex}
-.admin-sheet{
-  background:linear-gradient(180deg,#120A14 0%,#0C060A 100%);
-  border:1px solid rgba(101,8,31,.45);
-  border-radius:22px;
-  width:100%;max-width:680px;
-  height:92vh;max-height:92vh;
-  display:flex;flex-direction:column;overflow:hidden;
-  box-shadow:
-    0 24px 80px rgba(0,0,0,.75),
-    0 0 0 1px rgba(140,20,50,.15),
-    inset 0 1px 0 rgba(255,180,210,.06);
-}
 /* Admin header — dashboard style */
-.admin-head{
-  padding:16px 20px 0;
-  flex-shrink:0;
-}
-.admin-head-bar{
-  display:flex;align-items:center;gap:10px;margin-bottom:14px;
-}
-.admin-head-logo{
-  width:36px;height:36px;border-radius:11px;
-  background:linear-gradient(135deg,#9B1030,#65081F);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 2px 14px rgba(101,8,31,.55),0 0 0 1px rgba(200,40,70,.2);
-}
-.admin-head-title{font-size:17px;font-weight:800;letter-spacing:-.3px;flex:1;color:#F0E8EC}
-.admin-badge{
-  background:rgba(101,8,31,.35);
-  border:1px solid rgba(200,40,70,.4);
-  border-radius:20px;padding:3px 10px;
-  font-size:10px;font-weight:800;color:#FFB0C0;
-  letter-spacing:.5px;text-transform:uppercase;
-}
-.admin-close{
-  width:30px;height:30px;border-radius:8px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  cursor:pointer;color:rgba(255,255,255,.5);
-  font-size:14px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .18s;flex-shrink:0;
-}
-.admin-close:hover{background:rgba(255,80,80,.12);border-color:rgba(255,80,80,.3);color:#FF9090}
 /* KPI strip */
-.admin-kpi-strip{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-  padding:12px 20px 16px;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  flex-shrink:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.02) 0%,transparent 100%);
-}
-.admin-kpi{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:13px;padding:12px 10px;text-align:center;
-  transition:background .18s;
-}
-.admin-kpi:hover{background:rgba(255,255,255,.07)}
-.admin-kpi-n{font-size:26px;font-weight:900;line-height:1;margin-bottom:3px;letter-spacing:-.5px}
-.admin-kpi-n.el{color:#F5B731;text-shadow:0 0 20px rgba(245,183,49,.25)}
-.admin-kpi-n.ag{color:#22D0F0;text-shadow:0 0 20px rgba(34,208,240,.25)}
-.admin-kpi-n.rd{color:#FF6B6B;text-shadow:0 0 20px rgba(255,107,107,.2)}
-.admin-kpi-n.ok{color:#1FD18A;text-shadow:0 0 20px rgba(31,209,138,.2)}
-.admin-kpi-l{font-size:9px;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 /* Tabs — pill style */
-.admin-tabs{
-  display:flex;gap:4px;padding:10px 16px;
-  overflow-x:auto;overflow-y:hidden;
-  scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
-  flex-wrap:nowrap;flex-shrink:0;
-}
-.admin-tabs::-webkit-scrollbar{display:none}
-.admin-tab{
-  flex-shrink:0;white-space:nowrap;
-  padding:7px 13px;
-  font-family:var(--f);font-size:11px;font-weight:700;
-  color:rgba(255,255,255,.35);
-  cursor:pointer;
-  border-radius:20px;
-  border:1px solid transparent;
-  transition:all .18s;
-  user-select:none;
-}
-.admin-tab:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.04)}
-.admin-tab.active{
-  color:#FFD0D8;
-  background:linear-gradient(135deg,rgba(139,14,42,.5),rgba(101,8,31,.4));
-  border-color:rgba(200,40,70,.5);
-  box-shadow:0 2px 12px rgba(101,8,31,.35),inset 0 1px 0 rgba(255,180,200,.1);
-}
-.admin-body{
-  flex:1 1 auto;overflow-y:auto;padding:14px 18px 28px;
-  scrollbar-width:thin;scrollbar-color:rgba(101,8,31,.3) transparent;
-  -webkit-overflow-scrolling:touch;min-height:0;
-}
-.admin-body::-webkit-scrollbar{width:4px}
-.admin-body::-webkit-scrollbar-thumb{background:rgba(101,8,31,.3);border-radius:2px}
 /* Cards universales dentro del admin */
-.adm-card{
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;padding:14px 16px;margin-bottom:10px;
-  transition:border-color .2s;
-}
-.adm-card:hover{border-color:rgba(255,255,255,.12)}
-.adm-card-title{font-size:12px;font-weight:800;color:#F0E8EC;margin-bottom:10px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.4px}
-.adm-divider{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
 /* Toggle switch reutilizable */
-.adm-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:2px 0}
-.adm-toggle-label{font-size:13px;font-weight:700;color:#F0E8EC}
-.adm-toggle-sub{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:2px}
-.adm-switch{position:relative;width:44px;height:24px;flex-shrink:0;cursor:pointer}
-.adm-switch input{opacity:0;width:0;height:0;position:absolute}
-.adm-switch-track{
-  position:absolute;inset:0;border-radius:12px;
-  background:rgba(255,255,255,.1);
-  transition:background .2s;
-}
-.adm-switch input:checked ~ .adm-switch-track{background:#1FD18A}
-.adm-switch-thumb{
-  position:absolute;top:3px;left:3px;
-  width:18px;height:18px;border-radius:50%;
-  background:white;
-  transition:left .2s;
-  box-shadow:0 1px 4px rgba(0,0,0,.35);
-}
-.adm-switch input:checked ~ .adm-switch-thumb{left:23px}
 /* Stats grid */
-.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .a-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center}
 .a-stat-n{font-size:26px;font-weight:800;line-height:1;margin-bottom:4px}
 .a-stat-n.el{color:var(--elec)}.a-stat-n.ag{color:var(--agua)}.a-stat-n.all{color:#FFD0D8}
@@ -946,10 +816,6 @@ html.pwa-standalone #topbar{background:#0C0608}
 .a-btn:hover{background:rgba(255,255,255,.09)}
 .a-btn.fly{}.a-btn.fly:hover{color:#F0E8EC}
 .a-photo-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1);display:none}
-.admin-section{margin-bottom:10px}
-.admin-section-title{font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:7px}
-.admin-empty{padding:28px 0;text-align:center;color:rgba(255,255,255,.25);font-size:13px;line-height:1.7}
-.admin-empty span{font-size:30px;display:block;margin-bottom:8px}
 /* Ticket cards para Contáctanos */
 .ticket-card{
   background:rgba(255,255,255,.04);
@@ -975,32 +841,15 @@ html.pwa-standalone #topbar{background:#0C0608}
 /* ADMIN LOGIN */
 /* admin-login old rule removed */
 /* login sheet — glassmorphism bottom-sheet */
-#admin-login{
-  position:fixed;inset:0;z-index:2000;
-  display:none;align-items:flex-end;justify-content:center;
-  background:rgba(6,3,8,.82);
-  pointer-events:none;
-}
 #admin-login.open{
   display:flex;
   pointer-events:auto;
 }
-.login-sheet{width:100%;max-width:420px;background:linear-gradient(160deg,rgba(20,10,16,.97),rgba(10,5,8,.99));border:1px solid rgba(101,8,31,.5);border-bottom:none;border-radius:24px 24px 0 0;padding:10px 24px max(env(safe-area-inset-bottom,0px),28px);transform:translateY(110%);transition:transform .42s cubic-bezier(.32,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,.55)}
 #admin-login.open .login-sheet{transform:translateY(0)}
-.login-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 22px}
 .login-icon-wrap{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,rgba(101,8,31,.5),rgba(60,5,18,.4));border:1px solid rgba(150,20,50,.5);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 20px rgba(101,8,31,.3)}
-.login-title{font-size:21px;font-weight:800;color:#F0E8EC;text-align:center;letter-spacing:-.3px;margin-bottom:3px}
-.login-sub{font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:22px;letter-spacing:.3px}
-.login-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.04);border:1.5px solid rgba(101,8,31,.4);border-radius:13px;color:#F0E8EC;font-family:var(--f);font-size:16px;text-align:center;letter-spacing:.15em;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;margin-bottom:16px}
-.login-input:focus{border-color:rgba(220,80,80,.6);box-shadow:0 0 0 3px rgba(180,40,40,.12)}
-.login-input.err{border-color:#FF5555;animation:loginShake .3s ease}
 @keyframes loginShake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .login-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px}
-.btn-back{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);padding:13px;border-radius:13px;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer;-webkit-appearance:none;transition:background .18s}
-.btn-back:hover{background:rgba(255,255,255,.07)}
-.btn-brand{background:linear-gradient(135deg,#8B0E2A,#65081F);border:none;color:#FFD0D8;padding:13px;border-radius:13px;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;-webkit-appearance:none;box-shadow:0 4px 16px rgba(101,8,31,.4);transition:transform .15s}
-.btn-brand:active{transform:scale(.97)}
 
 /* TOASTS */
 #toasts{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:7px;pointer-events:none}
@@ -3396,88 +3245,6 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 </div>
 
 
-<!-- ADMIN LOGIN -->
-<div id="admin-login">
-  <div class="login-sheet">
-    <div class="login-handle"></div>
-    <div class="login-lockup">
-      <div class="login-seal">
-        <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
-          <rect x="6" y="13" width="16" height="12" rx="3" stroke="rgba(240,100,100,.85)" stroke-width="1.8"/>
-          <path d="M9 13V9a5 5 0 0 1 10 0v4" stroke="rgba(240,100,100,.85)" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="14" cy="19" r="1.5" fill="rgba(240,100,100,.85)"/>
-        </svg>
-      </div>
-      <div class="login-wordmark">
-        <div class="login-title">ApagonesMID</div>
-        <div class="login-sub">Acceso restringido · Admin</div>
-      </div>
-    </div>
-    <div class="login-field-wrap">
-      <div class="login-field-label">Contraseña</div>
-      <input type="password" class="login-input" id="pw-input" placeholder="••••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkPw()"/>
-    </div>
-    <div class="login-actions">
-      <button class="btn-back" onclick="document.getElementById('admin-login').classList.remove('open')">Cancelar</button>
-      <button class="btn-brand" onclick="checkPw()">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-        Ingresar
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="admin-panel">
-  <div class="admin-sheet">
-    <div class="admin-head">
-      <div class="admin-head-bar">
-        <div class="admin-head-logo">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg>
-        </div>
-        <div class="admin-head-title">Dashboard Admin</div>
-        <span class="admin-badge">Admin</span>
-        <button class="admin-close" onclick="closeAdmin()" title="Cerrar">
-          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
-        </button>
-      </div>
-      <!-- KPI strip — se llena en renderAdminPanel() -->
-      <div class="admin-kpi-strip" id="admin-kpi-strip">
-        <div class="admin-kpi"><div class="admin-kpi-n el" id="kpi-el">—</div><div class="admin-kpi-l">Eléctricos</div></div>
-        <div class="admin-kpi"><div class="admin-kpi-n ag" id="kpi-ag">—</div><div class="admin-kpi-l">Agua</div></div>
-        <div class="admin-kpi"><div class="admin-kpi-n rd" id="kpi-ac">—</div><div class="admin-kpi-l">Activos</div></div>
-        <div class="admin-kpi"><div class="admin-kpi-n ok" id="kpi-rs">—</div><div class="admin-kpi-l">Resueltos</div></div>
-      </div>
-    </div>
-    <div class="admin-tabs">
-      <div class="admin-tab active" id="atab-apagones" onclick="switchAdminTab('apagones')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 9h4l-1 5 6-7H9Z"/></svg> Apagones</span></div>
-      <div class="admin-tab" id="atab-agua" onclick="switchAdminTab('agua')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2C5 6 3 9 3 11a5 5 0 0 0 10 0c0-2-2-5-5-9Z"/></svg> Agua</span></div>
-      <div class="admin-tab" id="atab-alumbrado" onclick="switchAdminTab('alumbrado')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="7" r="3"/><path d="M8 1v1M8 13v2M3 3l1 1M12 3l-1 1M1 7h2M13 7h2M6 13h4"/></svg> Alumbrado</span></div>
-      <div class="admin-tab" id="atab-critical" onclick="switchAdminTab('critical')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2L1 14h14Z"/><path d="M8 6v4M8 12v1"/></svg> Críticos</span></div>
-      <div class="admin-tab" id="atab-heatmap" onclick="switchAdminTab('heatmap')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2C6 5 6 11 8 14M8 2c2 3 2 9 0 12M2 8h12"/></svg> Mapa</span></div>
-      <div class="admin-tab" id="atab-trends" onclick="switchAdminTab('trends')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="2,12 6,7 9,9 14,4"/><polyline points="11,4 14,4 14,7"/></svg> Tendencias</span></div>
-      <div class="admin-tab" id="atab-sched" onclick="switchAdminTab('sched')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg> Programar</span></div>
-      <div class="admin-tab" id="atab-anuncios" onclick="switchAdminTab('anuncios')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 6h2v4H2ZM4 6l8-3v10L4 10"/><path d="M6 10v3"/></svg> Anuncios</span></div>
-      <div class="admin-tab" id="atab-historico" onclick="switchAdminTab('historico')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 2h8a1 1 0 0 1 1 1v11l-4-2-4 2V3a1 1 0 0 1 1-1Z"/></svg> Histórico</span></div>
-      <div class="admin-tab" id="atab-audit" onclick="switchAdminTab('audit')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 2H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6Z"/><path d="M10 2v4h4M5 9h6M5 12h4"/></svg> Auditoría</span></div>
-      <div class="admin-tab" id="atab-settings" onclick="switchAdminTab('settings')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5 13 13M3 13l1.5-1.5M11.5 4.5 13 3"/></svg> Ajustes</span></div>
-    </div>
-    <div id="unlock-banner" style="display:none;margin:10px 14px 0;padding:12px 14px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.35);border-radius:11px">
-      <div style="display:flex;align-items:center;gap:8px;font-family:var(--f);font-size:12.5px;font-weight:700;color:#F5C84B;margin-bottom:8px">
-        <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M7 9 V6 a3 3 0 0 1 6 0"/></svg>
-        Contactos bloqueados (nombre y WhatsApp)
-      </div>
-      <div style="font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:9px;font-family:var(--f)">Para proteger los datos personales, ingresa la contraseña de desbloqueo (la de Supabase Auth).</div>
-      <div style="display:flex;gap:7px">
-        <input type="password" id="unlock-pw" placeholder="Contraseña de desbloqueo" onkeydown="if(event.key==='Enter')unlockContacts()" style="flex:1;background:var(--card2);border:1px solid var(--bdr2);border-radius:9px;padding:9px 12px;color:var(--tx);font-family:var(--f);font-size:14px"/>
-        <button id="unlock-btn" onclick="unlockContacts()" style="white-space:nowrap;padding:9px 14px;border-radius:9px;background:linear-gradient(135deg,var(--brand-br),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:12.5px;font-weight:800;cursor:pointer">🔓 Desbloquear contactos</button>
-      </div>
-    </div>
-    <div id="unlock-ok" style="display:none;margin:10px 14px 0;padding:9px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;font-family:var(--f);font-size:11.5px;font-weight:700;color:#5BD98A">🔓 Contactos desbloqueados — puedes ver nombres y WhatsApp</div>
-    <div class="admin-body" id="admin-body"></div>
-  </div>
-</div>
-
 <script>
 // ══════════════════════════════════════════════
 //  CONFIG
@@ -4601,98 +4368,6 @@ function renderTicker(reports){
 }
 
 // ADMIN
-function openAdminLogin(){if(adminMode){openAdminPanel();return;}document.getElementById('pw-input').value='';document.getElementById('pw-input').classList.remove('err');document.getElementById('admin-login').classList.add('open');setTimeout(()=>document.getElementById('pw-input').focus(),300);}
-let adminAuthed = false; // true = login real Supabase (puede ver contactos)
-
-// PASO 1: Entrar al panel admin con la contraseña local
-function checkPw(){
-  const pw = document.getElementById('pw-input').value;
-  const inp = document.getElementById('pw-input');
-  if(pw === ADMIN_PASSWORD){
-    adminMode = true;
-    document.getElementById('admin-login').classList.remove('open');
-    openAdminPanel();
-    toast('🔓 Panel admin abierto','b');
-  } else {
-    inp.classList.add('err'); setTimeout(()=>inp.classList.remove('err'),500);
-    toast('Contraseña incorrecta','e');
-  }
-}
-
-// PASO 2 (dentro del panel): desbloquear los contactos con login real de Supabase Auth
-async function unlockContacts(){
-  const pw = (document.getElementById('unlock-pw')?.value || '').trim();
-  if(!pw){ toast('Escribe la contraseña de desbloqueo','w'); return; }
-  const btn = document.getElementById('unlock-btn');
-  if(btn){ btn.disabled = true; btn.textContent = 'Verificando…'; }
-  try{
-    const { data, error } = await db.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pw });
-    if(error){
-      // Mostrar el error REAL de Supabase para diagnosticar
-      let msg = error.message || 'Error de autenticación';
-      if(/email not confirmed/i.test(msg)) msg = 'El usuario admin existe pero NO está confirmado. En Supabase → Authentication → Users, confírmalo.';
-      else if(/invalid login/i.test(msg)) msg = 'Email o contraseña incorrectos. Verifica que creaste el usuario admin@apagones.mx con esa contraseña.';
-      toast('🔒 '+msg,'e');
-      console.warn('unlockContacts error:', error);
-      if(btn){ btn.disabled=false; btn.textContent='🔓 Desbloquear contactos'; }
-      return;
-    }
-    if(data && data.session){
-      adminAuthed = true;
-      await loadContacts();
-      renderAdminPanel();
-      toast('🔐 Contactos desbloqueados','b');
-      return;
-    }
-    toast('No se pudo desbloquear','e');
-    if(btn){ btn.disabled=false; btn.textContent='🔓 Desbloquear contactos'; }
-  }catch(e){
-    console.error('unlockContacts:', e);
-    toast('Error de conexión al verificar','e');
-    if(btn){ btn.disabled=false; btn.textContent='🔓 Desbloquear contactos'; }
-  }
-}
-async function openAdminPanel(){updateAdminKPIs();
-  document.getElementById('admin-panel').classList.add('open');
-  if(adminAuthed && typeof loadContacts==='function'){ await loadContacts(); }
-  renderAdminPanel();
-  if(typeof autoPurgeHistorico==='function')autoPurgeHistorico();
-}
-function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');}
-let _histCache = [];
-async function renderHistorico(){
-  const list = document.getElementById('hist-list');
-  try{
-    const{data, error} = await db.from('reports_historico')
-      .select('*')
-      .order('resolved_at', {ascending:false})
-      .limit(500);
-    if(error) throw error;
-    _histCache = data||[];
-
-    // Stats
-    const total = _histCache.length;
-    const avgMin = total ? Math.round(_histCache.reduce((s,r)=>s+(r.resolucion_min||0),0)/total) : 0;
-    const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
-    const thisMonth = _histCache.filter(r=>r.resolved_at >= monthStart.getTime()).length;
-
-    const fmtDur = m => {
-      if(m<60) return m+'m';
-      const d=Math.floor(m/1440), h=Math.floor((m%1440)/60);
-      if(d>0) return d+'d '+h+'h';
-      return Math.floor(m/60)+'h '+(m%60)+'m';
-    };
-    const elTot=document.getElementById('hs-total'); if(elTot) elTot.textContent=total;
-    const elAvg=document.getElementById('hs-avg'); if(elAvg) elAvg.textContent= total?fmtDur(avgMin):'—';
-    const elMon=document.getElementById('hs-month'); if(elMon) elMon.textContent=thisMonth;
-
-    renderHistList(_histCache);
-  }catch(e){
-    console.warn('historico:', e.message);
-    list.innerHTML = '<div style="text-align:center;color:var(--mut);padding:20px">No se pudo cargar el histórico.<br/><span style="font-size:11px">Asegúrate de haber corrido el setup.sql actualizado.</span></div>';
-  }
-}
-
 function renderHistList(rows){
   const list = document.getElementById('hist-list');
   if(!list) return;
@@ -4828,14 +4503,6 @@ function filterHistorico(){
   renderHistList(filtered);
 }
 
-function switchAdminTab(tab){
-  adminTab=tab;
-  ['apagones','agua','alumbrado','critical','heatmap','trends','sched','anuncios','historico','audit','settings'].forEach(t=>{
-    const el=document.getElementById('atab-'+t);
-    if(el) el.classList.toggle('active',t===tab);
-  });
-  renderAdminPanel();
-}
 function handleLogoClick(){
   // Logo click: solo animación decorativa, sin pista de admin
   const logo = document.getElementById('logo-btn');
@@ -4854,427 +4521,6 @@ function handleLogoClick(){
   checkAdminHash();
   window.addEventListener('hashchange', checkAdminHash);
 })();
-function updateAdminKPIs(){
-  if(!cachedReports||!cachedReports.length) return;
-  const el=cachedReports.filter(r=>ELEC_TYPES.includes(r.type));
-  const ag=cachedReports.filter(r=>AGUA_TYPES.includes(r.type));
-  const active=cachedReports.filter(r=>r.active);
-  const resolved=cachedReports.filter(r=>r.resolved);
-  const kpiEl=document.getElementById('kpi-el');
-  const kpiAg=document.getElementById('kpi-ag');
-  const kpiAc=document.getElementById('kpi-ac');
-  const kpiRs=document.getElementById('kpi-rs');
-  if(kpiEl) kpiEl.textContent=el.length;
-  if(kpiAg) kpiAg.textContent=ag.length;
-  if(kpiAc) kpiAc.textContent=active.length||cachedReports.filter(r=>!r.resolved).length;
-  if(kpiRs) kpiRs.textContent=resolved.length;
-}
-function renderAdminPanel(){
-  const body = document.getElementById('admin-body');
-  // El banner de desbloqueo solo aparece en pestañas que muestran contactos
-  const contactTabs = ['apagones','agua','alumbrado','critical','historico'];
-  const showOnThisTab = contactTabs.includes(adminTab);
-  const ub = document.getElementById('unlock-banner');
-  const uok = document.getElementById('unlock-ok');
-  if(ub) ub.style.display = (!adminAuthed && showOnThisTab) ? 'block' : 'none';
-  if(uok) uok.style.display = (adminAuthed && showOnThisTab) ? 'block' : 'none';
-  // After render, fill colonia names async
-  setTimeout(()=>{
-    document.querySelectorAll('#admin-body .a-loc').forEach(async el=>{
-      const lat=parseFloat(el.dataset.lat), lng=parseFloat(el.dataset.lng);
-      if(isNaN(lat)||typeof getColonia!=='function') return;
-      try{
-        const c = await getColonia(lat,lng);
-        const span = el.querySelector('.a-col');
-        if(span) span.textContent = c;
-      }catch{}
-    });
-  }, 200);
-  if(!body) return;
-  const all = cachedReports;
-  const apagones = all.filter(r=>r.type==='apagon');
-  const agua     = all.filter(r=>AGUA_TYPES.includes(r.type));
-  const alumb    = all.filter(r=>r.type==='alumbrado');
-
-  // Shared helpers
-  const reportCard = (r, type) => {
-    const ag = AGUA_TYPES.includes(r.type);
-    const icon = r.type==='apagon'?'⚡':r.type==='alumbrado'?'💡':'💧';
-    const typeName = r.type==='apagon'?'Apagón':r.type==='alumbrado'?'Alumbrado':r.type==='corte_agua'?'Sin Agua':r.type==='presion_baja'?'Presión baja':r.type==='calidad_agua'?'Calidad':'Fuga';
-    const sev = r.severity||'moderado';
-    const sevColor = sev==='critico'||sev==='dañado'?'#FF3D3D':sev==='leve'||sev==='intermitente'?'#F5B731':sev==='apagado'?'#94A3B8':'#22D0F0';
-    let photoBtn = '';
-    if(r.photo_data && r.photo_data.length>10){
-      const flags = (r.photo_flags||'').split(',').filter(Boolean);
-      const noCam = flags.includes('nocam');
-      const susp = flags.includes('sospechosa');
-      let badge='', cls='';
-      if(susp){ badge='⚠️'; cls='style="border-color:#FF3D3D;color:#FF7A7A"'; }
-      else if(noCam){ badge='?'; cls='style="border-color:#F5B731;color:#F5B731"'; }
-      else { badge='✓'; cls='style="border-color:#22C55E;color:#22C55E"'; }
-      photoBtn = `<button class="a-btn" ${cls} onclick="openPhotoView('${r.id}')">📷 Foto ${badge}</button>`;
-    }
-    const _ct = (typeof contactOf==='function') ? contactOf(r.id) : {nombre:'',telefono:''};
-    const cNombre = _ct.nombre || '';
-    const cTel = _ct.telefono || '';
-    const noAuth = (typeof adminAuthed!=='undefined') && !adminAuthed;
-    const callBtn = cTel
-      ? `<a class="a-btn" href="tel:${cTel.replace(/\D/g,'')}" style="text-decoration:none;display:inline-block">📞 Llamar</a>` : '';
-    const phoneDigits = cTel.replace(/\D/g,'');
-    const waNumber = phoneDigits.length===10 ? '52'+phoneDigits : phoneDigits;
-    const waBtn = cTel
-      ? `<a class="a-btn" href="https://wa.me/${waNumber}?text=${encodeURIComponent('Hola, soy del equipo de ApagonesMID. Recibimos tu reporte y queremos darte seguimiento.')}" target="_blank" style="text-decoration:none;display:inline-block;color:#25D366;border-color:#25D366">💬 WA</a>` : '';
-    const folioBtn = `<button class="a-btn" onclick="setFolio('${r.id}')">${r.report_number?'✏️ Folio':'＋ Folio'}</button>`;
-    const contactLine = noAuth
-      ? `<span style="color:var(--mut);font-style:italic">🔒 Inicia sesión admin para ver contacto</span>`
-      : `<strong>${cNombre||'Anónimo'}</strong>${cTel?' · '+cTel:''}`;
-    return `<div class="a-report">
-      <div class="a-report-icon">${icon}</div>
-      <div class="a-report-info">
-        <div class="a-report-head ${ag?'ag':'el'}">${typeName} <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${sevColor};margin:0 4px"></span>${sev}${(r.confirmations||0)>=5?'<span class="a-report-badge urgent" style="margin-left:auto">🔥 CRÍTICO</span>':''}</div>
-        <div class="a-report-meta">
-          ${contactLine}<br/>
-          <span style="color:var(--dim)" class="a-loc" data-lat="${r.lat}" data-lng="${r.lng}">${fmtTime(r.timestamp)} · <span class="a-col">${(typeof geoCache!=='undefined'&&geoCache[Math.round(r.lat*100)/100+'_'+Math.round(r.lng*100)/100])||'Mérida'}</span>${r.report_number?' · 🗂️ '+r.report_number:''}</span>
-        </div>
-        <div class="a-report-acts" style="flex-wrap:wrap;gap:4px">
-          <button class="a-btn fly" onclick="flyTo('${r.id}','${r.lat}','${r.lng}','${r.type}','${r.seccion||''}');closeAdmin()">🗺️ Ver</button>
-          ${photoBtn}
-          ${callBtn}
-          ${waBtn}
-          ${folioBtn}
-          <button class="a-btn resolve" onclick="adminForceResolveLog('${r.id}','${r.type}')">✅ Resolver</button>
-        </div>
-      </div>
-    </div>`;
-  };
-
-  // ──────────────────── TAB: APAGONES ────────────────────
-  if(adminTab==='apagones'){
-    body.innerHTML = `
-      ${adminExportBar('apagon')}
-      ${apagones.length===0
-        ? `<div class="admin-empty"><span>⚡</span>Sin apagones activos</div>`
-        : `<div class="admin-section"><div class="admin-section-title">⚡ Apagones (${apagones.length})</div>${apagones.map(r=>reportCard(r,'apagon')).join('')}</div>`}`;
-  }
-
-  // ──────────────────── TAB: AGUA ────────────────────
-  else if(adminTab==='agua'){
-    body.innerHTML = `
-      ${adminExportBar('agua')}
-      <div style="background:rgba(34,208,240,.06);border:1px solid rgba(34,208,240,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">💡 Reportes de agua no expiran. Solo el admin puede marcarlos resueltos.</div>
-      ${agua.length===0
-        ? `<div class="admin-empty"><span>💧</span>Sin reportes de agua</div>`
-        : `<div class="admin-section"><div class="admin-section-title">💧 Agua (${agua.length})</div>${agua.map(r=>reportCard(r,'agua')).join('')}</div>`}`;
-  }
-
-  // ──────────────────── TAB: ALUMBRADO ────────────────────
-  else if(adminTab==='alumbrado'){
-    body.innerHTML = `
-      ${adminExportBar('alumbrado')}
-      <div style="background:rgba(245,183,49,.06);border:1px solid rgba(245,183,49,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">💡 Reportes de alumbrado se reportan a Ayuntamiento de Mérida. <a href="https://www.merida.gob.mx/app/" target="_blank" style="color:var(--elec)">App Mérida</a> · <a href="https://isla.merida.gob.mx/serviciosinternet/participacionciudadana/public/ayuntatel" target="_blank" style="color:var(--elec)">Ayuntatel</a></div>
-      ${alumb.length===0
-        ? `<div class="admin-empty"><span>💡</span>Sin reportes de alumbrado</div>`
-        : `<div class="admin-section"><div class="admin-section-title">💡 Alumbrado (${alumb.length})</div>${alumb.map(r=>reportCard(r,'alumbrado')).join('')}</div>`}`;
-  }
-
-  // ──────────────────── TAB: CRÍTICOS ────────────────────
-  else if(adminTab==='critical'){
-    const critical = all.filter(r=>
-      r.severity==='critico' ||
-      r.severity==='dañado' ||
-      (r.confirmations||0) >= 5
-    );
-    body.innerHTML = `
-      <div style="background:rgba(255,61,61,.08);border:1px solid rgba(255,61,61,.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#FFB0B0;margin-bottom:14px;line-height:1.5">
-        🚨 Atención inmediata: severidad crítica o 5+ confirmaciones
-      </div>
-      ${critical.length===0
-        ? `<div class="admin-empty"><span>✓</span>Sin reportes críticos</div>`
-        : `<div class="admin-section"><div class="admin-section-title">🚨 Críticos (${critical.length})</div>${critical.map(r=>reportCard(r)).join('')}</div>`}`;
-  }
-
-  // ──────────────────── TAB: HEATMAP ────────────────────
-  else if(adminTab==='heatmap'){
-    body.innerHTML = `<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Calculando mapa de calor…</div>`;
-    renderHeatmapTab();
-  }
-
-  // ──────────────────── TAB: TRENDS ────────────────────
-  else if(adminTab==='trends'){
-    body.innerHTML = `<div style="text-align:center;padding:30px;color:var(--dim)">⏳ Cargando tendencias…</div>`;
-    renderTrendsTab();
-  }
-
-  // ──────────────────── TAB: SCHEDULED ────────────────────
-  else if(adminTab==='sched'){
-    body.innerHTML = `
-      <button onclick="document.getElementById('schedule-add-modal').style.display='flex';setTimeout(renderScheduledList,150)" style="display:flex;align-items:center;gap:7px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:11px 14px;cursor:pointer;font-family:var(--f);font-size:13px;font-weight:700;color:#C084FC;margin-bottom:14px;width:100%;justify-content:center">
-        📅 Nuevo aviso programado
-      </button>
-      <div class="admin-section">
-        <div class="admin-section-title">📅 Avisos programados</div>
-        <div id="sched-tab-list" style="min-height:60px"></div>
-      </div>`;
-    renderScheduledTabList();
-  }
-
-  // ──────────────────── TAB: ANUNCIOS ────────────────────
-  else if(adminTab==='anuncios'){
-    const promoEnabled = lsGet('promo_enabled','1') === '1';
-    const adSlots = JSON.parse(lsGet('apx_ad_slots','[]'));
-    const igPaused  = lsGet('promo_ig_paused','0')==='1';
-    const fbPaused  = lsGet('promo_fb_paused','0')==='1';
-    const igOff     = lsGet('promo_ig_active','1')==='0';
-    const fbOff     = lsGet('promo_fb_active','1')==='0';
-
-    // Helper: badge de estado
-    const statusBadge = (active, paused) => active && !paused
-      ? `<span class="adm-badge-on">Activo</span>`
-      : paused
-        ? `<span class="adm-badge-warn">Pausado</span>`
-        : `<span class="adm-badge-off">Inactivo</span>`;
-
-    // Lista de todos los slots activos (redes + custom)
-    const activeCount = [
-      !igOff && !igPaused,
-      !fbOff && !fbPaused,
-      ...adSlots.map(s=>s.active)
-    ].filter(Boolean).length;
-
-    body.innerHTML = `
-    <!-- Toggle global + resumen -->
-    <div class="adm-card" style="border-color:${promoEnabled?'rgba(31,209,138,.2)':'rgba(255,255,255,.07)'}">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div>
-          <div style="font-size:13px;font-weight:800;color:#F0E8EC;display:flex;align-items:center;gap:6px">
-            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="${promoEnabled?'#1FD18A':'rgba(255,255,255,.3)'}" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="5" width="4" height="8" rx="1"/><path d="M5 6l9-4v12L5 10"/><path d="M7 10v3"/></svg>
-            Barra de anuncios
-          </div>
-          <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${activeCount} slide${activeCount!==1?'s':''} activo${activeCount!==1?'s':''} · No invasiva · Aparece sobre el ticker</div>
-        </div>
-        <label class="adm-switch" style="margin-left:auto;flex-shrink:0">
-          <input type="checkbox" ${promoEnabled?'checked':''} onchange="togglePromoGlobal(this.checked)"/>
-          <span class="adm-switch-track"></span><span class="adm-switch-thumb"></span>
-        </label>
-      </div>
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <div style="font-size:10px;color:rgba(255,255,255,.3);flex:1">Si la barra no aparece en un dispositivo, puede ser que fue cerrada antes.</div>
-        <button onclick="resetPromoBar()" class="adm-tag adm-tag-dim" style="font-size:10px">
-          <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 2a5 5 0 1 0 1 4M10 2v3h-3"/></svg>
-          Resetear visibilidad
-        </button>
-      </div>
-    </div>
-
-    <!-- Lista de slides con numeración -->
-    <div class="adm-card">
-      <div class="adm-card-title">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(255,200,220,.65)" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
-        Slides en rotación (${activeCount} activos)
-      </div>
-
-      <!-- Slide 1: Instagram -->
-      <div class="adm-slide-item">
-        <div class="adm-slide-num">1</div>
-        <div class="adm-slide-preview" style="background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d)">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:700;color:#F0E8EC">Instagram <span style="font-size:10px;color:rgba(245,183,49,.8);font-weight:600">2×</span></div>
-          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">@apagonesmid · instagram.com</div>
-          ${statusBadge(!igOff, igPaused)}
-        </div>
-        <div class="adm-slide-actions">
-          <button onclick="toggleSlide('ig','pause')" class="adm-tag ${igPaused?'adm-tag-warn':'adm-tag-dim'}" title="${igPaused?'Reanudar':'Pausar'}">
-            ${igPaused?`<svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M2 2l8 4-8 4V2z"/></svg>`:`<svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 2v8M8 2v8"/></svg>`}
-            ${igPaused?'Reanudar':'Pausar'}
-          </button>
-          <button onclick="toggleSlide('ig','active')" class="adm-tag ${igOff?'adm-tag-on':'adm-tag-off'}" title="${igOff?'Activar':'Quitar'}">
-            ${igOff?'Activar':'Quitar'}
-          </button>
-        </div>
-      </div>
-      <div class="adm-divider"></div>
-
-      <!-- Slide 2: Instagram (2da aparición) -->
-      <div class="adm-slide-item">
-        <div class="adm-slide-num">2</div>
-        <div class="adm-slide-preview" style="background:linear-gradient(135deg,#833ab4,#e1306c,#fcb045)">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:700;color:#F0E8EC">Instagram <span style="font-size:10px;color:rgba(245,183,49,.8);font-weight:600">2×</span></div>
-          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">@apagonesmid · variante 2</div>
-          ${statusBadge(!igOff, igPaused)}
-        </div>
-        <div class="adm-slide-actions">
-          <button onclick="toggleSlide('ig','pause')" class="adm-tag ${igPaused?'adm-tag-warn':'adm-tag-dim'}">
-            ${igPaused?`<svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M2 2l8 4-8 4V2z"/></svg>`:`<svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 2v8M8 2v8"/></svg>`}
-            ${igPaused?'Reanudar':'Pausar'}
-          </button>
-          <button onclick="toggleSlide('ig','active')" class="adm-tag ${igOff?'adm-tag-on':'adm-tag-off'}">${igOff?'Activar':'Quitar'}</button>
-        </div>
-      </div>
-      <div class="adm-divider"></div>
-
-      <!-- Slide 3: Facebook -->
-      <div class="adm-slide-item">
-        <div class="adm-slide-num">3</div>
-        <div class="adm-slide-preview" style="background:#1877F2">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:700;color:#F0E8EC">Facebook</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">ApagonesMID · facebook.com</div>
-          ${statusBadge(!fbOff, fbPaused)}
-        </div>
-        <div class="adm-slide-actions">
-          <button onclick="toggleSlide('fb','pause')" class="adm-tag ${fbPaused?'adm-tag-warn':'adm-tag-dim'}">
-            ${fbPaused?`<svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M2 2l8 4-8 4V2z"/></svg>`:`<svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 2v8M8 2v8"/></svg>`}
-            ${fbPaused?'Reanudar':'Pausar'}
-          </button>
-          <button onclick="toggleSlide('fb','active')" class="adm-tag ${fbOff?'adm-tag-on':'adm-tag-off'}">${fbOff?'Activar':'Quitar'}</button>
-        </div>
-      </div>
-
-      <!-- Slots de anuncios custom -->
-      ${adSlots.length ? '<div class="adm-divider"></div>' : ''}
-      ${adSlots.map((ad, i) => {
-        const slotNum = 4 + i;
-        return `<div class="adm-slide-item" id="adslot-${ad.id}">
-          <div class="adm-slide-num">${slotNum}</div>
-          <div class="adm-slide-preview" style="${ad.imgData?`background-image:url('${ad.imgData}')`:''};background-color:#1A0E14">
-            ${ad.imgData ? '' : `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/><circle cx="5.5" cy="5.5" r="1.5" fill="rgba(255,255,255,.3)" stroke="none"/></svg>`}
-          </div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:700;color:#F0E8EC;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.title||'Sin título'}</div>
-            <div style="font-size:10px;color:rgba(34,208,240,.7);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.url||'Sin URL'}</div>
-            ${statusBadge(ad.active, false)}
-          </div>
-          <div class="adm-slide-actions">
-            <button onclick="editAdSlot('${ad.id}')" class="adm-tag adm-tag-dim">
-              <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2l2 2-6 6H2V8z"/></svg>
-              Editar
-            </button>
-            <button onclick="toggleAdSlot('${ad.id}')" class="adm-tag ${ad.active?'adm-tag-off':'adm-tag-on'}">${ad.active?'Pausar':'Activar'}</button>
-            <button onclick="deleteAdSlot('${ad.id}')" class="adm-tag adm-tag-off" style="padding:5px 7px">
-              <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7"/></svg>
-            </button>
-          </div>
-        </div>${i < adSlots.length-1 ? '<div class="adm-divider"></div>' : ''}`;
-      }).join('')}
-    </div>
-
-    <!-- Agregar nuevo anuncio -->
-    <div class="adm-card" id="new-ad-form-card">
-      <div class="adm-card-title" style="cursor:pointer" onclick="document.getElementById('new-ad-form').style.display=document.getElementById('new-ad-form').style.display==='none'?'block':'none'">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(34,208,240,.75)" stroke-width="2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
-        Agregar nuevo anuncio
-        <span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.3)">Toca para expandir</span>
-      </div>
-      <div id="new-ad-form" style="display:none;margin-top:10px">
-        <!-- Preview en vivo -->
-        <div id="new-ad-preview-wrap" style="border-radius:10px;overflow:hidden;margin-bottom:12px;${_newAdImgData?'':'display:none'};border:1px solid rgba(34,208,240,.15)">
-          <img id="new-ad-preview-img" src="${_newAdImgData||''}" style="width:100%;height:44px;object-fit:cover;display:block"/>
-        </div>
-        <!-- Campos -->
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
-          <div>
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Título del anuncio</div>
-            <input type="text" id="new-ad-title" placeholder="Ej. Panadería El Buen Pan" maxlength="40"
-              style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:10px;padding:10px 13px;color:#F0E8EC;font-family:var(--f);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s"
-              onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"
-            />
-          </div>
-          <div>
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">URL al tocar</div>
-            <input type="url" id="new-ad-url" placeholder="https://ejemplo.com"
-              style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:10px;padding:10px 13px;color:#F0E8EC;font-family:var(--f);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s"
-              onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"
-            />
-          </div>
-          <div>
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Imagen del banner <span style="color:rgba(34,208,240,.7);font-weight:600">720 × 88 px</span></div>
-            <label style="width:100%;display:block;padding:11px;background:rgba(34,208,240,.07);border:1.5px dashed rgba(34,208,240,.25);border-radius:11px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;box-sizing:border-box" id="new-ad-img-label">
-              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
-              ${_newAdImgData ? 'Imagen lista — toca para cambiar' : 'Seleccionar imagen'}
-              <input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>
-            </label>
-          </div>
-        </div>
-        <!-- Nota de medidas -->
-        <div style="background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.1);border-radius:10px;padding:9px 12px;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:12px;line-height:1.5">
-          💡 La imagen debe medir <strong style="color:#22D0F0">720 × 88 px</strong> para verse perfecta. El banner se mostrará sobre el ticker de reportes. Máx 400 KB.
-        </div>
-        <button onclick="saveNewAdSlot()" class="adm-action-btn" style="width:100%;background:linear-gradient(135deg,rgba(34,208,240,.25),rgba(34,208,240,.12));border-color:rgba(34,208,240,.4);color:#22D0F0;font-size:13px;font-weight:800;padding:12px">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><path d="M13 5l-6 6-3-3"/></svg>
-          Publicar anuncio
-        </button>
-      </div>
-    </div>`;
-
-    setTimeout(()=>{
-      // Si no hay imagen cargada, dibujar canvas de referencia en el campo vacío
-      // (no hay canvas aquí pero sí queremos mostrar el adm-slide-preview correcto)
-    }, 30);
-  }
-
-  else if(adminTab==='historico'){
-    renderHistoricoTab(body);
-  }
-
-    else if(adminTab==='audit'){
-    body.innerHTML = `
-      <div style="background:rgba(101,8,31,.1);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
-        📝 Registro de acciones admin: resoluciones, folios añadidos, anuncios publicados.
-      </div>
-      <div class="admin-section">
-        <div class="admin-section-title">Últimas acciones</div>
-        <div id="audit-list" style="font-size:12px"></div>
-      </div>`;
-    renderAuditList();
-  }
-
-  // ──────────────────── TAB: SETTINGS ────────────────────
-  else if(adminTab==='settings'){
-    const ttlH = lsGet('apx_ttl_hours','8');
-    const resTh = lsGet('apx_resolve_threshold','3');
-    const heatT = lsGet('apx_heat_threshold','37');
-    const heatC = lsGet('apx_heat_critical','40');
-    const histM = lsGet('apx_hist_months','12');
-    body.innerHTML = `
-      <div style="background:rgba(245,183,49,.06);border:1px solid rgba(245,183,49,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
-        ⚙️ Ajustes locales — se guardan en este dispositivo, no en servidor.
-      </div>
-      <div class="fld"><label>⏱️ TTL Apagones (horas)</label>
-        <input type="number" id="set-ttl" value="${ttlH}" min="1" max="48" step="1"/>
-        <div style="font-size:10px;color:var(--mut);margin-top:3px">Tiempo que duran apagones activos antes de expirar automáticamente</div>
-      </div>
-      <div class="fld"><label>🗳️ Umbral de votos para resolver</label>
-        <input type="number" id="set-resolve" value="${resTh}" min="2" max="10" step="1"/>
-        <div style="font-size:10px;color:var(--mut);margin-top:3px">Vecinos que deben confirmar "volvió la luz" para auto-resolver</div>
-      </div>
-      <div class="fld"><label>🌡️ Alerta de calor (°C)</label>
-        <input type="number" id="set-heat" value="${heatT}" min="30" max="45" step="1"/>
-      </div>
-      <div class="fld"><label>🚨 Calor crítico (°C)</label>
-        <input type="number" id="set-heat-crit" value="${heatC}" min="35" max="50" step="1"/>
-      </div>
-      <div class="fld"><label>📚 Conservar histórico (meses)</label>
-        <input type="number" id="set-hist-months" value="${histM}" min="0" max="60" step="1"/>
-        <div style="font-size:10px;color:var(--mut);margin-top:3px">Reportes resueltos más antiguos se borran solos. 0 = conservar para siempre. Recomendado: 12 meses (privacidad).</div>
-      </div>
-      <button onclick="saveAdminSettings()" style="width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer">💾 Guardar ajustes</button>
-      <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--bdr)">
-        <div style="font-size:11px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Acciones peligrosas</div>
-        <button onclick="clearAllResolved()" style="width:100%;padding:10px;border-radius:10px;background:rgba(255,61,61,.1);border:1px solid rgba(255,61,61,.3);color:#FF7A7A;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:6px">🗑️ Limpiar histórico antiguo ahora</button>
-        <button onclick="resetTodo()" style="width:100%;padding:10px;border-radius:10px;background:rgba(255,61,61,.18);border:1px solid rgba(255,61,61,.5);color:#FF5050;font-family:var(--f);font-size:12px;font-weight:800;cursor:pointer;margin-bottom:6px">⚠️ RESET TOTAL — borrar todos los reportes</button>
-        <button onclick="logoutAdmin()" style="width:100%;padding:10px;border-radius:10px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">🚪 Cerrar sesión admin</button>
-      </div>`;
-  }
-}
-
-// Export bar shown on apagones/agua/alumbrado tabs
 function adminExportBar(type){
   const lock = adminAuthed ? '' : '🔒 ';
   const hint = adminAuthed ? '' : '<div style="width:100%;font-size:10.5px;color:var(--mut);margin-bottom:7px;font-family:var(--f)">🔒 Desbloquea contactos (login Supabase) para exportar.</div>';
@@ -5292,293 +4538,11 @@ function adminExportBar(type){
 //  ADMIN HELPERS — supporting all 10 tabs
 // ════════════════════════════════════════════════════
 
-// ─── Audit log (localStorage) ───
-function auditLog(action, details){
-  try{
-    const log = JSON.parse(lsGet('apx_audit','[]'));
-    log.unshift({timestamp:Date.now(), action, details, admin:'admin'});
-    // Keep last 100
-    lsSet('apx_audit', JSON.stringify(log.slice(0,100)));
-  } catch(e){ console.warn('audit:',e); }
-}
 
-function renderAuditList(){
-  const el = document.getElementById('audit-list');
-  if(!el) return;
-  try{
-    const log = JSON.parse(lsGet('apx_audit','[]'));
-    if(!log.length){
-      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--mut)">Sin acciones registradas</div>';
-      return;
-    }
-    el.innerHTML = log.slice(0,50).map(e=>{
-      const d = new Date(e.timestamp);
-      const when = d.toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      const icon = e.action.includes('resolve')?'✅':e.action.includes('folio')?'🗂️':e.action.includes('anuncio')?'📢':e.action.includes('sched')?'📅':'📝';
-      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-bottom:1px solid var(--bdr)">
-        <span style="font-size:14px">${icon}</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:700;color:var(--tx)">${e.action}</div>
-          <div style="font-size:10px;color:var(--mut)">${when} · ${e.details||''}</div>
-        </div>
-      </div>`;
-    }).join('');
-  } catch(err){ el.innerHTML = '<div style="color:#FF7A7A">Error: '+err.message+'</div>'; }
-}
 
-// ─── Wrap force-resolve with audit ───
-async function adminForceResolveLog(id, type){
-  await adminForceResolve(id);
-  auditLog('Reporte resuelto', `${type} · ${id.slice(-6)}`);
-}
 
-// ─── Photo viewer modal ───
-function openPhotoView(reportId){
-  const r = cachedReports.find(x=>x.id===reportId);
-  if(!r || !r.photo_data){ toast('Sin foto disponible','i'); return; }
-  let modal = document.getElementById('photo-view-modal');
-  if(!modal){
-    modal = document.createElement('div');
-    modal.id = 'photo-view-modal';
-    modal.style.cssText = 'position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
-    modal.onclick = ()=>{modal.style.display='none';};
-    document.body.appendChild(modal);
-  }
-  modal.style.display = 'flex';
-  const _flags = (r.photo_flags||'').split(',').filter(Boolean);
-  const _noCam = _flags.includes('nocam');
-  const _susp = _flags.includes('sospechosa');
-  let _verifHtml = '';
-  if(_susp){
-    _verifHtml = '<div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:#FFB0B0;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:8px;font-family:var(--f)">⚠️ Foto marcada como sospechosa — revisa que corresponda al reporte</div>';
-  } else if(_noCam){
-    _verifHtml = '<div style="background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.35);color:#F5D89A;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:8px;font-family:var(--f)">❓ Sin datos de cámara (puede ser de WhatsApp, PC o captura)</div>';
-  } else {
-    _verifHtml = '<div style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#A0E8B0;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:8px;font-family:var(--f)">✓ Foto verificada — tomada con cámara</div>';
-  }
-    modal.innerHTML = `${_verifHtml}<img src="${r.photo_data}" style="max-width:100%;max-height:90vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.6)"/>
-    <button style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:36px;height:36px;color:white;font-size:18px;cursor:pointer">✕</button>`;
-}
 
-// ─── Set/update folio ───
-async function setFolio(reportId){
-  const r = cachedReports.find(x=>x.id===reportId);
-  if(!r) return;
-  const current = r.report_number||'';
-  const newFolio = prompt('Folio oficial (CFE/JAPAY/Ayuntatel):', current);
-  if(newFolio===null) return;
-  const{error} = await db.from('reports').update({report_number:newFolio.trim()}).eq('id',reportId);
-  if(error){ toast('Error: '+error.message,'e'); return; }
-  auditLog('Folio actualizado', `${r.type} · ${reportId.slice(-6)} · ${newFolio.trim()||'(vacío)'}`);
-  toast('Folio guardado','s');
-  await renderAll();
-  renderAdminPanel();
-}
 
-// ═════ TAB: HEATMAP — top colonias ─────
-async function renderHeatmapTab(){
-  const body = document.getElementById('admin-body');
-  if(!body) return;
-  const since = Date.now() - 7*24*3600000;
-  try{
-    const{data} = await db.from('reports').select('lat,lng,type,timestamp,severity,seccion').gt('timestamp',since).limit(500);
-    const reports = data || [];
-    // Group by proximity (~500m)
-    const groups = [];
-    reports.forEach(r=>{
-      const g = groups.find(gr=>Math.hypot(gr.lat-r.lat, gr.lng-r.lng) < 0.005);
-      if(g){g.reports.push(r);g.lat=(g.lat+r.lat)/2;g.lng=(g.lng+r.lng)/2;}
-      else groups.push({lat:r.lat,lng:r.lng,reports:[r]});
-    });
-    // Sort by count desc
-    groups.sort((a,b)=>b.reports.length-a.reports.length);
-    const top = groups.slice(0,12);
-    // Fetch colonia names
-    const namedGroups = await Promise.all(top.map(async g=>{
-      const name = await getColonia(g.lat, g.lng);
-      return {...g, name};
-    }));
-    const maxCount = top[0]?.reports.length || 1;
-    body.innerHTML = `
-      <div style="background:rgba(255,75,31,.06);border:1px solid rgba(255,75,31,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
-        🗺️ Top colonias con más reportes en últimos 7 días.
-      </div>
-      <div class="admin-section">
-        <div class="admin-section-title">🔥 Colonias más afectadas</div>
-        ${namedGroups.length===0?'<div class="admin-empty"><span>🌙</span>Sin reportes esta semana</div>':namedGroups.map((g,i)=>{
-          const elN = g.reports.filter(r=>ELEC_TYPES.includes(r.type)).length;
-          const agN = g.reports.filter(r=>AGUA_TYPES.includes(r.type)).length;
-          const pct = (g.reports.length/maxCount)*100;
-          const medal = ['🥇','🥈','🥉','4️⃣','5️⃣'][i] || (i+1)+'.';
-          return `<div style="background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px;margin-bottom:8px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-              <span style="font-size:18px;width:24px">${medal}</span>
-              <strong style="flex:1;font-size:14px;color:var(--tx)">${g.name}</strong>
-              <span style="font-size:14px;font-weight:800;color:var(--brand-lt)">${g.reports.length}</span>
-            </div>
-            <div style="height:6px;background:var(--bdr);border-radius:3px;overflow:hidden;margin-bottom:6px">
-              <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#FF4B1F,#F5B731);border-radius:3px"></div>
-            </div>
-            <div style="display:flex;gap:10px;font-size:11px;color:var(--dim)">
-              ${elN>0?`<span style="color:var(--elec)">⚡ ${elN}</span>`:''}
-              ${agN>0?`<span style="color:var(--agua)">💧 ${agN}</span>`:''}
-              <button onclick="map.flyTo([${g.lat},${g.lng}],15);closeAdmin()" style="margin-left:auto;background:none;border:none;color:var(--brand-lt);font-size:11px;cursor:pointer;font-family:var(--f);font-weight:700">Ver en mapa →</button>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>`;
-  } catch(e){
-    body.innerHTML = '<div style="color:#FF7A7A;padding:20px;text-align:center">Error: '+e.message+'</div>';
-  }
-}
-
-// ═════ TAB: TRENDS ─────
-async function renderTrendsTab(){
-  const body = document.getElementById('admin-body');
-  if(!body) return;
-  const since30 = Date.now() - 30*24*3600000;
-  try{
-    // Combine ACTIVE reports + HISTÓRICO (resolved moved there) for full picture
-    const[activeRes, histRes] = await Promise.all([
-      db.from('reports').select('type,timestamp,resolved,resolved_at,severity').gt('timestamp',since30).limit(1500),
-      db.from('reports_historico').select('type,timestamp,resolved_at,severity,resolucion_min').gt('timestamp',since30).limit(1500)
-    ]);
-    const active = activeRes.data || [];
-    const hist = (histRes.data || []).map(r=>({...r, resolved:true}));
-    const reports = [...active, ...hist];
-
-    // Daily counts last 14 days
-    const days = 14;
-    const bucket = Array(days).fill(0).map(()=>({el:0,ag:0,total:0}));
-    const now = Date.now();
-    reports.forEach(r=>{
-      const ageMs = now - r.timestamp;
-      const dayIdx = days - 1 - Math.floor(ageMs / (24*3600000));
-      if(dayIdx>=0 && dayIdx<days){
-        bucket[dayIdx].total++;
-        if(ELEC_TYPES.includes(r.type)) bucket[dayIdx].el++;
-        else if(AGUA_TYPES.includes(r.type)) bucket[dayIdx].ag++;
-      }
-    });
-    const maxDay = Math.max(...bucket.map(b=>b.total),1);
-
-    // Hourly distribution
-    const hours = Array(24).fill(0);
-    reports.forEach(r=>{
-      const h = new Date(r.timestamp).getHours();
-      hours[h]++;
-    });
-    const maxHour = Math.max(...hours,1);
-
-    // Resolution time avg (resolved reports only)
-    const resolved = reports.filter(r=>r.resolved && (r.resolucion_min || r.resolved_at));
-    const avgResMs = resolved.length ? resolved.reduce((s,r)=>{
-      const ms = r.resolucion_min ? r.resolucion_min*60000 : (r.resolved_at-r.timestamp);
-      return s+ms;
-    },0)/resolved.length : 0;
-    const avgResH = avgResMs ? (avgResMs/3600000).toFixed(1) : '—';
-
-    // Week-over-week
-    const thisWeek = reports.filter(r=>now-r.timestamp < 7*24*3600000).length;
-    const lastWeek = reports.filter(r=>now-r.timestamp >= 7*24*3600000 && now-r.timestamp < 14*24*3600000).length;
-    const wowChange = lastWeek ? ((thisWeek-lastWeek)/lastWeek*100).toFixed(0) : '—';
-    const wowSign = thisWeek>lastWeek?'↑':thisWeek<lastWeek?'↓':'→';
-    const wowColor = thisWeek>lastWeek?'#FF7A7A':thisWeek<lastWeek?'var(--grn)':'var(--dim)';
-
-    body.innerHTML = `
-      <div class="admin-stats">
-        <div class="a-stat"><div class="a-stat-n all">${reports.length}</div><div class="a-stat-l">30 días</div></div>
-        <div class="a-stat"><div class="a-stat-n el" style="color:${wowColor}">${wowSign}${Math.abs(wowChange)}%</div><div class="a-stat-l">vs semana ant.</div></div>
-        <div class="a-stat"><div class="a-stat-n ag">${avgResH}h</div><div class="a-stat-l">Prom. resolución</div></div>
-      </div>
-      <div class="admin-section">
-        <div class="admin-section-title">📊 Últimos 14 días</div>
-        <div style="display:flex;align-items:flex-end;gap:3px;height:120px;padding:8px;background:var(--card);border-radius:10px;border:1px solid var(--bdr)">
-          ${bucket.map((b,i)=>{
-            const elH = (b.el/maxDay)*100;
-            const agH = (b.ag/maxDay)*100;
-            const d = new Date(now - (days-1-i)*24*3600000);
-            return `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;min-width:0" title="${d.toLocaleDateString('es-MX')}: ⚡${b.el} 💧${b.ag}">
-              <div style="height:${elH}%;background:var(--elec);border-radius:2px 2px 0 0;min-height:${b.el>0?'2px':'0'}"></div>
-              <div style="height:${agH}%;background:var(--agua);border-radius:0 0 2px 2px;min-height:${b.ag>0?'2px':'0'}"></div>
-            </div>`;
-          }).join('')}
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mut);margin-top:4px;padding:0 8px">
-          <span>${new Date(now-13*24*3600000).getDate()}/${new Date(now-13*24*3600000).getMonth()+1}</span>
-          <span>Hoy</span>
-        </div>
-      </div>
-      <div class="admin-section">
-        <div class="admin-section-title">🕐 Distribución por hora</div>
-        <div style="display:flex;align-items:flex-end;gap:1px;height:80px;padding:8px;background:var(--card);border-radius:10px;border:1px solid var(--bdr)">
-          ${hours.map((n,h)=>{
-            const hT = (n/maxHour)*100;
-            return `<div style="flex:1;background:var(--brand-lt);height:${hT}%;border-radius:1px 1px 0 0;min-height:${n>0?'2px':'0'}" title="${h}:00 — ${n} reportes"></div>`;
-          }).join('')}
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mut);margin-top:4px;padding:0 8px">
-          <span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span>
-        </div>
-      </div>
-      <div class="admin-section">
-        <div class="admin-section-title">📋 Por tipo</div>
-        ${(()=>{
-          const types = {
-            apagon:'⚡ Apagones',
-            alumbrado:'💡 Alumbrado',
-            agua:'💧 Fugas',
-            corte_agua:'🚰 Sin Agua',
-            presion_baja:'💧 Presión baja',
-            calidad_agua:'💧 Calidad agua'
-          };
-          return Object.entries(types).map(([t,lbl])=>{
-            const n = reports.filter(r=>r.type===t).length;
-            const pct = (n/reports.length*100)||0;
-            return n>0?`<div style="margin-bottom:8px">
-              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-                <span>${lbl}</span><strong style="color:var(--tx)">${n}</strong>
-              </div>
-              <div style="height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
-                <div style="width:${pct}%;height:100%;background:${ELEC_TYPES.includes(t)?'var(--elec)':'var(--agua)'};border-radius:3px"></div>
-              </div>
-            </div>`:'';
-          }).join('');
-        })()}
-      </div>`;
-  } catch(e){
-    body.innerHTML = '<div style="color:#FF7A7A;padding:20px;text-align:center">Error: '+e.message+'</div>';
-  }
-}
-
-// ═════ TAB: SCHEDULED LIST ─────
-async function renderScheduledTabList(){
-  const container = document.getElementById('sched-tab-list');
-  if(!container) return;
-  const now = Date.now();
-  const{data, error} = await db.from('scheduled_outages').select('*').gt('scheduled_for',now-24*3600000).order('scheduled_for',{ascending:true});
-  if(error || !data || !data.length){
-    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--mut);font-size:12px">Sin avisos programados</div>';
-    return;
-  }
-  container.innerHTML = data.map(s=>{
-    const when = new Date(s.scheduled_for);
-    const dateStr = when.toLocaleString('es-MX',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
-    const past = s.scheduled_for < now;
-    return `<div style="background:var(--card);border:1px solid ${past?'var(--bdr)':'rgba(168,85,247,.3)'};border-radius:10px;padding:12px;margin-bottom:8px;${past?'opacity:.55':''}">
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="font-size:20px">${s.type==='apagon'?'⚡':'🚰'}</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:800;color:var(--tx);margin-bottom:3px">${s.title}</div>
-          <div style="font-size:11px;color:var(--dim)">${dateStr} · ${s.duration_hours}h</div>
-          ${s.description?`<div style="font-size:11px;color:var(--dim);margin-top:4px;font-style:italic">${s.description}</div>`:''}
-          ${s.seccion?`<div style="font-size:10px;color:var(--brand-lt);margin-top:4px">📍 ${s.seccion}</div>`:''}
-        </div>
-        <button onclick="deleteScheduledOutage('${s.id}');setTimeout(renderScheduledTabList,300)" style="background:rgba(255,61,61,.1);border:1px solid rgba(255,61,61,.3);border-radius:7px;padding:5px 9px;cursor:pointer;color:#FF7A7A;font-family:var(--f);font-size:11px;font-weight:700;flex-shrink:0">Quitar</button>
-      </div>
-    </div>`;
-  }).join('');
-}
 
 // ═════ TAB: ANUNCIOS ─────
 function publishAnuncio(){
@@ -5643,43 +4607,6 @@ function saveAdminSettings(){
   toast('💾 Ajustes guardados','s');
 }
 
-async function resetTodo(){
-  // Doble confirmación para evitar accidentes
-  if(!confirm('⚠️ Esto borrará TODOS los reportes (activos e históricos) de forma permanente.\n\n¿Estás seguro?')) return;
-  if(!confirm('Última confirmación: se eliminará TODO y no se puede deshacer.\n\n¿Continuar con el reset total?')) return;
-  toast('Borrando todos los reportes…','i');
-  try{
-    // Borrar activos — con {count:'exact'} para saber cuántas filas se borraron de verdad
-    const{error:e1, count:n1} = await db.from('reports').delete({count:'exact'}).neq('id','');
-    // Borrar históricos
-    let e2=null, n2=0;
-    try{ const r=await db.from('reports_historico').delete({count:'exact'}).neq('id',''); e2=r.error; n2=r.count||0; }catch(_){ e2=null; }
-    // Borrar contactos privados (requiere login admin)
-    try{ await db.from('report_contacts').delete().neq('report_id',''); }catch(_){}
-    try{ _contactsCache={}; }catch(_){}
-    if(e1){ toast('Error borrando activos: '+e1.message,'e'); return; }
-    // Si no había error pero tampoco borró filas habiendo reportes → falta política DELETE (RLS)
-    if((n1===0||n1===null) && cachedReports.length>0){
-      toast('⚠️ No se borró nada. Corre fix-delete.sql en Supabase (falta permiso DELETE).','e');
-      return;
-    }
-    // Limpiar cache local y mapa
-    cachedReports = [];
-    Object.values(aguaMarkers||{}).forEach(m=>m.remove()); 
-    Object.values(alumbradoMarkers||{}).forEach(m=>m.remove());
-    Object.values(zoneCircles||{}).forEach(z=>{ if(z.circle)z.circle.remove(); if(z.glow)z.glow.remove(); });
-    Object.values(zoneBulbMarkers||{}).forEach(m=>m.remove());
-    if(typeof aguaMarkers!=='undefined') for(const k in aguaMarkers) delete aguaMarkers[k];
-    if(typeof alumbradoMarkers!=='undefined') for(const k in alumbradoMarkers) delete alumbradoMarkers[k];
-    await renderAll();
-    if(typeof renderAdminPanel==='function') renderAdminPanel();
-    if(typeof auditLog==='function') auditLog('RESET TOTAL', `${n1||0} activos + ${n2||0} históricos`);
-    toast(`✅ Reset completado — ${(n1||0)+(n2||0)} reportes borrados`,'b');
-  }catch(e){
-    console.error('resetTodo:', e);
-    toast('Error en reset: '+(e.message||'reintenta'),'e');
-  }
-}
 
 async function clearAllResolved(){
   const months = parseInt(lsGet('apx_hist_months','12'));
@@ -5692,300 +4619,6 @@ async function clearAllResolved(){
 }
 
 // Auto-purge histórico viejo (corre al abrir admin)
-async function autoPurgeHistorico(){
-  try{
-    const months = parseInt(lsGet('apx_hist_months','12'));
-    if(months<=0) return; // 0 = conservar para siempre
-    const cutoff = Date.now() - months*30*24*3600000;
-    const{count} = await db.from('reports_historico').delete({count:'exact'}).lt('resolved_at',cutoff);
-    if(count>0){ console.log('Auto-purga histórico:', count); }
-  }catch(e){ /* silencioso */ }
-}
-
-function logoutAdmin(){
-  if(!confirm('¿Cerrar sesión admin?'))return;
-  adminMode = false;
-  adminAuthed = false;
-  _contactsCache = {};
-  try{ db.auth.signOut(); }catch(e){}
-  const am=document.getElementById('admin-modal'); if(am) am.style.display='none';
-  const af=document.getElementById('admin-fab'); if(af) af.style.display='none';
-  const ap=document.getElementById('admin-panel'); if(ap) ap.classList.remove('open');
-  toast('Sesión cerrada','i');
-}
-
-// ═════ EXPORTS — Filtered ─────
-// Verifica que el admin tenga login real (Supabase Auth) antes de exportar
-function requireAuthForExport(){
-  if(!adminAuthed){
-    toast('🔒 Desbloquea contactos (login Supabase) para exportar Excel/PDF','e');
-    return false;
-  }
-  return true;
-}
-// Resuelve la colonia (calle/zona) de cada reporte vía getColonia
-async function resolveColonias(data){
-  const out = {};
-  for(const r of data){
-    if(r.lat && r.lng && typeof getColonia==='function'){
-      try{ out[r.id] = await getColonia(r.lat, r.lng); }catch(e){ out[r.id]=''; }
-    } else { out[r.id]=''; }
-  }
-  return out;
-}
-// Asegura que el histórico esté cargado antes de exportar
-async function ensureHistLoaded(){
-  try{
-    if(typeof _histCache==='undefined' || !_histCache || !_histCache.length){
-      const{data} = await db.from('reports_historico').select('*').order('resolved_at',{ascending:false}).limit(1000);
-      _histCache = data||[];
-    }
-  }catch(e){}
-}
-
-async function exportCSVFiltered(type){
-  if(!requireAuthForExport()) return;
-  await ensureHistLoaded();
-  const data = filteredReportsForExport(type);
-  if(!data.length){ toast('Sin datos para exportar','i'); return; }
-  toast('Generando CSV (resolviendo calles)…','i');
-  const col = await resolveColonias(data);
-  const headers = ['ID','Tipo','Severidad','Latitud','Longitud','Calle/Colonia','Sección','Timestamp','Fecha','Resuelto','Nombre','Teléfono','Folio'];
-  const rows = data.map(r=>[
-    r.id, r.type, r.severity||'', r.lat, r.lng, col[r.id]||'', r.seccion||'',
-    r.timestamp, new Date(r.timestamp).toLocaleString('es-MX'),
-    r.resolved?'Sí':'No', contactOf(r.id).nombre||'', contactOf(r.id).telefono||'', r.report_number||''
-  ]);
-  const csv = [headers.join(','), ...rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(','))].join('\n');
-  downloadFile(csv, `apagones-mid-${type}-${new Date().toISOString().slice(0,10)}.csv`, 'text/csv;charset=utf-8');
-  auditLog('Export CSV', `${type} · ${data.length} registros`);
-}
-
-async function exportXLSXFiltered(type){
-  if(!requireAuthForExport()) return;
-  await ensureHistLoaded();
-  // Simple TSV that Excel opens cleanly (avoids needing SheetJS)
-  const data = filteredReportsForExport(type);
-  if(!data.length){ toast('Sin datos','i'); return; }
-  toast('Generando Excel (resolviendo calles)…','i');
-  const col = await resolveColonias(data);
-  const headers = ['ID','Tipo','Severidad','Latitud','Longitud','Calle/Colonia','Sección','Fecha','Resuelto','Nombre','Teléfono','Folio'];
-  const rows = data.map(r=>[
-    r.id, r.type, r.severity||'', r.lat, r.lng, col[r.id]||'', r.seccion||'',
-    new Date(r.timestamp).toLocaleString('es-MX'),
-    r.resolved?'Sí':'No', contactOf(r.id).nombre||'', contactOf(r.id).telefono||'', r.report_number||''
-  ]);
-  const tsv = [headers.join('\t'), ...rows.map(r=>r.join('\t'))].join('\n');
-  // BOM for Excel UTF-8 recognition
-  const blob = '\ufeff' + tsv;
-  downloadFile(blob, `apagones-mid-${type}-${new Date().toISOString().slice(0,10)}.xls`, 'application/vnd.ms-excel;charset=utf-8');
-  auditLog('Export Excel', `${type} · ${data.length} registros`);
-}
-
-async function exportPDFFiltered(type){
-  if(!requireAuthForExport()) return;
-  await ensureHistLoaded();
-  const data = filteredReportsForExport(type);
-  if(!data.length){ toast('Sin datos','i'); return; }
-  toast('Generando PDF (resolviendo calles)…','i');
-  const col = await resolveColonias(data);
-  // Build printable HTML and open print window
-  const now = new Date().toLocaleString('es-MX');
-  const typeLbl = type==='apagon'?'Apagones':type==='agua'?'Reportes de Agua':type==='alumbrado'?'Alumbrado público':'Todos los reportes';
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ApagonesMID — ${typeLbl}</title>
-    <style>
-      body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:30px;color:#222;font-size:11px;line-height:1.5}
-      h1{color:#65081F;font-size:22px;margin:0 0 4px 0}
-      .meta{color:#888;font-size:11px;margin-bottom:20px}
-      .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-      .stat{background:#f5f0f2;padding:12px;border-radius:8px;text-align:center}
-      .stat-n{font-size:20px;font-weight:800;color:#65081F}
-      .stat-l{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px}
-      table{width:100%;border-collapse:collapse;font-size:10px}
-      th{background:#65081F;color:white;padding:6px;text-align:left;font-weight:600}
-      td{padding:5px 6px;border-bottom:1px solid #eee}
-      tr:nth-child(even){background:#fafafa}
-      .footer{margin-top:30px;padding-top:14px;border-top:1px solid #ddd;font-size:9px;color:#999;text-align:center}
-      @media print{ body{padding:15px} }
-    
-/* Contáctanos modal */
-.ct-cat{
-  padding:7px 12px;font-family:var(--f);font-size:12px;font-weight:700;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;color:rgba(255,255,255,.45);cursor:pointer;-webkit-appearance:none;
-  transition:all .18s;white-space:nowrap;
-}
-.ct-cat.active{
-  background:rgba(34,208,240,.15);border-color:rgba(34,208,240,.4);color:#22D0F0;
-}
-
-/* Contáctanos v2 */
-.ct-cat-card{
-  width:100%;display:flex;align-items:center;gap:14px;
-  padding:13px 14px;min-height:64px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:16px;
-  cursor:pointer;text-align:left;
-  font-family:var(--f);
-  transition:background .18s, border-color .18s, transform .1s;
-  -webkit-appearance:none;touch-action:manipulation;
-}
-.ct-cat-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
-.ct-cat-card:active{transform:scale(.98);background:rgba(255,255,255,.06)}
-.ct-cat-card.ct-cat-highlight{
-  background:rgba(101,8,31,.18);
-  border-color:rgba(180,40,70,.3);
-}
-.ct-cat-card.ct-cat-highlight:hover{background:rgba(101,8,31,.25);border-color:rgba(200,60,90,.45)}
-html.light .ct-cat-card{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.09);color:#1A0E14}
-html.light .ct-cat-card:hover{background:rgba(0,0,0,.07)}
-html.light .ct-cat-card.ct-cat-highlight{background:rgba(101,8,31,.08);border-color:rgba(101,8,31,.2)}
-.ct-cat-icon{
-  width:40px;height:40px;border-radius:12px;
-  border:1px solid;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.ct-cat-text{flex:1;min-width:0}
-.ct-cat-name{font-size:14px;font-weight:700;color:#F4EFFE;margin-bottom:2px}
-html.light .ct-cat-name{color:#1A0E14}
-.ct-cat-sub{font-size:11.5px;color:rgba(255,255,255,.35);line-height:1.3}
-html.light .ct-cat-sub{color:rgba(0,0,0,.45)}
-.ct-cat-arrow{flex-shrink:0;transition:transform .18s}
-.ct-cat-card:hover .ct-cat-arrow{transform:translateX(3px)}
-
-.adm-slide-row{display:flex;align-items:center;gap:10px;padding:4px 0}
-.adm-slide-btn{
-  padding:5px 10px;font-family:var(--f);font-size:11px;font-weight:700;
-  border-radius:8px;border:1px solid;background:rgba(255,255,255,.03);
-  cursor:pointer;-webkit-appearance:none;
-  display:inline-flex;align-items:center;gap:4px;
-  white-space:nowrap;transition:background .18s;
-}
-.adm-slide-btn:hover{background:rgba(255,255,255,.06)}
-
-.adm-action-btn{padding:8px 14px;border-radius:9px;border:1px solid;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;transition:opacity .15s,transform .1s;white-space:nowrap;touch-action:manipulation}
-.adm-action-btn:active{opacity:.75;transform:scale(.97)}
-.adm-tag{padding:6px 11px;border-radius:20px;border:1px solid;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;-webkit-appearance:none;display:inline-flex;align-items:center;gap:4px;transition:opacity .15s;white-space:nowrap;touch-action:manipulation}
-.adm-tag:active{opacity:.7}
-.adm-tag-on{background:rgba(31,209,138,.1);border-color:rgba(31,209,138,.3);color:#1FD18A}
-.adm-tag-off{background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.25);color:#FF8080}
-.adm-tag-warn{background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.25);color:#F5B731}
-.adm-tag-dim{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
-
-html.light .login-sheet{background:#0E0812!important}
-</style></head><body>
-    <h1>ApagonesMID — ${typeLbl}</h1>
-    <div class="meta">Reporte generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
-    <div class="summary">
-      <div class="stat"><div class="stat-n">${data.length}</div><div class="stat-l">Total</div></div>
-      <div class="stat"><div class="stat-n">${data.filter(r=>!r.resolved).length}</div><div class="stat-l">Activos</div></div>
-      <div class="stat"><div class="stat-n">${data.filter(r=>r.resolved).length}</div><div class="stat-l">Resueltos</div></div>
-    </div>
-    <table>
-      <thead><tr><th>Fecha</th><th>Tipo</th><th>Severidad</th><th>Calle/Colonia</th><th>Sección</th><th>Folio</th><th>Estado</th></tr></thead>
-      <tbody>
-        ${data.slice(0,200).map(r=>`<tr>
-          <td>${new Date(r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
-          <td>${r.type}</td>
-          <td>${r.severity||'—'}</td>
-          <td>${col[r.id]||'—'}</td>
-          <td>${r.seccion||'—'}</td>
-          <td>${r.report_number||'S/F'}</td>
-          <td>${r.resolved?'✓ Resuelto':'⚠ Activo'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
-    ${data.length>200?'<p style="font-size:10px;color:#888;margin-top:10px">Mostrando primeros 200 de '+data.length+'. Use Excel/CSV para registro completo.</p>':''}
-    <div class="footer">ApagonesMID · Datos ciudadanos sin filtro · apagones.mx</div>
-    <scr'+'ipt>window.onload=()=>{setTimeout(()=>window.print(),300)};</scr'+'ipt>
-    
-</body></html>`;
-  const w = window.open('', '_blank');
-  if(!w){ toast('Permite popups para PDF','e'); return; }
-  w.document.write(html);
-  w.document.close();
-  auditLog('Export PDF', `${type} · ${data.length} registros`);
-}
-
-function filteredReportsForExport(type){
-  // Combinar reportes ACTIVOS + HISTÓRICO (resueltos) para exportar todo
-  const hist = (typeof _histCache!=='undefined' && Array.isArray(_histCache))
-    ? _histCache.map(r=>({...r, resolved:true}))
-    : [];
-  let data = [...cachedReports, ...hist];
-  if(type==='apagon') data = data.filter(r=>r.type==='apagon');
-  else if(type==='agua') data = data.filter(r=>AGUA_TYPES.includes(r.type));
-  else if(type==='alumbrado') data = data.filter(r=>r.type==='alumbrado');
-  // Apply saved filters if any
-  const filters = window._exportFilters||{};
-  if(filters.dateFrom){
-    const from = new Date(filters.dateFrom).getTime();
-    data = data.filter(r=>r.timestamp>=from);
-  }
-  if(filters.dateTo){
-    const to = new Date(filters.dateTo).getTime()+86400000;
-    data = data.filter(r=>r.timestamp<=to);
-  }
-  if(filters.severity && filters.severity!=='all') data = data.filter(r=>r.severity===filters.severity);
-  return data;
-}
-
-function openExportFilters(type){
-  let modal = document.getElementById('export-filters-modal');
-  if(!modal){
-    modal = document.createElement('div');
-    modal.id = 'export-filters-modal';
-    modal.style.cssText = 'position:fixed;inset:0;z-index:5500;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px';
-    document.body.appendChild(modal);
-  }
-  modal.style.display='flex';
-  modal.innerHTML = `<div style="background:var(--surf);border:1px solid var(--brand-lt);border-radius:16px;width:100%;max-width:380px;padding:20px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-      <span style="font-size:18px">🔍</span>
-      <strong style="font-size:15px;flex:1">Filtros de export</strong>
-      <button onclick="document.getElementById('export-filters-modal').style.display='none'" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:18px">✕</button>
-    </div>
-    <div class="fld"><label>Desde</label><input type="date" id="filt-from" value="${(window._exportFilters?.dateFrom)||''}"/></div>
-    <div class="fld"><label>Hasta</label><input type="date" id="filt-to" value="${(window._exportFilters?.dateTo)||''}"/></div>
-    <div class="fld"><label>Severidad</label>
-      <select id="filt-sev" style="width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px;color:var(--tx);font-family:var(--f)">
-        <option value="all">Todas</option>
-        <option value="leve">Leve</option>
-        <option value="moderado">Moderado</option>
-        <option value="critico">Crítico</option>
-        <option value="apagado">Apagado (alumbrado)</option>
-        <option value="intermitente">Intermitente (alumbrado)</option>
-        <option value="dañado">Dañado (alumbrado)</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button onclick="window._exportFilters={};document.getElementById('export-filters-modal').style.display='none';toast('Filtros eliminados','i')" style="flex:1;padding:10px;border-radius:9px;background:var(--card);border:1px solid var(--bdr);color:var(--dim);font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">Limpiar</button>
-      <button onclick="applyExportFilters()" style="flex:1;padding:10px;border-radius:9px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">Aplicar</button>
-    </div>
-  </div>`;
-}
-
-function applyExportFilters(){
-  window._exportFilters = {
-    dateFrom: document.getElementById('filt-from').value,
-    dateTo: document.getElementById('filt-to').value,
-    severity: document.getElementById('filt-sev').value
-  };
-  document.getElementById('export-filters-modal').style.display='none';
-  toast('🔍 Filtros aplicados — exporta ahora','s');
-}
-
-function downloadFile(content, filename, mime){
-  const blob = new Blob([content], {type:mime});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
-  toast(`📥 ${filename}`,'s');
-}
 
 
 // FLOW
@@ -10287,38 +8920,40 @@ function updateAdSlot(id){
   }
 }
 
-function refreshAllAdSlides(){
-  const slots = getAdSlots();
-  const bar   = document.getElementById('promo-slides');
+async function refreshAllAdSlides(){
+  const bar = document.getElementById('promo-slides');
   if(!bar) return;
-  // Eliminar slides custom anteriores
+  // Quitar slides custom previos
   bar.querySelectorAll('[id^="ps-custom-"]').forEach(el=>el.remove());
-  // Añadir los activos — con branding sobre la imagen
-  slots.filter(s=>s.active).forEach(s=>{
-    const div = document.createElement('div');
-    div.className = 'promo-slide';
-    div.id = 'ps-custom-' + s.id;
-    const href = s.url ? s.url : '#';
-    // Slide con imagen de fondo + overlay de branding + badge Publicidad
-    div.innerHTML = `
-      <a href="${href}" target="_blank" rel="noopener sponsored"
+  // Cargar desde Supabase
+  try{
+    const {data, error} = await db.from('ad_slots')
+      .select('id,title,url,img_data,active,paused')
+      .eq('active', true)
+      .eq('paused', false)
+      .order('sort_order')
+      .order('created_at');
+    if(error) throw error;
+    (data||[]).forEach(s=>{
+      const div = document.createElement('div');
+      div.className = 'promo-slide';
+      div.id = 'ps-custom-' + s.id;
+      const href = s.url||'#';
+      div.innerHTML = `<a href="${href}" target="_blank" rel="noopener sponsored"
         style="display:flex;width:100%;height:44px;align-items:center;position:relative;overflow:hidden;text-decoration:none;cursor:pointer">
-        <!-- Imagen de fondo -->
-        <div style="position:absolute;inset:0;background-image:url('${s.imgData}');background-size:cover;background-position:center;background-repeat:no-repeat"></div>
-        <!-- Overlay oscuro sutil para legibilidad del texto -->
-        <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,rgba(0,0,0,.35) 100%)"></div>
-        <!-- Contenido: nombre del anunciante a la izquierda -->
+        <div style="position:absolute;inset:0;background-image:url('${s.img_data}');background-size:cover;background-position:center"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.1) 60%,rgba(0,0,0,.35))"></div>
         <div style="position:relative;z-index:1;display:flex;align-items:center;gap:8px;padding:0 12px;width:100%">
           <div style="flex:1;min-width:0">
             <div style="font-size:12px;font-weight:800;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.6)">${s.title}</div>
-            ${s.url ? `<div style="font-size:9px;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.url.replace(/^https?:\/\//,'').split('/')[0]}</div>` : ''}
+            ${s.url?`<div style="font-size:9px;color:rgba(255,255,255,.55);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.url.replace(/^https?:\/\//,'').split('/')[0]}</div>`:''}
           </div>
-          <!-- Badge Publicidad -->
           <div style="flex-shrink:0;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.3px">PUBLI</div>
         </div>
       </a>`;
-    bar.appendChild(div);
-  });
+      bar.appendChild(div);
+    });
+  } catch(e){ console.warn('ads:', e.message); }
 }
 
 // CSS extra para los nuevos componentes del tab anuncios
@@ -10498,7 +9133,7 @@ function refreshAllAdSlides(){
           <div class="pv-item-h">b) Datos de ubicación <span class="pv-req">(requerido)</span></div>
           <ul class="pv-ul">
             <li>Coordenadas geográficas (latitud y longitud) del punto reportado</li>
-            <li>Colonia / sección electoral / zona aproximada</li>
+            <li>Colonia / zona aproximada del reporte</li>
           </ul>
         </div>
 
@@ -10604,3 +9239,12 @@ function refreshAllAdSlides(){
 
 </body>
 </html>
+      <a href="./admin.html" target="_blank" class="mm-btn" style="text-decoration:none;opacity:.4">
+        <div class="mm-btn-icon" style="background:rgba(101,8,31,.1);border-color:rgba(101,8,31,.18)">
+          <svg viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="var(--brand-lt)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="16" height="9" rx="2"/><path d="M7 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </div>
+        <div class="mm-btn-content">
+          <div class="mm-btn-name" style="color:var(--dim)">Panel admin</div>
+          <div class="mm-btn-sub">Dashboard de gestión</div>
+        </div>
+      </a>
