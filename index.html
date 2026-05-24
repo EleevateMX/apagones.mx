@@ -5174,8 +5174,8 @@ function renderAdminPanel(){
       </div>
       <div id="new-ad-form" style="display:none;margin-top:10px">
         <!-- Preview en vivo -->
-        <div id="new-ad-preview-wrap" style="border-radius:10px;overflow:hidden;margin-bottom:12px;display:none;border:1px solid rgba(34,208,240,.15)">
-          <img id="new-ad-preview-img" style="width:100%;height:44px;object-fit:cover;display:block"/>
+        <div id="new-ad-preview-wrap" style="border-radius:10px;overflow:hidden;margin-bottom:12px;${_newAdImgData?'':'display:none'};border:1px solid rgba(34,208,240,.15)">
+          <img id="new-ad-preview-img" src="${_newAdImgData||''}" style="width:100%;height:44px;object-fit:cover;display:block"/>
         </div>
         <!-- Campos -->
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
@@ -5197,7 +5197,7 @@ function renderAdminPanel(){
             <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Imagen del banner <span style="color:rgba(34,208,240,.7);font-weight:600">720 × 88 px</span></div>
             <label style="width:100%;display:block;padding:11px;background:rgba(34,208,240,.07);border:1.5px dashed rgba(34,208,240,.25);border-radius:11px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;box-sizing:border-box" id="new-ad-img-label">
               <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
-              Seleccionar imagen
+              ${_newAdImgData ? 'Imagen lista — toca para cambiar' : 'Seleccionar imagen'}
               <input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>
             </label>
           </div>
@@ -9934,6 +9934,10 @@ async function renderHistoricoTab(body){
 }
 
 // ── AD SLOTS ──────────────────────────────────────────────
+// Estado del formulario de nuevo anuncio (persiste entre re-renders)
+let _newAdImgData = '';   // imagen comprimida 720×88
+let _newAdEditId  = '';   // si está editando, el id del slot
+
 function getAdSlots(){
   try{return JSON.parse(lsGet('apx_ad_slots','[]'));}catch{return[];}
 }
@@ -10159,7 +10163,9 @@ function applyCrop(){
   const preview=document.getElementById('new-ad-preview-img');
   const wrap=document.getElementById('new-ad-preview-wrap');
   const label=document.getElementById('new-ad-img-label');
-  if(preview){ preview.src=compressed; preview._compressed=compressed; if(wrap)wrap.style.display=''; }
+  // Guardar en variable global (no en DOM que puede destruirse)
+  _newAdImgData = compressed;
+  if(preview){ preview.src=compressed; if(wrap)wrap.style.display=''; }
   if(label) label.innerHTML=`<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M13 5l-6 6-3-3"/></svg> Imagen lista (720×88) — toca para cambiar<input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>`;
   const sizeKB=Math.round(compressed.length*0.75/1024);
   toast('✅ Imagen recortada y lista — '+sizeKB+' KB','s');
@@ -10169,17 +10175,16 @@ function applyCrop(){
 function saveNewAdSlot(){
   const title=(document.getElementById('new-ad-title')?.value||'').trim();
   const url=(document.getElementById('new-ad-url')?.value||'').trim();
-  const imgEl=document.getElementById('new-ad-preview-img');
-  // Usar la versión comprimida si está disponible, si no usar src
-  const imgData=(imgEl?._compressed&&imgEl._compressed.startsWith('data:'))
-    ? imgEl._compressed
-    : (imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'');
+  // Usar la variable de estado global (no propiedad del DOM)
+  const imgData = _newAdImgData && _newAdImgData.startsWith('data:') ? _newAdImgData : '';
   if(!title){toast('Escribe un título para el anuncio','w');return;}
-  if(!imgData){toast('Carga una imagen primero','w');return;}
+  if(!imgData){toast('Selecciona y recorta una imagen primero','w');return;}
   const slots=getAdSlots();
   const id='ad_'+Date.now().toString(36);
   slots.push({id,title,url:url||'',imgData,active:true,created_at:Date.now()});
   saveAdSlots(slots);
+  _newAdImgData = '';  // limpiar estado del form
+  _newAdEditId  = '';
   // Actualizar la promo bar con el nuevo slot
   refreshAllAdSlides();
   toast('✅ Anuncio publicado','s');
@@ -10275,6 +10280,7 @@ function updateAdSlot(id){
     s.url=url||'';
     if(imgData) s.imgData=imgData;
     saveAdSlots(slots);
+    _newAdImgData=''; _newAdEditId='';
     refreshAllAdSlides();
     toast('✅ Anuncio actualizado','s');
     switchAdminTab('anuncios');
