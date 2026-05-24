@@ -5136,8 +5136,8 @@ function renderAdminPanel(){
         const slotNum = 4 + i;
         return `<div class="adm-slide-item" id="adslot-${ad.id}">
           <div class="adm-slide-num">${slotNum}</div>
-          <div class="adm-slide-preview" style="background:#1A0E14;overflow:hidden;padding:0">
-            ${ad.imgData ? `<img src="${ad.imgData}" style="width:100%;height:100%;object-fit:cover"/>` : `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/><circle cx="5.5" cy="5.5" r="1.5" fill="rgba(255,255,255,.3)" stroke="none"/></svg>`}
+          <div class="adm-slide-preview" style="${ad.imgData?`background-image:url('${ad.imgData}')`:''};background-color:#1A0E14">
+            ${ad.imgData ? '' : `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/><circle cx="5.5" cy="5.5" r="1.5" fill="rgba(255,255,255,.3)" stroke="none"/></svg>`}
           </div>
           <div style="flex:1;min-width:0">
             <div style="font-size:12px;font-weight:700;color:#F0E8EC;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.title||'Sin título'}</div>
@@ -9918,16 +9918,55 @@ function saveAdSlots(slots){
 }
 
 function previewNewAd(input){
-  const file=input.files[0];
+  const file = input.files[0];
   if(!file) return;
-  if(file.size>500000){toast('Imagen muy grande (máx 400 KB)','e');input.value='';return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const preview=document.getElementById('new-ad-preview-img');
-    const wrap=document.getElementById('new-ad-preview-wrap');
-    const label=document.getElementById('new-ad-img-label');
-    if(preview){preview.src=e.target.result;if(wrap)wrap.style.display='';}
-    if(label) label.innerHTML='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M13 5l-6 6-3-3"/></svg> Imagen cargada — toca para cambiar<input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>';
+  if(!file.type.startsWith('image/')){toast('Solo se permiten imágenes','e');input.value='';return;}
+  if(file.size > 8*1024*1024){toast('Imagen demasiado grande (máx 8 MB)','e');input.value='';return;}
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      // Comprimir y recortar a 720×88px (proporciones del banner)
+      const TW = 720, TH = 88;
+      const canvas = document.createElement('canvas');
+      canvas.width = TW; canvas.height = TH;
+      const ctx = canvas.getContext('2d');
+
+      // Fondo oscuro como fallback
+      ctx.fillStyle = '#0C060A';
+      ctx.fillRect(0, 0, TW, TH);
+
+      // Calcular crop centrado manteniendo aspect ratio
+      const srcRatio = img.width / img.height;
+      const tgtRatio = TW / TH;
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      if(srcRatio > tgtRatio){
+        sw = img.height * tgtRatio;
+        sx = (img.width - sw) / 2;
+      } else {
+        sh = img.width / tgtRatio;
+        sy = (img.height - sh) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, TW, TH);
+
+      // Comprimir a JPEG 0.80 (~80-120 KB para un banner típico)
+      const compressed = canvas.toDataURL('image/jpeg', 0.80);
+
+      // Mostrar preview
+      const preview = document.getElementById('new-ad-preview-img');
+      const wrap    = document.getElementById('new-ad-preview-wrap');
+      const label   = document.getElementById('new-ad-img-label');
+      if(preview){ preview.src = compressed; if(wrap) wrap.style.display = ''; }
+      if(label) label.innerHTML = `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M13 5l-6 6-3-3"/></svg> Imagen lista (720×88) — toca para cambiar<input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>`;
+
+      // Guardar referencia comprimida
+      if(preview) preview._compressed = compressed;
+      const sizeKB = Math.round(compressed.length * 0.75 / 1024);
+      toast('✅ Imagen lista — ' + sizeKB + ' KB', 's');
+    };
+    img.onerror = () => toast('No se pudo leer la imagen','e');
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -9936,7 +9975,10 @@ function saveNewAdSlot(){
   const title=(document.getElementById('new-ad-title')?.value||'').trim();
   const url=(document.getElementById('new-ad-url')?.value||'').trim();
   const imgEl=document.getElementById('new-ad-preview-img');
-  const imgData=imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'';
+  // Usar la versión comprimida si está disponible, si no usar src
+  const imgData=(imgEl?._compressed&&imgEl._compressed.startsWith('data:'))
+    ? imgEl._compressed
+    : (imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'');
   if(!title){toast('Escribe un título para el anuncio','w');return;}
   if(!imgData){toast('Carga una imagen primero','w');return;}
   const slots=getAdSlots();
@@ -9995,7 +10037,10 @@ function updateAdSlot(id){
   const title=(document.getElementById('new-ad-title')?.value||'').trim();
   const url=(document.getElementById('new-ad-url')?.value||'').trim();
   const imgEl=document.getElementById('new-ad-preview-img');
-  const imgData=imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'';
+  // Usar la versión comprimida si está disponible, si no usar src
+  const imgData=(imgEl?._compressed&&imgEl._compressed.startsWith('data:'))
+    ? imgEl._compressed
+    : (imgEl?.src&&imgEl.src.startsWith('data:')?imgEl.src:'');
   if(!title){toast('El título no puede estar vacío','w');return;}
   const slots=getAdSlots();
   const s=slots.find(x=>x.id===id);
@@ -10011,20 +10056,35 @@ function updateAdSlot(id){
 }
 
 function refreshAllAdSlides(){
-  // Actualizar los slides custom en el DOM del promo-bar
-  const slots=getAdSlots();
-  const bar=document.getElementById('promo-slides');
+  const slots = getAdSlots();
+  const bar   = document.getElementById('promo-slides');
   if(!bar) return;
   // Eliminar slides custom anteriores
   bar.querySelectorAll('[id^="ps-custom-"]').forEach(el=>el.remove());
-  // Añadir los activos
+  // Añadir los activos — con branding sobre la imagen
   slots.filter(s=>s.active).forEach(s=>{
-    const div=document.createElement('div');
-    div.className='promo-slide';
-    div.id='ps-custom-'+s.id;
-    div.innerHTML=`<a href="${s.url||'#'}" target="_blank" rel="noopener" style="width:100%;height:44px;display:flex;align-items:center;overflow:hidden">
-      <img src="${s.imgData}" alt="${s.title}" style="width:100%;height:44px;object-fit:cover;object-position:center"/>
-    </a>`;
+    const div = document.createElement('div');
+    div.className = 'promo-slide';
+    div.id = 'ps-custom-' + s.id;
+    const href = s.url ? s.url : '#';
+    // Slide con imagen de fondo + overlay de branding + badge Publicidad
+    div.innerHTML = `
+      <a href="${href}" target="_blank" rel="noopener sponsored"
+        style="display:flex;width:100%;height:44px;align-items:center;position:relative;overflow:hidden;text-decoration:none;cursor:pointer">
+        <!-- Imagen de fondo -->
+        <div style="position:absolute;inset:0;background-image:url('${s.imgData}');background-size:cover;background-position:center;background-repeat:no-repeat"></div>
+        <!-- Overlay oscuro sutil para legibilidad del texto -->
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,rgba(0,0,0,.35) 100%)"></div>
+        <!-- Contenido: nombre del anunciante a la izquierda -->
+        <div style="position:relative;z-index:1;display:flex;align-items:center;gap:8px;padding:0 12px;width:100%">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:800;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.6)">${s.title}</div>
+            ${s.url ? `<div style="font-size:9px;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.url.replace(/^https?:\/\//,'').split('/')[0]}</div>` : ''}
+          </div>
+          <!-- Badge Publicidad -->
+          <div style="flex-shrink:0;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.3px">PUBLI</div>
+        </div>
+      </a>`;
     bar.appendChild(div);
   });
 }
@@ -10040,7 +10100,8 @@ function refreshAllAdSlides(){
     .adm-badge-off{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#FF8080;margin-top:3px}
     .adm-slide-item{display:flex;align-items:center;gap:10px;padding:6px 0}
     .adm-slide-num{width:18px;height:18px;border-radius:6px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(255,255,255,.4);flex-shrink:0}
-    .adm-slide-preview{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+    .adm-slide-preview{width:40px;height:40px;border-radius:9px;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat;display:flex;align-items:center;justify-content:center}
+    .adm-slide-preview img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0}
     .adm-slide-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}
   `;
   document.head.appendChild(style);
