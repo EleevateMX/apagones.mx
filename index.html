@@ -5057,6 +5057,13 @@ function renderAdminPanel(){
           <span class="adm-switch-track"></span><span class="adm-switch-thumb"></span>
         </label>
       </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="font-size:10px;color:rgba(255,255,255,.3);flex:1">Si la barra no aparece en un dispositivo, puede ser que fue cerrada antes.</div>
+        <button onclick="resetPromoBar()" class="adm-tag adm-tag-dim" style="font-size:10px">
+          <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 2a5 5 0 1 0 1 4M10 2v3h-3"/></svg>
+          Resetear visibilidad
+        </button>
+      </div>
     </div>
 
     <!-- Lista de slides con numeración -->
@@ -9644,6 +9651,23 @@ function dismissPromo(){
 }
 
 // ── ADMIN ANUNCIOS HELPERS ──────────────────────────────
+function resetPromoBar(){
+  // Borrar el flag de dismissed para que vuelva a aparecer en este y otros dispositivos
+  try{ localStorage.removeItem('promo_dismissed_v1'); }catch{}
+  // Reiniciar la barra visualmente
+  const bar=document.getElementById('promo-bar');
+  if(bar){
+    bar.classList.remove('hidden');
+    bar.classList.add('visible');
+    document.body.classList.add('promo-on');
+    refreshAllAdSlides();
+    const allSlides=Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
+    if(allSlides.length){ allSlides[0].classList.add('active'); }
+  }
+  toast('✅ Barra reseteada — aparecerá en todos los dispositivos','s');
+  switchAdminTab('anuncios');
+}
+
 function togglePromoGlobal(on){
   lsSet('promo_enabled', on ? '1' : '0');
   const bar = document.getElementById('promo-bar');
@@ -9917,58 +9941,229 @@ function saveAdSlots(slots){
   lsSet('apx_ad_slots',JSON.stringify(slots));
 }
 
+// ── CROP INTERACTIVO 720×88 ──────────────────────────────
+let _cropImg = null, _cropOffX = 0, _cropOffY = 0, _cropScale = 1;
+let _cropDragStart = null, _cropStartOff = null;
+
 function previewNewAd(input){
   const file = input.files[0];
   if(!file) return;
   if(!file.type.startsWith('image/')){toast('Solo se permiten imágenes','e');input.value='';return;}
   if(file.size > 8*1024*1024){toast('Imagen demasiado grande (máx 8 MB)','e');input.value='';return;}
-
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
-    img.onload = () => {
-      // Comprimir y recortar a 720×88px (proporciones del banner)
-      const TW = 720, TH = 88;
-      const canvas = document.createElement('canvas');
-      canvas.width = TW; canvas.height = TH;
-      const ctx = canvas.getContext('2d');
-
-      // Fondo oscuro como fallback
-      ctx.fillStyle = '#0C060A';
-      ctx.fillRect(0, 0, TW, TH);
-
-      // Calcular crop centrado manteniendo aspect ratio
-      const srcRatio = img.width / img.height;
-      const tgtRatio = TW / TH;
-      let sx = 0, sy = 0, sw = img.width, sh = img.height;
-      if(srcRatio > tgtRatio){
-        sw = img.height * tgtRatio;
-        sx = (img.width - sw) / 2;
-      } else {
-        sh = img.width / tgtRatio;
-        sy = (img.height - sh) / 2;
-      }
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, TW, TH);
-
-      // Comprimir a JPEG 0.80 (~80-120 KB para un banner típico)
-      const compressed = canvas.toDataURL('image/jpeg', 0.80);
-
-      // Mostrar preview
-      const preview = document.getElementById('new-ad-preview-img');
-      const wrap    = document.getElementById('new-ad-preview-wrap');
-      const label   = document.getElementById('new-ad-img-label');
-      if(preview){ preview.src = compressed; if(wrap) wrap.style.display = ''; }
-      if(label) label.innerHTML = `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M13 5l-6 6-3-3"/></svg> Imagen lista (720×88) — toca para cambiar<input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>`;
-
-      // Guardar referencia comprimida
-      if(preview) preview._compressed = compressed;
-      const sizeKB = Math.round(compressed.length * 0.75 / 1024);
-      toast('✅ Imagen lista — ' + sizeKB + ' KB', 's');
-    };
+    img.onload = () => { _cropImg = img; openCropModal(); };
     img.onerror = () => toast('No se pudo leer la imagen','e');
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+function openCropModal(){
+  // Crear o reutilizar el modal de crop
+  let modal = document.getElementById('crop-modal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'crop-modal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px';
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+  modal.innerHTML = `
+    <div style="background:#120A14;border:1px solid rgba(101,8,31,.4);border-radius:18px;width:100%;max-width:520px;padding:20px;box-shadow:0 20px 80px rgba(0,0,0,.7)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <div style="width:32px;height:32px;border-radius:9px;background:rgba(34,208,240,.12);border:1px solid rgba(34,208,240,.2);display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#F0E8EC">Ajustar banner</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3)">Arrastra para posicionar · Usa los botones para el zoom</div>
+        </div>
+        <button onclick="closeCropModal()" style="margin-left:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:30px;height:30px;color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">✕</button>
+      </div>
+      <div style="font-size:11px;color:rgba(34,208,240,.7);margin-bottom:12px;padding-left:42px">Tamaño objetivo: <strong>720 × 88 px</strong></div>
+
+      <!-- Área de crop: aspect ratio 720:88 ≈ 8.18:1 -->
+      <div style="position:relative;width:100%;padding-bottom:${(88/720*100).toFixed(3)}%;background:#0C060A;border-radius:10px;overflow:hidden;border:2px solid rgba(34,208,240,.3);cursor:grab;touch-action:none" id="crop-area">
+        <canvas id="crop-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        <!-- Guía de tercios -->
+        <div style="position:absolute;inset:0;pointer-events:none">
+          <div style="position:absolute;top:0;bottom:0;left:33.3%;width:1px;background:rgba(34,208,240,.15)"></div>
+          <div style="position:absolute;top:0;bottom:0;left:66.6%;width:1px;background:rgba(34,208,240,.15)"></div>
+          <div style="position:absolute;left:0;right:0;top:33.3%;height:1px;background:rgba(34,208,240,.15)"></div>
+          <div style="position:absolute;left:0;right:0;top:66.6%;height:1px;background:rgba(34,208,240,.15)"></div>
+          <!-- Marco exterior -->
+          <div style="position:absolute;inset:0;border:1px solid rgba(34,208,240,.2);pointer-events:none;border-radius:8px"></div>
+        </div>
+      </div>
+
+      <!-- Preview con nombre del anunciante encima -->
+      <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);margin-bottom:5px">Vista previa como aparecerá en la barra:</div>
+      <div id="crop-live-preview" style="height:44px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.1);position:relative;background:#0C060A">
+        <canvas id="crop-preview-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,rgba(0,0,0,.35) 100%);pointer-events:none"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 12px;gap:8px;pointer-events:none">
+          <div style="flex:1;min-width:0">
+            <div id="crop-preview-title" style="font-size:12px;font-weight:800;color:white;text-shadow:0 1px 3px rgba(0,0,0,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Nombre del anunciante</div>
+            <div id="crop-preview-url" style="font-size:9px;color:rgba(255,255,255,.55)">ejemplo.com</div>
+          </div>
+          <div style="flex-shrink:0;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.3px">PUBLI</div>
+        </div>
+      </div>
+
+      <!-- Controles de zoom -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="4"/><path d="M13 13l-3-3"/></svg>
+        <input type="range" id="crop-zoom" min="100" max="300" value="100" step="5"
+          style="flex:1;accent-color:#22D0F0;height:4px;cursor:pointer"
+          oninput="cropUpdateZoom(this.value)"
+        />
+        <button onclick="cropZoomStep(-10)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;width:28px;height:28px;color:rgba(255,255,255,.6);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+        <button onclick="cropZoomStep(10)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;width:28px;height:28px;color:rgba(255,255,255,.6);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+        <button onclick="cropReset()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:0 10px;height:28px;color:rgba(255,255,255,.4);cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0">Centrar</button>
+      </div>
+
+      <!-- Botones de acción -->
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:14px">
+        <button onclick="closeCropModal()" style="padding:12px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+        <button onclick="applyCrop()" style="padding:12px;border-radius:11px;background:linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.15));border:1px solid rgba(34,208,240,.45);color:#22D0F0;font-family:var(--f);font-size:13px;font-weight:800;cursor:pointer">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><path d="M13 5l-6 6-3-3"/></svg>
+          Usar esta imagen
+        </button>
+      </div>
+    </div>`;
+
+  // Inicializar crop
+  _cropOffX = 0; _cropOffY = 0; _cropScale = 1;
+  const area = document.getElementById('crop-area');
+  requestAnimationFrame(()=>{
+    cropDraw();
+    initCropEvents(area);
+    // Actualizar preview con título y URL del form
+    const t = document.getElementById('new-ad-title')?.value||'Nombre del anunciante';
+    const u = document.getElementById('new-ad-url')?.value||'ejemplo.com';
+    const pt = document.getElementById('crop-preview-title');
+    const pu = document.getElementById('crop-preview-url');
+    if(pt) pt.textContent = t || 'Nombre del anunciante';
+    if(pu) pu.textContent = (u||'ejemplo.com').replace(/^https?:\/\//,'').split('/')[0];
+  });
+}
+
+function cropDraw(){
+  const c = document.getElementById('crop-canvas');
+  if(!c || !_cropImg) return;
+  const W = c.offsetWidth || 360, H = c.offsetHeight || 44;
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0C060A';
+  ctx.fillRect(0,0,W,H);
+  const scale = _cropScale;
+  const dw = _cropImg.width  * (H / _cropImg.height) * scale;
+  const dh = H * scale;
+  // Centro + offset de drag
+  const dx = (W - dw) / 2 + _cropOffX;
+  const dy = (H - dh) / 2 + _cropOffY;
+  ctx.drawImage(_cropImg, dx, dy, dw, dh);
+  // Live preview también
+  const pc = document.getElementById('crop-preview-canvas');
+  if(pc){
+    pc.width = pc.offsetWidth||360; pc.height = pc.offsetHeight||44;
+    const pctx = pc.getContext('2d');
+    pctx.fillStyle = '#0C060A';
+    pctx.fillRect(0,0,pc.width,pc.height);
+    const pw = _cropImg.width*(pc.height/_cropImg.height)*scale;
+    const ph = pc.height*scale;
+    const px = (pc.width-pw)/2 + _cropOffX*(pc.width/W);
+    const py = (pc.height-ph)/2 + _cropOffY*(pc.height/H);
+    pctx.drawImage(_cropImg, px, py, pw, ph);
+  }
+}
+
+function cropUpdateZoom(val){
+  _cropScale = parseInt(val) / 100;
+  cropDraw();
+}
+function cropZoomStep(d){
+  const sl = document.getElementById('crop-zoom');
+  if(sl){ sl.value = Math.min(300,Math.max(100,parseInt(sl.value)+d)); _cropScale=parseInt(sl.value)/100; }
+  cropDraw();
+}
+function cropReset(){
+  _cropOffX=0; _cropOffY=0; _cropScale=1;
+  const sl=document.getElementById('crop-zoom');
+  if(sl) sl.value=100;
+  cropDraw();
+}
+
+function initCropEvents(area){
+  if(!area) return;
+  // Mouse
+  area.onmousedown = e=>{
+    _cropDragStart={x:e.clientX,y:e.clientY};
+    _cropStartOff={x:_cropOffX,y:_cropOffY};
+    area.style.cursor='grabbing';
+    e.preventDefault();
+  };
+  document.onmousemove = e=>{
+    if(!_cropDragStart) return;
+    _cropOffX = _cropStartOff.x + (e.clientX-_cropDragStart.x);
+    _cropOffY = _cropStartOff.y + (e.clientY-_cropDragStart.y);
+    cropDraw();
+  };
+  document.onmouseup = ()=>{ _cropDragStart=null; if(area)area.style.cursor='grab'; };
+  // Touch
+  area.ontouchstart = e=>{
+    if(e.touches.length===1){
+      _cropDragStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
+      _cropStartOff={x:_cropOffX,y:_cropOffY};
+      e.preventDefault();
+    }
+  };
+  area.ontouchmove = e=>{
+    if(!_cropDragStart||e.touches.length!==1) return;
+    _cropOffX=_cropStartOff.x+(e.touches[0].clientX-_cropDragStart.x);
+    _cropOffY=_cropStartOff.y+(e.touches[0].clientY-_cropDragStart.y);
+    cropDraw();
+    e.preventDefault();
+  };
+  area.ontouchend = ()=>{ _cropDragStart=null; };
+}
+
+function closeCropModal(){
+  const m=document.getElementById('crop-modal');
+  if(m) m.style.display='none';
+  _cropDragStart=null;
+  document.onmousemove=null; document.onmouseup=null;
+}
+
+function applyCrop(){
+  // Generar la imagen final en 720×88
+  const TW=720, TH=88;
+  const c=document.createElement('canvas');
+  c.width=TW; c.height=TH;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0C060A';
+  ctx.fillRect(0,0,TW,TH);
+  // Escalar el offset y tamaño del canvas de preview al canvas final
+  const area=document.getElementById('crop-canvas');
+  const aW=area?area.offsetWidth:360, aH=area?area.offsetHeight:44;
+  const scale=_cropScale;
+  const dw=_cropImg.width*(TH/_cropImg.height)*scale*(TW/aW);
+  const dh=TH*scale;
+  const dx=(TW-dw)/2+_cropOffX*(TW/aW);
+  const dy=(TH-dh)/2+_cropOffY;
+  ctx.drawImage(_cropImg,dx,dy,dw,dh);
+  const compressed=c.toDataURL('image/jpeg',0.82);
+  // Guardar en el form
+  const preview=document.getElementById('new-ad-preview-img');
+  const wrap=document.getElementById('new-ad-preview-wrap');
+  const label=document.getElementById('new-ad-img-label');
+  if(preview){ preview.src=compressed; preview._compressed=compressed; if(wrap)wrap.style.display=''; }
+  if(label) label.innerHTML=`<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M13 5l-6 6-3-3"/></svg> Imagen lista (720×88) — toca para cambiar<input type="file" accept="image/*" id="new-ad-file" onchange="previewNewAd(this)" style="display:none"/>`;
+  const sizeKB=Math.round(compressed.length*0.75/1024);
+  toast('✅ Imagen recortada y lista — '+sizeKB+' KB','s');
+  closeCropModal();
 }
 
 function saveNewAdSlot(){
@@ -9995,7 +10190,21 @@ function toggleAdSlot(id){
   const slots=getAdSlots();
   const s=slots.find(x=>x.id===id);
   if(s){s.active=!s.active;saveAdSlots(slots);}
+  if(window._promoInterval){ clearInterval(window._promoInterval); window._promoInterval=null; }
+  document.querySelectorAll('.promo-slide').forEach(sl=>sl.classList.remove('active'));
   refreshAllAdSlides();
+  const allSlides=Array.from(document.querySelectorAll('.promo-slide')).filter(sl=>sl.style.display!=='none');
+  if(allSlides.length){ allSlides[0].classList.add('active'); }
+  let cur=0;
+  if(lsGet('promo_enabled','1')==='1' && allSlides.length){
+    window._promoInterval=setInterval(()=>{
+      const sl=Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
+      if(!sl.length) return;
+      sl[cur%sl.length].classList.remove('active');
+      cur=(cur+1)%sl.length;
+      sl[cur].classList.add('active');
+    },6000);
+  }
   switchAdminTab('anuncios');
 }
 
@@ -10003,7 +10212,24 @@ function deleteAdSlot(id){
   if(!confirm('¿Eliminar este anuncio?'))return;
   const slots=getAdSlots().filter(x=>x.id!==id);
   saveAdSlots(slots);
+  // Resetear el intervalo de rotación para evitar índices desfasados
+  if(window._promoInterval){ clearInterval(window._promoInterval); window._promoInterval=null; }
+  // Quitar clase active de todos los slides existentes
+  document.querySelectorAll('.promo-slide').forEach(s=>s.classList.remove('active'));
   refreshAllAdSlides();
+  // Reiniciar la rotación con el primer slide activo
+  const allSlides = Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
+  if(allSlides.length){ allSlides[0].classList.add('active'); }
+  let cur=0;
+  if(lsGet('promo_enabled','1')==='1' && allSlides.length){
+    window._promoInterval = setInterval(()=>{
+      const sl=Array.from(document.querySelectorAll('.promo-slide')).filter(s=>s.style.display!=='none');
+      if(!sl.length) return;
+      sl[cur%sl.length].classList.remove('active');
+      cur=(cur+1)%sl.length;
+      sl[cur].classList.add('active');
+    },6000);
+  }
   toast('Anuncio eliminado','b');
   switchAdminTab('anuncios');
 }
