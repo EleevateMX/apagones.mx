@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin · ApagonesMID</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    :root{
+      --bg:#07040C;--surf:#0F0817;--card:#160E20;--card2:#1A1228;
+      --bdr:rgba(255,255,255,.07);--bdr2:rgba(255,255,255,.04);
+      --tx:#F0E8EC;--dim:rgba(255,255,255,.45);--mut:rgba(255,255,255,.22);
+      --brand:#65081F;--brand-lt:#9B1030;--brand-sub:rgba(101,8,31,.15);
+      --agua:#22D0F0;--elec:#F5B731;--grn:#1FD18A;--red:#FF6B6B;
+      --f:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+      --sidebar:240px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:var(--bg);color:var(--tx);font-family:var(--f);height:100%}
+    button,input,select,textarea{font-family:var(--f)}
+
+    /* ────── AUTH GATE ────── */
+    #auth{
+      position:fixed;inset:0;z-index:999;background:var(--bg);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+    }
+    .auth-box{
+      width:100%;max-width:360px;
+      background:var(--surf);border:1px solid rgba(101,8,31,.35);
+      border-radius:22px;padding:36px 28px;
+      box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 0 1px rgba(101,8,31,.1);
+    }
+    .auth-seal{
+      width:54px;height:54px;border-radius:16px;margin:0 auto 22px;
+      background:linear-gradient(145deg,rgba(101,8,31,.4),rgba(60,4,20,.3));
+      border:1px solid rgba(180,40,60,.35);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 18px rgba(101,8,31,.3);
+    }
+    .auth-t{font-size:21px;font-weight:800;text-align:center;letter-spacing:-.4px;margin-bottom:3px}
+    .auth-s{font-size:12px;color:var(--mut);text-align:center;margin-bottom:28px}
+    .auth-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+    .auth-inp{
+      width:100%;padding:14px 16px;
+      background:rgba(255,255,255,.04);border:1.5px solid rgba(101,8,31,.3);
+      border-radius:13px;color:var(--tx);font-size:16px;
+      text-align:center;letter-spacing:.12em;outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .auth-inp:focus{border-color:rgba(240,80,80,.5);box-shadow:0 0 0 3px rgba(180,40,40,.1)}
+    .auth-inp.err{border-color:#FF5555;animation:shake .28s ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+    .auth-btn{
+      width:100%;margin-top:14px;padding:15px;
+      background:linear-gradient(135deg,#9B1030,#65081F);border:none;
+      border-radius:13px;color:#FFD0D8;font-size:14px;font-weight:800;
+      cursor:pointer;box-shadow:0 4px 20px rgba(101,8,31,.4);
+      transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .auth-btn:active{transform:scale(.97)}
+    .auth-err{font-size:12px;color:#FF8080;text-align:center;margin-top:10px;min-height:16px}
+
+    /* ────── SHELL ────── */
+    #shell{display:none;height:100vh;overflow:hidden}
+    .shell-grid{display:grid;grid-template-columns:var(--sidebar) 1fr;grid-template-rows:auto 1fr;height:100vh}
+    @media(max-width:900px){
+      .shell-grid{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
+      #sidebar{display:none}
+    }
+
+    /* ────── TOPBAR ────── */
+    .topbar{
+      grid-column:1/-1;
+      background:rgba(7,4,12,.96);border-bottom:1px solid rgba(101,8,31,.25);
+      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      padding:0 20px;height:58px;
+      display:flex;align-items:center;gap:14px;
+      position:sticky;top:0;z-index:200;
+    }
+    .tb-logo{
+      width:34px;height:34px;border-radius:10px;
+      background:linear-gradient(135deg,#9B1030,#65081F);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      box-shadow:0 2px 12px rgba(101,8,31,.45);
+    }
+    .tb-name{font-size:15px;font-weight:800;letter-spacing:-.2px}
+    .tb-badge{
+      background:var(--brand-sub);border:1px solid rgba(155,16,48,.35);
+      border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;color:var(--brand-lt);
+      letter-spacing:.3px;
+    }
+    .tb-sp{flex:1}
+    .tb-live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--grn)}
+    .live-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(31,209,138,.4)}50%{box-shadow:0 0 0 4px rgba(31,209,138,0)}}
+    .tb-map-btn{
+      padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);color:var(--dim);font-size:12px;font-weight:600;
+      cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px;
+      transition:background .18s;
+    }
+    .tb-map-btn:hover{background:rgba(255,255,255,.07)}
+    .tb-logout{
+      padding:7px 12px;border-radius:9px;border:1px solid rgba(255,80,80,.15);
+      background:rgba(255,80,80,.06);color:#FF8080;font-size:12px;font-weight:600;
+      cursor:pointer;transition:background .18s;
+    }
+    .tb-logout:hover{background:rgba(255,80,80,.1)}
+
+    /* ────── SIDEBAR ────── */
+    #sidebar{
+      background:var(--surf);border-right:1px solid var(--bdr);
+      overflow-y:auto;padding:16px 12px;
+    }
+    .nav-section{font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.7px;padding:0 8px;margin:16px 0 6px}
+    .nav-item{
+      display:flex;align-items:center;gap:10px;
+      padding:9px 12px;border-radius:10px;
+      cursor:pointer;color:var(--dim);font-size:13px;font-weight:600;
+      transition:background .18s,color .18s;border:1px solid transparent;
+      user-select:none;-webkit-user-select:none;
+    }
+    .nav-item:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+    .nav-item.active{
+      background:linear-gradient(135deg,rgba(139,14,42,.35),rgba(101,8,31,.2));
+      border-color:rgba(180,30,60,.25);color:#FFD0D8;
+    }
+    .nav-item svg{flex-shrink:0}
+    .nav-badge{
+      margin-left:auto;background:rgba(101,8,31,.3);border:1px solid rgba(180,30,60,.2);
+      border-radius:8px;padding:1px 7px;font-size:10px;font-weight:800;color:var(--brand-lt);
+    }
+
+    /* ────── MAIN ────── */
+    #main{
+      overflow-y:auto;background:var(--bg);
+      padding:24px 20px 48px;
+    }
+
+    /* ────── KPI STRIP ────── */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    @media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+    .kpi{
+      background:var(--card);border:1px solid var(--bdr);border-radius:16px;
+      padding:16px;transition:border-color .2s,transform .15s;cursor:default;
+    }
+    .kpi:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px)}
+    .kpi-n{font-size:30px;font-weight:900;letter-spacing:-.8px;line-height:1;margin-bottom:4px}
+    .kpi-l{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+    .kpi-sub{font-size:11px;color:var(--dim);margin-top:4px}
+
+    /* ────── SECTION HEADER ────── */
+    .sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .sec-title{font-size:13px;font-weight:800;color:var(--tx)}
+    .sec-sub{font-size:11px;color:var(--mut);margin-left:auto}
+    .sec-btn{
+      padding:6px 13px;border-radius:8px;font-size:11px;font-weight:700;
+      cursor:pointer;-webkit-appearance:none;transition:opacity .15s;
+      display:inline-flex;align-items:center;gap:5px;border:1px solid;
+    }
+
+    /* ────── REPORT CARDS ────── */
+    .rp-card{
+      background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+      padding:13px 15px;margin-bottom:8px;
+      display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;
+      transition:border-color .2s;
+    }
+    .rp-card:hover{border-color:rgba(255,255,255,.1)}
+    .rp-dot{
+      width:36px;height:36px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+    }
+    .rp-type{font-size:12px;font-weight:800;margin-bottom:2px}
+    .rp-loc{font-size:11px;color:var(--dim)}
+    .rp-meta{font-size:10px;color:var(--mut);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+    .rp-actions{display:flex;gap:5px;flex-direction:column;align-items:flex-end}
+    .rp-btn{
+      padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;
+      cursor:pointer;-webkit-appearance:none;white-space:nowrap;
+      display:inline-flex;align-items:center;gap:3px;border:1px solid;
+    }
+    .rp-btn-resolve{background:rgba(31,209,138,.1);border-color:rgba(31,209,138,.25);color:#1FD18A}
+    .rp-btn-folio{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:#F5B731}
+    .rp-sev{display:inline-block;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700}
+    .sev-leve{background:rgba(31,209,138,.1);color:#1FD18A}
+    .sev-moderado{background:rgba(245,183,49,.1);color:#F5B731}
+    .sev-critico{background:rgba(255,80,80,.12);color:#FF8080}
+
+    /* ────── CHARTS ────── */
+    .chart-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:16px;margin-bottom:14px}
+    .chart-title{font-size:12px;font-weight:700;color:var(--dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:.4px}
+    .bar-chart{display:flex;align-items:flex-end;gap:3px;height:100px}
+    .bar-day{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;cursor:default;min-width:0}
+    .bar-el{background:var(--elec);border-radius:2px 2px 0 0;min-height:0;transition:height .4s ease}
+    .bar-ag{background:var(--agua);border-radius:0;min-height:0}
+    .bar-lbl{font-size:7px;color:var(--mut);text-align:center;margin-top:4px;overflow:hidden}
+    .hour-chart{display:flex;align-items:flex-end;gap:2px;height:60px}
+    .hour-bar{flex:1;border-radius:2px 2px 0 0;background:var(--brand-lt);min-height:0;transition:height .4s ease}
+    .dist-bar{height:8px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:6px}
+
+    /* ────── SCHEDULED ────── */
+    .sched-card{
+      background:var(--card);border:1px solid rgba(168,85,247,.2);border-radius:14px;
+      padding:13px 15px;margin-bottom:8px;
+      display:flex;align-items:flex-start;gap:12px;
+    }
+
+    /* ────── FORM FIELDS ────── */
+    .fld{margin-bottom:12px}
+    .fld label{display:block;font-size:11px;font-weight:700;color:var(--dim);margin-bottom:6px}
+    .fld input,.fld select,.fld textarea{
+      width:100%;padding:10px 13px;
+      background:rgba(255,255,255,.04);border:1px solid var(--bdr);
+      border-radius:10px;color:var(--tx);font-size:13px;outline:none;
+      transition:border-color .2s;
+    }
+    .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:rgba(101,8,31,.5)}
+    .fld select{background:var(--card2)}
+
+    /* ────── TABLE ────── */
+    .tbl-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin-bottom:14px}
+    .tbl-row{display:grid;padding:11px 15px;border-bottom:1px solid var(--bdr2);align-items:center;gap:8px}
+    .tbl-row:last-child{border-bottom:none}
+    .tbl-head .tbl-row{background:rgba(255,255,255,.02);font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+
+    /* ────── DANGER ZONE ────── */
+    .danger-zone{background:rgba(255,61,61,.04);border:1px solid rgba(255,61,61,.15);border-radius:14px;padding:16px}
+    .danger-title{font-size:11px;font-weight:800;color:#FF7A7A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+    .danger-btn{
+      width:100%;padding:11px;border-radius:10px;margin-bottom:7px;
+      font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;
+    }
+
+    /* ────── MOBILE NAV ────── */
+    .mobile-nav{
+      display:none;
+      background:rgba(7,4,12,.97);border-top:1px solid rgba(101,8,31,.2);
+      padding:6px 4px calc(env(safe-area-inset-bottom,0px) + 6px);
+      grid-template-columns:repeat(5,1fr);
+    }
+    @media(max-width:900px){.mobile-nav{display:grid}}
+    .mn-item{
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+      padding:5px 2px;border-radius:9px;cursor:pointer;color:var(--mut);
+      font-size:9px;font-weight:700;transition:color .15s;border:none;background:none;
+    }
+    .mn-item.active{color:#FFD0D8}
+
+    /* ────── EMPTY / LOADING ────── */
+    .empty{text-align:center;padding:48px 20px;color:var(--mut)}
+    .loading{text-align:center;padding:32px;color:var(--mut)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:26px;height:26px;border:2.5px solid rgba(255,255,255,.08);border-top-color:rgba(101,8,31,.6);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+
+    /* ────── TOAST ────── */
+    #toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:max-content;max-width:90vw}
+    .toast{background:rgba(18,8,26,.97);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:9px 18px;font-size:13px;font-weight:600;animation:tIn .22s ease;white-space:nowrap}
+    @keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .toast.s{border-color:rgba(31,209,138,.3);color:#1FD18A}
+    .toast.e{border-color:rgba(255,80,80,.3);color:#FF8080}
+    .toast.b{border-color:rgba(34,208,240,.3);color:#22D0F0}
+
+    /* ────── SECTION PANEL ────── */
+    .panel{display:none}
+    .panel.active{display:block}
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="auth">
+  <div class="auth-box">
+    <div class="auth-seal">
+      <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
+        <rect x="6" y="13" width="16" height="12" rx="3" stroke="rgba(240,100,100,.85)" stroke-width="1.8"/>
+        <path d="M9 13V9a5 5 0 0 1 10 0v4" stroke="rgba(240,100,100,.85)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="14" cy="19" r="1.5" fill="rgba(240,100,100,.85)"/>
+      </svg>
+    </div>
+    <div class="auth-t">Dashboard Admin</div>
+    <div class="auth-s">ApagonesMID · Acceso restringido</div>
+    <div class="auth-lbl">Contraseña</div>
+    <input type="password" class="auth-inp" id="auth-inp" placeholder="••••••••••••"
+      onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="auth-btn" onclick="doLogin()">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+      Ingresar
+    </button>
+    <div class="auth-err" id="auth-err"></div>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="shell">
+  <div class="shell-grid">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="tb-logo">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg>
+      </div>
+      <div class="tb-name">ApagonesMID</div>
+      <span class="tb-badge">ADMIN</span>
+      <div class="tb-sp"></div>
+      <div class="tb-live" id="tb-live">
+        <span class="live-dot"></span>
+        <span id="tb-live-txt">Conectando…</span>
+      </div>
+      <a href="./index.html" class="tb-map-btn" target="_blank">
+        <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 1L1 3v10l4-2 4 2 4-2V1l-4 2z"/><path d="M5 1v10M9 3v10"/></svg>
+        Ver mapa
+      </a>
+      <button class="tb-logout" onclick="doLogout()">Salir</button>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" data-panel="overview" onclick="goPanel('overview',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+        Resumen
+      </div>
+      <div class="nav-item" data-panel="reports" onclick="goPanel('reports',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" transform="scale(0.7) translate(1,1)"/><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Reportes activos
+        <span class="nav-badge" id="nav-badge-reports">—</span>
+      </div>
+      <div class="nav-item" data-panel="agua" onclick="goPanel('agua',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 1C8 1 2 7 2 10.5a6 5 0 0012 0C14 7 8 1 8 1Z"/></svg>
+        Agua
+      </div>
+      <div class="nav-section">Análisis</div>
+      <div class="nav-item" data-panel="trends" onclick="goPanel('trends',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12l4-4 3 3 4-5 3 3"/></svg>
+        Tendencias
+      </div>
+      <div class="nav-item" data-panel="historico" onclick="goPanel('historico',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Histórico
+      </div>
+      <div class="nav-section">Gestión</div>
+      <div class="nav-item" data-panel="sched" onclick="goPanel('sched',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+        Programados
+      </div>
+      <div class="nav-item" data-panel="ads" onclick="goPanel('ads',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="8" rx="1"/><path d="M4 5l10-3v10L4 9"/></svg>
+        Anuncios
+      </div>
+      <div class="nav-item" data-panel="audit" onclick="goPanel('audit',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="1" width="10" height="14" rx="2"/><path d="M6 5h4M6 8h4M6 11h2"/></svg>
+        Auditoría
+      </div>
+      <div class="nav-item" data-panel="settings" onclick="goPanel('settings',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M3.05 12.95l1.42-1.42M11.53 4.47l1.42-1.42"/></svg>
+        Ajustes
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main id="main">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="panel active" id="panel-overview">
+        <div class="kpi-grid" id="kpi-grid">
+          <div class="kpi"><div class="kpi-n" style="color:var(--elec)" id="kpi-el">—</div><div class="kpi-l">Eléctricos</div><div class="kpi-sub" id="kpi-el-sub">activos</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:var(--agua)" id="kpi-ag">—</div><div class="kpi-l">Agua</div><div class="kpi-sub" id="kpi-ag-sub">activos</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:var(--red)" id="kpi-crit">—</div><div class="kpi-l">Críticos</div><div class="kpi-sub">severidad crítica</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:var(--grn)" id="kpi-res">—</div><div class="kpi-l">Resueltos hoy</div><div class="kpi-sub">últimas 24h</div></div>
+        </div>
+
+        <div class="sec-hd">
+          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="rgba(255,200,220,.6)" stroke-width="1.8" stroke-linecap="round"><path d="M1 10l3-4 2.5 2.5L9 5l4 5"/></svg>
+          <div class="sec-title">Actividad — últimos 14 días</div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Reportes por día · <span style="color:var(--elec)">■ Eléctrico</span> <span style="color:var(--agua)">■ Agua</span></div>
+          <div class="bar-chart" id="bar-14d"></div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mut);margin-top:4px" id="bar-labels"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div class="chart-wrap" style="margin-bottom:0">
+            <div class="chart-title">Por hora del día</div>
+            <div class="hour-chart" id="hour-chart"></div>
+            <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--mut);margin-top:4px"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
+          </div>
+          <div class="chart-wrap" style="margin-bottom:0">
+            <div class="chart-title">Distribución</div>
+            <div id="dist-chart" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <div class="sec-hd">
+          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="rgba(255,107,107,.6)" stroke-width="1.8" stroke-linecap="round"><path d="M7 1C7 1 1 6 1 9a6 5 0 0012 0C13 6 7 1 7 1Z"/></svg>
+          <div class="sec-title">Top colonias afectadas · 30 días</div>
+        </div>
+        <div id="top-zones-list" class="loading"><div class="spinner"></div>Cargando…</div>
+      </div>
+
+      <!-- ── REPORTES ACTIVOS ── -->
+      <div class="panel" id="panel-reports">
+        <div class="sec-hd">
+          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="var(--elec)" stroke-width="1.8" stroke-linecap="round"><path d="M8 1L3 8h4l-1 5 7-8h-5Z"/></svg>
+          <div class="sec-title">Apagones activos</div>
+          <span class="sec-sub" id="el-count-lbl">—</span>
+        </div>
+        <div id="list-el"><div class="loading"><div class="spinner"></div></div></div>
+
+        <div class="sec-hd" style="margin-top:20px">
+          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="var(--agua)" stroke-width="1.8" stroke-linecap="round"><path d="M7 1C7 1 1 6 1 9a6 5 0 0012 0C13 6 7 1 7 1Z"/></svg>
+          <div class="sec-title">Alumbrado activo</div>
+        </div>
+        <div id="list-alum"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ── AGUA ── -->
+      <div class="panel" id="panel-agua">
+        <div class="sec-hd">
+          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="var(--agua)" stroke-width="1.8" stroke-linecap="round"><path d="M7 1C7 1 1 6 1 9a6 5 0 0012 0C13 6 7 1 7 1Z"/></svg>
+          <div class="sec-title">Reportes de agua activos</div>
+          <span class="sec-sub" id="ag-count-lbl">—</span>
+        </div>
+        <div id="list-ag"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ── TENDENCIAS ── -->
+      <div class="panel" id="panel-trends">
+        <div class="loading" id="trends-loading"><div class="spinner"></div>Cargando…</div>
+        <div id="trends-content" style="display:none"></div>
+      </div>
+
+      <!-- ── HISTÓRICO ── -->
+      <div class="panel" id="panel-historico">
+        <div class="loading" id="hist-loading"><div class="spinner"></div>Cargando…</div>
+        <div id="hist-content"></div>
+      </div>
+
+      <!-- ── PROGRAMADOS ── -->
+      <div class="panel" id="panel-sched">
+        <div class="sec-hd">
+          <div class="sec-title">Avisos programados</div>
+          <button class="sec-btn" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.25);color:#C084FC" onclick="openSchedForm()">
+            <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+            Nuevo aviso
+          </button>
+        </div>
+        <div id="sched-form" style="display:none;background:var(--card);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:16px;margin-bottom:14px">
+          <div style="font-size:13px;font-weight:800;margin-bottom:14px;color:#C084FC">📅 Nuevo aviso programado</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fld"><label>Tipo</label><select id="sch-type"><option value="apagon">⚡ Apagón</option><option value="corte_agua">💧 Corte de agua</option></select></div>
+            <div class="fld"><label>Duración (horas)</label><input type="number" id="sch-dur" value="4" min="1" max="72"/></div>
+          </div>
+          <div class="fld"><label>Título del aviso</label><input type="text" id="sch-title" placeholder="Ej. Mantenimiento CFE Zona Centro"/></div>
+          <div class="fld"><label>Fecha y hora</label><input type="datetime-local" id="sch-date"/></div>
+          <div class="fld"><label>Descripción (opcional)</label><input type="text" id="sch-desc" placeholder="Detalles adicionales…"/></div>
+          <div class="fld"><label>Zona / Sección</label><input type="text" id="sch-zone" placeholder="Ej. 123 o Col. García Ginerés"/></div>
+          <div style="display:flex;gap:8px">
+            <button onclick="document.getElementById('sched-form').style.display='none'" style="flex:1;padding:11px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);color:var(--dim);font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+            <button onclick="submitSched()" style="flex:2;padding:11px;border-radius:10px;background:linear-gradient(135deg,rgba(168,85,247,.3),rgba(168,85,247,.15));border:1px solid rgba(168,85,247,.35);color:#C084FC;font-size:13px;font-weight:800;cursor:pointer">Publicar aviso</button>
+          </div>
+        </div>
+        <div id="sched-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ── ANUNCIOS ── -->
+      <div class="panel" id="panel-ads">
+        <div style="background:var(--card);border:1px solid rgba(34,208,240,.2);border-radius:16px;padding:20px;text-align:center">
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(34,208,240,.1);border:1px solid rgba(34,208,240,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+            <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="5" width="4" height="10" rx="1"/><path d="M5 6.5L17 2v16L5 13.5"/></svg>
+          </div>
+          <div style="font-size:16px;font-weight:800;margin-bottom:6px">Gestión de Anuncios</div>
+          <div style="font-size:12px;color:var(--dim);margin-bottom:18px">Los anuncios se administran desde una página dedicada. Se guardan en Supabase y aparecen en el mapa de todos los usuarios.</div>
+          <a href="./anuncios.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:11px;background:linear-gradient(135deg,rgba(34,208,240,.25),rgba(34,208,240,.12));border:1px solid rgba(34,208,240,.4);color:#22D0F0;text-decoration:none;font-size:13px;font-weight:800">
+            <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 1h3v3M13 1L6 8M5 3H2v9h9v-3"/></svg>
+            Abrir gestor de anuncios
+          </a>
+        </div>
+      </div>
+
+      <!-- ── AUDITORÍA ── -->
+      <div class="panel" id="panel-audit">
+        <div class="sec-hd"><div class="sec-title">Registro de acciones</div></div>
+        <div id="audit-content"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ── AJUSTES ── -->
+      <div class="panel" id="panel-settings">
+        <div style="max-width:520px">
+          <div class="sec-hd"><div class="sec-title">Parámetros del sistema</div></div>
+          <div style="background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:16px;margin-bottom:14px">
+            <div class="fld">
+              <label>⏱ TTL Apagones (horas)</label>
+              <input type="number" id="set-ttl" min="1" max="48"/>
+              <div style="font-size:10px;color:var(--mut);margin-top:4px">Tiempo que permanece activo antes de expirar</div>
+            </div>
+            <div class="fld">
+              <label>🗳 Umbral de votos para auto-resolver</label>
+              <input type="number" id="set-resolve" min="2" max="10"/>
+            </div>
+            <div class="fld">
+              <label>🌡 Alerta de calor (°C)</label>
+              <input type="number" id="set-heat" min="30" max="45"/>
+            </div>
+            <div class="fld">
+              <label>🚨 Calor crítico (°C)</label>
+              <input type="number" id="set-heat-crit" min="35" max="50"/>
+            </div>
+            <div class="fld">
+              <label>📚 Conservar histórico (meses)</label>
+              <input type="number" id="set-hist" min="0" max="60"/>
+              <div style="font-size:10px;color:var(--mut);margin-top:4px">0 = conservar siempre</div>
+            </div>
+            <button onclick="saveSettings()" style="width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,var(--brand-lt),var(--brand));color:#FFE0E6;border:none;font-size:14px;font-weight:800;cursor:pointer">Guardar ajustes</button>
+          </div>
+
+          <div class="danger-zone">
+            <div class="danger-title">⚠️ Acciones peligrosas</div>
+            <button class="danger-btn" style="background:rgba(255,61,61,.08);border:1px solid rgba(255,61,61,.2);color:#FF9090" onclick="clearOldHist()">Limpiar histórico antiguo</button>
+            <button class="danger-btn" style="background:rgba(255,61,61,.15);border:1px solid rgba(255,61,61,.4);color:#FF5050;font-weight:800" onclick="doReset()">RESET TOTAL — borrar todos los reportes</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Mobile bottom nav -->
+    <nav class="mobile-nav">
+      <button class="mn-item active" data-panel="overview" onclick="goPanel('overview',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+        Inicio
+      </button>
+      <button class="mn-item" data-panel="reports" onclick="goPanel('reports',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 1L3 8h4l-1 5 7-8h-5Z"/></svg>
+        Reportes
+      </button>
+      <button class="mn-item" data-panel="trends" onclick="goPanel('trends',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12l4-4 3 3 4-5 3 3"/></svg>
+        Stats
+      </button>
+      <button class="mn-item" data-panel="sched" onclick="goPanel('sched',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+        Avisos
+      </button>
+      <button class="mn-item" data-panel="settings" onclick="goPanel('settings',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M3.05 12.95l1.42-1.42M11.53 4.47l1.42-1.42"/></svg>
+        Ajustes
+      </button>
+    </nav>
+
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ══════ CONFIG ══════════════════════════════════════════
+const SB_URL = 'https://fybotuqwmzxsajedisus.supabase.co';
+const SB_KEY = 'sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
+const ADMIN_PW = 'ArtosdeMorena_2026';
+const ELEC_TYPES = ['apagon','alumbrado'];
+const AGUA_TYPES = ['agua','corte_agua','presion_baja','calidad_agua'];
+
+const db = supabase.createClient(SB_URL, SB_KEY);
+let allReports = [], histCache = [], contactsCache = {};
+const lsGet=(k,d='')=>{ try{const v=localStorage.getItem(k); return v===null?d:v;}catch{return d;} };
+const lsSet=(k,v)=>{ try{localStorage.setItem(k,String(v));}catch{} };
+
+// ══════ AUTH ══════════════════════════════════════════
+function doLogin(){
+  const v = document.getElementById('auth-inp').value;
+  if(v === ADMIN_PW){
+    document.getElementById('auth').style.display='none';
+    document.getElementById('shell').style.display='block';
+    loadSettings();
+    initData();
+    auditLog('Sesión iniciada','Admin login');
+  } else {
+    const inp=document.getElementById('auth-inp');
+    inp.classList.add('err');
+    document.getElementById('auth-err').textContent='Contraseña incorrecta';
+    setTimeout(()=>inp.classList.remove('err'),400);
+    inp.value='';
+  }
+}
+document.getElementById('auth-inp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function doLogout(){
+  if(!confirm('¿Cerrar sesión admin?')) return;
+  document.getElementById('shell').style.display='none';
+  document.getElementById('auth').style.display='flex';
+  document.getElementById('auth-inp').value='';
+}
+
+// ══════ NAVIGATION ══════════════════════════════════════
+let currentPanel = 'overview';
+function goPanel(name, el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name)?.classList.add('active');
+  document.querySelectorAll('.nav-item, .mn-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('[data-panel="'+name+'"]').forEach(n=>n.classList.add('active'));
+  currentPanel = name;
+  if(name==='trends') loadTrends();
+  if(name==='historico') loadHistorico();
+  if(name==='sched') loadSched();
+  if(name==='audit') renderAuditList();
+}
+
+// ══════ DATA ══════════════════════════════════════════
+async function initData(){
+  await loadReports();
+  setInterval(loadReports, 60000);
+  // Realtime
+  db.channel('admin-rt').on('postgres_changes',{event:'*',schema:'public',table:'reports'},()=>{
+    loadReports();
+  }).subscribe(status=>{
+    const el=document.getElementById('tb-live-txt');
+    if(status==='SUBSCRIBED'){ el.textContent='En tiempo real'; }
+    else { el.textContent='Reconectando…'; }
+  });
+}
+
+async function loadReports(){
+  try{
+    const {data} = await db.from('reports').select('*').order('timestamp',{ascending:false});
+    allReports = data||[];
+    updateKPIs();
+    renderReportsPanel();
+    renderAguaPanel();
+    updateNavBadge();
+    if(currentPanel==='overview') renderOverviewCharts();
+  } catch(e){ toast('Error cargando reportes: '+e.message,'e'); }
+}
+
+function updateKPIs(){
+  const el = allReports.filter(r=>r.type==='apagon'&&!r.resolved).length;
+  const ag = allReports.filter(r=>AGUA_TYPES.includes(r.type)&&!r.resolved).length;
+  const crit = allReports.filter(r=>!r.resolved&&r.severity==='critico').length;
+  const since24 = Date.now()-86400000;
+  db.from('reports_historico').select('id',{count:'exact'}).gt('resolved_at',since24)
+    .then(({count})=>{
+      document.getElementById('kpi-res').textContent = count||0;
+    });
+  document.getElementById('kpi-el').textContent = el;
+  document.getElementById('kpi-ag').textContent = ag;
+  document.getElementById('kpi-crit').textContent = crit;
+  document.getElementById('kpi-el-sub').textContent = el===1?'activo':'activos';
+  document.getElementById('kpi-ag-sub').textContent = ag===1?'activo':'activos';
+  document.getElementById('el-count-lbl').textContent = el+' activos';
+  document.getElementById('ag-count-lbl').textContent = ag+' activos';
+}
+
+function updateNavBadge(){
+  const active = allReports.filter(r=>!r.resolved).length;
+  document.getElementById('nav-badge-reports').textContent = active||'—';
+}
+
+// ══════ OVERVIEW CHARTS ══════════════════════════════
+async function renderOverviewCharts(){
+  const since30 = Date.now()-30*24*3600000;
+  const {data:hist} = await db.from('reports_historico').select('type,timestamp,seccion,lat,lng').gt('resolved_at',since30).limit(500);
+  const all = [...allReports, ...(hist||[]).map(r=>({...r,resolved:true}))];
+
+  // 14-day bar chart
+  const days=14, now=Date.now();
+  const buckets = Array(days).fill(0).map(()=>({el:0,ag:0,total:0}));
+  all.forEach(r=>{
+    const idx=days-1-Math.floor((now-r.timestamp)/(24*3600000));
+    if(idx>=0&&idx<days){
+      buckets[idx].total++;
+      if(ELEC_TYPES.includes(r.type)) buckets[idx].el++;
+      else if(AGUA_TYPES.includes(r.type)) buckets[idx].ag++;
+    }
+  });
+  const maxDay=Math.max(...buckets.map(b=>b.total),1);
+  const barEl=document.getElementById('bar-14d');
+  const lblEl=document.getElementById('bar-labels');
+  barEl.innerHTML=buckets.map((b,i)=>{
+    const d=new Date(now-(days-1-i)*24*3600000);
+    const elH=(b.el/maxDay*100).toFixed(1), agH=(b.ag/maxDay*100).toFixed(1);
+    return `<div class="bar-day" title="${d.toLocaleDateString('es-MX')}: ⚡${b.el} 💧${b.ag}">
+      <div class="bar-el" style="height:${elH}%"></div>
+      <div class="bar-ag" style="height:${agH}%"></div>
+      <div class="bar-lbl">${d.getDate()}/${d.getMonth()+1}</div>
+    </div>`;
+  }).join('');
+
+  // Hourly
+  const hrs=Array(24).fill(0);
+  all.forEach(r=>{ hrs[new Date(r.timestamp).getHours()]++; });
+  const maxHr=Math.max(...hrs,1);
+  document.getElementById('hour-chart').innerHTML=hrs.map((n,h)=>`
+    <div class="hour-bar" style="height:${(n/maxHr*100).toFixed(1)}%;opacity:${0.4+n/maxHr*0.6}" title="${h}:00 — ${n} reportes"></div>
+  `).join('');
+
+  // Distribution
+  const el=all.filter(r=>ELEC_TYPES.includes(r.type)).length;
+  const ag=all.filter(r=>AGUA_TYPES.includes(r.type)).length;
+  const tot=el+ag||1;
+  document.getElementById('dist-chart').innerHTML=`
+    <div class="dist-bar">
+      <div style="width:${(el/tot*100).toFixed(1)}%;background:var(--elec)"></div>
+      <div style="flex:1;background:var(--agua)"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px">
+      <span style="color:var(--elec)">⚡ Eléctrico ${el} (${(el/tot*100).toFixed(0)}%)</span>
+      <span style="color:var(--agua)">💧 Agua ${ag} (${(ag/tot*100).toFixed(0)}%)</span>
+    </div>`;
+
+  // Top zones
+  const zones={};
+  all.forEach(r=>{ if(r.seccion){if(!zones[r.seccion])zones[r.seccion]={n:0,lat:r.lat,lng:r.lng};zones[r.seccion].n++;} });
+  const top=Object.entries(zones).sort((a,b)=>b[1].n-a[1].n).slice(0,8);
+  const maxZ=top[0]?.[1]?.n||1;
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣'];
+  const listEl=document.getElementById('top-zones-list');
+  listEl.className='';listEl.innerHTML='';
+  top.forEach(async([sec,d],i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:11px 14px;margin-bottom:8px';
+    div.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+      <span style="font-size:16px">${medals[i]||''}</span>
+      <div style="flex:1;font-size:13px;font-weight:700" id="tz-${i}">Sec. ${sec}</div>
+      <strong style="color:var(--brand-lt)">${d.n}</strong>
+    </div>
+    <div style="height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
+      <div style="width:${(d.n/maxZ*100).toFixed(0)}%;height:100%;background:linear-gradient(90deg,#FF4B1F,#F5B731);border-radius:3px"></div>
+    </div>`;
+    listEl.appendChild(div);
+    if(d.lat&&d.lng){
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${d.lat}&lon=${d.lng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID-Admin/1.0'}});
+        const jd=await r.json();
+        const col=jd.address?.suburb||jd.address?.neighbourhood||jd.address?.road||'';
+        const el2=document.getElementById('tz-'+i);
+        if(el2&&col) el2.textContent=col;
+      }catch{}
+    }
+  });
+  if(!top.length) listEl.innerHTML='<div class="empty">Sin datos suficientes</div>';
+}
+
+// ══════ REPORT CARDS ══════════════════════════════════
+function rpCard(r){
+  const typeLabel={apagon:'Apagón',alumbrado:'Alumbrado',agua:'Fuga de agua',corte_agua:'Sin agua',presion_baja:'Presión baja',calidad_agua:'Calidad agua'};
+  const typeColor={apagon:'var(--elec)',alumbrado:'#F5B731',agua:'var(--agua)',corte_agua:'var(--agua)',presion_baja:'var(--agua)',calidad_agua:'#F5B731'};
+  const typeIcon={apagon:'⚡',alumbrado:'💡',agua:'💧',corte_agua:'🚰',presion_baja:'💧',calidad_agua:'⚠️'};
+  const typeBg={apagon:'rgba(245,183,49,.12)',alumbrado:'rgba(245,183,49,.1)',agua:'rgba(34,208,240,.1)',corte_agua:'rgba(34,208,240,.12)',presion_baja:'rgba(34,208,240,.08)',calidad_agua:'rgba(245,183,49,.08)'};
+  const sev=r.severity||'moderado';
+  const when=fmtTime(r.timestamp);
+  return `<div class="rp-card" id="rpc-${r.id}">
+    <div class="rp-dot" style="background:${typeBg[r.type]||'rgba(255,255,255,.06)'}">
+      <span style="font-size:16px">${typeIcon[r.type]||'📋'}</span>
+    </div>
+    <div>
+      <div class="rp-type" style="color:${typeColor[r.type]||'#F0E8EC'}">${typeLabel[r.type]||r.type}</div>
+      <div class="rp-loc" id="rploc-${r.id}">Sec. ${r.seccion||'—'}</div>
+      <div class="rp-meta">
+        <span>${when}</span>
+        <span class="rp-sev sev-${sev}">${sev}</span>
+        ${r.report_number?`<span style="color:rgba(168,85,247,.8)">📋 ${r.report_number}</span>`:''}
+        ${r.confirmations?`<span>${r.confirmations} confirmaciones</span>`:''}
+      </div>
+    </div>
+    <div class="rp-actions">
+      <button class="rp-btn rp-btn-resolve" onclick="forceResolve('${r.id}','${r.type}')">✓ Resolver</button>
+      <button class="rp-btn rp-btn-folio" onclick="addFolio('${r.id}')">📋 Folio</button>
+    </div>
+  </div>`;
+}
+
+function renderReportsPanel(){
+  const el=allReports.filter(r=>r.type==='apagon'&&!r.resolved);
+  const alum=allReports.filter(r=>r.type==='alumbrado'&&!r.resolved);
+  document.getElementById('list-el').innerHTML = el.length
+    ? el.map(rpCard).join('')
+    : '<div class="empty">Sin apagones activos</div>';
+  document.getElementById('list-alum').innerHTML = alum.length
+    ? alum.map(rpCard).join('')
+    : '<div class="empty">Sin reportes de alumbrado</div>';
+  // Reverse-geocode colonias async
+  [...el,...alum].forEach(async r=>{
+    if(r.lat&&r.lng){
+      try{
+        const res=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${r.lat}&lon=${r.lng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID-Admin/1.0'}});
+        const d=await res.json();
+        const col=d.address?.suburb||d.address?.neighbourhood||d.address?.road||'';
+        const el2=document.getElementById('rploc-'+r.id);
+        if(el2&&col) el2.textContent=col;
+      }catch{}
+    }
+  });
+}
+
+function renderAguaPanel(){
+  const ag=allReports.filter(r=>AGUA_TYPES.includes(r.type)&&!r.resolved);
+  document.getElementById('list-ag').innerHTML = ag.length
+    ? ag.map(rpCard).join('')
+    : '<div class="empty">Sin reportes de agua activos</div>';
+  ag.forEach(async r=>{
+    if(r.lat&&r.lng){
+      try{
+        const res=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${r.lat}&lon=${r.lng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID-Admin/1.0'}});
+        const d=await res.json();
+        const col=d.address?.suburb||d.address?.neighbourhood||d.address?.road||'';
+        const el=document.getElementById('rploc-'+r.id);
+        if(el&&col) el.textContent=col;
+      }catch{}
+    }
+  });
+}
+
+// ══════ RESOLVE / FOLIO ══════════════════════════════
+async function forceResolve(id, type){
+  if(!confirm('¿Resolver este reporte?')) return;
+  const r=allReports.find(x=>x.id===id);
+  if(!r) return;
+  const resMs=Date.now()-r.timestamp;
+  const{error}=await db.from('reports').update({resolved:true,resolved_at:Date.now(),resolucion_min:Math.round(resMs/60000)}).eq('id',id);
+  if(error){toast('Error: '+error.message,'e');return;}
+  try{
+    await db.from('reports_historico').insert([{...r,resolved:true,resolved_at:Date.now(),resolucion_min:Math.round(resMs/60000)}]);
+    await db.from('reports').delete().eq('id',id);
+  }catch{}
+  auditLog('Reporte resuelto',`${type} · ${id.slice(-6)}`);
+  toast('✅ Reporte resuelto','s');
+  await loadReports();
+}
+
+async function addFolio(id){
+  const r=allReports.find(x=>x.id===id);
+  if(!r) return;
+  const folio=prompt('Folio oficial (CFE/JAPAY/Ayuntatel):',r.report_number||'');
+  if(folio===null) return;
+  const{error}=await db.from('reports').update({report_number:folio.trim()}).eq('id',id);
+  if(error){toast('Error: '+error.message,'e');return;}
+  auditLog('Folio actualizado',`${r.type} · ${id.slice(-6)} → ${folio.trim()}`);
+  toast('Folio guardado','s');
+  await loadReports();
+}
+
+// ══════ TRENDS ══════════════════════════════════════
+async function loadTrends(){
+  document.getElementById('trends-loading').style.display='block';
+  document.getElementById('trends-content').style.display='none';
+  try{
+    const since30=Date.now()-30*24*3600000, since7=Date.now()-7*24*3600000;
+    const[{data:act},{data:hist}]=await Promise.all([
+      db.from('reports').select('type,timestamp,resolved,severity').gt('timestamp',since30).limit(1000),
+      db.from('reports_historico').select('type,timestamp,resolucion_min,resolved_at').gt('timestamp',since30).limit(1000)
+    ]);
+    const all=[...(act||[]),...(hist||[]).map(r=>({...r,resolved:true}))];
+    const thisW=all.filter(r=>r.timestamp>since7).length;
+    const lastW=all.filter(r=>r.timestamp<=since7&&r.timestamp>since7-7*24*3600000).length;
+    const wow=lastW?((thisW-lastW)/lastW*100).toFixed(0):'—';
+    const wowSign=thisW>lastW?'↑':'↓';
+    const wowColor=thisW>lastW?'var(--red)':'var(--grn)';
+    const res=hist||[];
+    const avgMs=res.length?res.filter(r=>r.resolucion_min).reduce((s,r)=>s+r.resolucion_min*60000,0)/res.filter(r=>r.resolucion_min).length:0;
+    const avgH=avgMs?(avgMs/3600000).toFixed(1):'—';
+
+    const types={apagon:'⚡ Apagones',alumbrado:'💡 Alumbrado',agua:'💧 Fugas',corte_agua:'🚰 Sin agua',presion_baja:'💧 Presión baja',calidad_agua:'⚠️ Calidad agua'};
+    const typeRows=Object.entries(types).map(([t,lbl])=>{
+      const n=all.filter(r=>r.type===t).length;
+      const pct=all.length?(n/all.length*100).toFixed(0):0;
+      return n>0?`<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>${lbl}</span><strong>${n}</strong></div>
+        <div style="height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:${ELEC_TYPES.includes(t)?'var(--elec)':'var(--agua)'};border-radius:3px"></div>
+        </div>
+      </div>`:''
+    }).join('');
+
+    document.getElementById('trends-content').innerHTML=`
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+        <div class="kpi"><div class="kpi-n" style="color:#F0E8EC">${all.length}</div><div class="kpi-l">30 días total</div></div>
+        <div class="kpi"><div class="kpi-n" style="color:${wowColor}">${wowSign}${Math.abs(wow)}%</div><div class="kpi-l">vs semana ant.</div></div>
+        <div class="kpi"><div class="kpi-n" style="color:var(--grn)">${avgH}h</div><div class="kpi-l">Prom. resolución</div></div>
+      </div>
+      <div class="chart-wrap"><div class="chart-title">Por tipo de reporte</div>${typeRows}</div>`;
+    document.getElementById('trends-loading').style.display='none';
+    document.getElementById('trends-content').style.display='block';
+  }catch(e){toast('Error: '+e.message,'e');}
+}
+
+// ══════ HISTÓRICO ══════════════════════════════════
+async function loadHistorico(){
+  const wrap=document.getElementById('hist-content');
+  wrap.innerHTML='<div class="loading"><div class="spinner"></div>Cargando…</div>';
+  try{
+    const{data}=await db.from('reports_historico').select('*').order('resolved_at',{ascending:false}).limit(200);
+    histCache=data||[];
+    if(!histCache.length){wrap.innerHTML='<div class="empty">Sin histórico disponible</div>';return;}
+    const el=histCache.filter(r=>ELEC_TYPES.includes(r.type)).length;
+    const ag=histCache.filter(r=>AGUA_TYPES.includes(r.type)).length;
+    const avg=histCache.filter(r=>r.resolucion_min).reduce((s,r,_,a)=>s+r.resolucion_min/a.length,0);
+    wrap.innerHTML=`
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+        <div class="kpi"><div class="kpi-n" style="color:#FFD0D8">${histCache.length}</div><div class="kpi-l">Total resueltos</div></div>
+        <div class="kpi"><div class="kpi-n" style="color:var(--elec)">${el}</div><div class="kpi-l">Eléctricos</div></div>
+        <div class="kpi"><div class="kpi-n" style="color:var(--agua)">${ag}</div><div class="kpi-l">Agua</div></div>
+        <div class="kpi"><div class="kpi-n" style="color:var(--grn)">${avg?avg.toFixed(1)+'h':'—'}</div><div class="kpi-l">Prom. resoluc.</div></div>
+      </div>
+      <div id="hist-rows"></div>`;
+    const rowsEl=document.getElementById('hist-rows');
+    const typeIcon={apagon:'⚡',alumbrado:'💡',agua:'💧',corte_agua:'🚰',presion_baja:'💧',calidad_agua:'⚠️'};
+    histCache.slice(0,80).forEach(r=>{
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--card);border:1px solid var(--bdr);border-radius:10px;margin-bottom:6px';
+      const when=new Date(r.resolved_at||r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+      const dur=r.resolucion_min?Math.round(r.resolucion_min)+'m':'—';
+      div.innerHTML=`<div style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0">${typeIcon[r.type]||'📋'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700" id="hloc-${r.id}">Cargando…</div>
+          <div style="font-size:10px;color:var(--mut)">${when}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:11px;font-weight:700;color:var(--grn)">${dur}</div><div style="font-size:9px;color:var(--mut)">duración</div></div>`;
+      rowsEl.appendChild(div);
+      if(r.lat&&r.lng) fetch(`https://nominatim.openstreetmap.org/reverse?lat=${r.lat}&lon=${r.lng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID-Admin/1.0'}}).then(res=>res.json()).then(d=>{const col=d.address?.suburb||d.address?.neighbourhood||d.address?.road||'';const el=document.getElementById('hloc-'+r.id);if(el&&col)el.textContent=col;}).catch(()=>{});
+      else { const el=document.getElementById('hloc-'+r.id);if(el)el.textContent=r.seccion?'Sec. '+r.seccion:'Sin ubicación'; }
+    });
+  }catch(e){wrap.innerHTML='<div class="empty">Error cargando histórico</div>';}
+}
+
+// ══════ SCHEDULED ══════════════════════════════════
+function openSchedForm(){
+  const f=document.getElementById('sched-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+
+async function loadSched(){
+  const list=document.getElementById('sched-list');
+  list.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  const now=Date.now();
+  const{data}=await db.from('scheduled_outages').select('*').gt('scheduled_for',now-24*3600000).order('scheduled_for');
+  if(!data||!data.length){list.innerHTML='<div class="empty">Sin avisos programados</div>';return;}
+  list.innerHTML=data.map(s=>{
+    const when=new Date(s.scheduled_for).toLocaleString('es-MX',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const past=s.scheduled_for<now;
+    return `<div class="sched-card" style="${past?'opacity:.5':''}">
+      <span style="font-size:22px;flex-shrink:0">${s.type==='apagon'?'⚡':'💧'}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:800">${s.title}</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:2px">${when} · ${s.duration_hours}h</div>
+        ${s.description?`<div style="font-size:11px;color:var(--mut);margin-top:3px">${s.description}</div>`:''}
+      </div>
+      <button onclick="delSched('${s.id}')" style="background:rgba(255,61,61,.1);border:1px solid rgba(255,61,61,.25);border-radius:8px;padding:5px 10px;color:#FF8080;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0">Quitar</button>
+    </div>`;
+  }).join('');
+}
+
+async function submitSched(){
+  const title=document.getElementById('sch-title').value.trim();
+  const date=document.getElementById('sch-date').value;
+  if(!title||!date){toast('Completa título y fecha','w');return;}
+  const rec={
+    id:'sch_'+Date.now().toString(36),
+    type:document.getElementById('sch-type').value,
+    title,description:document.getElementById('sch-desc').value.trim(),
+    seccion:document.getElementById('sch-zone').value.trim(),
+    scheduled_for:new Date(date).getTime(),
+    duration_hours:parseFloat(document.getElementById('sch-dur').value)||4,
+    active:true
+  };
+  const{error}=await db.from('scheduled_outages').insert([rec]);
+  if(error){toast('Error: '+error.message,'e');return;}
+  auditLog('Aviso programado',`${rec.type} · ${title}`);
+  toast('📅 Aviso publicado','s');
+  document.getElementById('sched-form').style.display='none';
+  loadSched();
+}
+
+async function delSched(id){
+  if(!confirm('¿Quitar este aviso?'))return;
+  await db.from('scheduled_outages').delete().eq('id',id);
+  toast('Aviso eliminado','b');
+  loadSched();
+}
+
+// ══════ AUDIT LOG ══════════════════════════════════
+function auditLog(action,details){
+  try{
+    const log=JSON.parse(lsGet('apx_audit_adm','[]'));
+    log.unshift({ts:Date.now(),action,details});
+    lsSet('apx_audit_adm',JSON.stringify(log.slice(0,150)));
+  }catch{}
+}
+
+function renderAuditList(){
+  try{
+    const log=JSON.parse(lsGet('apx_audit_adm','[]'));
+    const icons={resuelto:'✅',folio:'📋',programado:'📅',reset:'⚠️',login:'🔑'};
+    const html=log.length?`<div class="tbl-wrap">
+      ${log.slice(0,80).map(e=>{
+        const d=new Date(e.ts).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+        const icon=Object.entries(icons).find(([k])=>e.action.toLowerCase().includes(k))?.[1]||'📝';
+        return `<div class="tbl-row" style="grid-template-columns:auto 1fr auto">
+          <span style="font-size:14px">${icon}</span>
+          <div><div style="font-size:12px;font-weight:700">${e.action}</div><div style="font-size:10px;color:var(--mut)">${e.details||''}</div></div>
+          <div style="font-size:10px;color:var(--mut);white-space:nowrap">${d}</div>
+        </div>`;
+      }).join('')}
+    </div>`:'<div class="empty">Sin acciones registradas</div>';
+    document.getElementById('audit-content').innerHTML=html;
+  }catch{}
+}
+
+// ══════ SETTINGS ══════════════════════════════════
+function loadSettings(){
+  document.getElementById('set-ttl').value    = lsGet('apx_ttl_hours','8');
+  document.getElementById('set-resolve').value= lsGet('apx_resolve_threshold','3');
+  document.getElementById('set-heat').value   = lsGet('apx_heat_threshold','37');
+  document.getElementById('set-heat-crit').value = lsGet('apx_heat_critical','40');
+  document.getElementById('set-hist').value   = lsGet('apx_hist_months','12');
+}
+function saveSettings(){
+  lsSet('apx_ttl_hours',    document.getElementById('set-ttl').value);
+  lsSet('apx_resolve_threshold', document.getElementById('set-resolve').value);
+  lsSet('apx_heat_threshold',    document.getElementById('set-heat').value);
+  lsSet('apx_heat_critical',     document.getElementById('set-heat-crit').value);
+  lsSet('apx_hist_months',       document.getElementById('set-hist').value);
+  auditLog('Ajustes actualizados','');
+  toast('💾 Ajustes guardados','s');
+}
+
+async function clearOldHist(){
+  const m=parseInt(lsGet('apx_hist_months','12'));
+  if(!confirm(`Eliminar histórico de hace más de ${m} meses. ¿Continuar?`)) return;
+  const cut=Date.now()-m*30*24*3600000;
+  const{count,error}=await db.from('reports_historico').delete({count:'exact'}).lt('resolved_at',cut);
+  if(error){toast('Error: '+error.message,'e');return;}
+  auditLog('Limpieza histórico',`${count||0} reportes (>${m}m)`);
+  toast(`Limpieza: ${count||0} eliminados`,'s');
+}
+
+async function doReset(){
+  if(!confirm('⚠️ Esto borrará TODOS los reportes. ¿Estás seguro?')) return;
+  if(!confirm('Última confirmación — se borrará todo de forma permanente.')) return;
+  const{error}=await db.from('reports').delete().neq('id','');
+  if(error){toast('Error: '+error.message,'e');return;}
+  try{await db.from('reports_historico').delete().neq('id','');}catch{}
+  auditLog('RESET TOTAL','');
+  toast('✅ Reset completado','s');
+  await loadReports();
+}
+
+// ══════ UTILS ══════════════════════════════════════
+function fmtTime(ts){
+  const min=Math.floor((Date.now()-ts)/60000);
+  if(min<1)return'Justo ahora';
+  if(min<60)return`Hace ${min} min`;
+  const days=Math.floor(min/1440),h=Math.floor((min%1440)/60);
+  if(days>0)return h>0?`Hace ${days}d ${h}h`:`Hace ${days}d`;
+  return`Hace ${h}h ${min%60}m`;
+}
+
+function toast(msg,type='i'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className='toast '+(type||'i');
+  t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},2800);
+  setTimeout(()=>t.remove(),3200);
+}
+</script>
+</body>
+</html>

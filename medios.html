@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ApagonesMID · Sala de Prensa</title>
+  <meta name="description" content="Datos en tiempo real sobre apagones y fugas de agua en Mérida, Yucatán. Información pública para medios de comunicación."/>
+  <meta property="og:title" content="ApagonesMID · Sala de Prensa — Mérida"/>
+  <meta property="og:description" content="Reportes ciudadanos en tiempo real: apagones, fugas y fallas de servicio en Mérida, Yucatán."/>
+  <meta property="og:url" content="https://apagonesmid.mx/medios"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <style>
+    :root{
+      --bg:#06030B;--surf:#0D0818;--card:#130D1C;--card2:#181024;
+      --bdr:rgba(255,255,255,.07);--bdr2:rgba(255,255,255,.04);
+      --tx:#F0E8EC;--dim:rgba(255,255,255,.5);--mut:rgba(255,255,255,.22);
+      --brand:#65081F;--bl:#9B1030;
+      --agua:#22D0F0;--elec:#F5B731;--grn:#1FD18A;--red:#FF6B6B;
+      --f:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:var(--bg);color:var(--tx);font-family:var(--f)}
+    ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+    /* ── HEADER ── */
+    .header{
+      background:rgba(6,3,11,.97);
+      border-bottom:1px solid rgba(101,8,31,.25);
+      -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+      padding:0 20px;
+      position:sticky;top:0;z-index:100;
+    }
+    .header-inner{
+      max-width:1200px;margin:0 auto;
+      height:62px;display:flex;align-items:center;gap:14px;
+    }
+    .h-logo{
+      width:36px;height:36px;border-radius:10px;
+      background:linear-gradient(135deg,#9B1030,#65081F);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      box-shadow:0 2px 12px rgba(101,8,31,.4);
+    }
+    .h-name{font-size:16px;font-weight:800;letter-spacing:-.2px}
+    .h-sub{font-size:11px;color:var(--mut);display:none}
+    @media(min-width:500px){.h-sub{display:block}}
+    .h-sep{width:1px;height:22px;background:rgba(255,255,255,.1);flex-shrink:0;display:none}
+    @media(min-width:500px){.h-sep{display:block}}
+    .h-press{font-size:12px;font-weight:700;color:rgba(245,183,49,.7);display:none}
+    @media(min-width:500px){.h-press{display:block}}
+    .h-sp{flex:1}
+    .live-pill{
+      display:flex;align-items:center;gap:6px;
+      background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.2);
+      border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:#1FD18A;
+    }
+    .live-d{width:6px;height:6px;border-radius:50%;background:#1FD18A;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(31,209,138,.4)}50%{box-shadow:0 0 0 4px rgba(31,209,138,0)}}
+    .h-map-btn{
+      padding:7px 14px;border-radius:9px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);color:var(--dim);font-size:12px;font-weight:600;
+      text-decoration:none;display:flex;align-items:center;gap:5px;
+      transition:background .18s;white-space:nowrap;
+    }
+    .h-map-btn:hover{background:rgba(255,255,255,.08)}
+
+    /* ── HERO ── */
+    .hero{
+      background:linear-gradient(180deg,rgba(101,8,31,.08) 0%,transparent 100%);
+      border-bottom:1px solid var(--bdr2);
+      padding:32px 20px 28px;text-align:center;
+    }
+    .hero-inner{max-width:660px;margin:0 auto}
+    .hero-tag{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(245,183,49,.08);border:1px solid rgba(245,183,49,.2);
+      border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--elec);
+      margin-bottom:14px;
+    }
+    .hero-title{font-size:clamp(22px,5vw,36px);font-weight:900;letter-spacing:-.5px;line-height:1.1;margin-bottom:10px}
+    .hero-desc{font-size:14px;color:var(--dim);line-height:1.6;margin-bottom:18px;max-width:520px;margin-left:auto;margin-right:auto}
+    .hero-meta{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mut)}
+    .hero-meta span{display:flex;align-items:center;gap:4px}
+
+    /* ── LAYOUT ── */
+    .page{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
+    @media(min-width:1000px){
+      .page{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+      .col-left{}
+      .col-right{position:sticky;top:78px;max-height:calc(100vh - 90px);overflow-y:auto}
+    }
+
+    /* ── KPI GRID ── */
+    .kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    @media(min-width:600px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+    .kpi{
+      background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+      padding:15px 14px;
+    }
+    .kpi-n{font-size:28px;font-weight:900;letter-spacing:-.8px;line-height:1;margin-bottom:3px}
+    .kpi-l{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+    .kpi-dt{font-size:11px;color:var(--dim);margin-top:4px}
+
+    /* ── MAP ── */
+    .map-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;margin-bottom:20px}
+    .map-hd{padding:13px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+    .map-hd-t{font-size:13px;font-weight:700;flex:1}
+    #medios-map{height:320px}
+    @media(min-width:700px){#medios-map{height:420px}}
+
+    /* ── CHART ── */
+    .chart-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:16px;margin-bottom:20px}
+    .chart-t{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px}
+    .bar-row{display:flex;align-items:flex-end;gap:4px;height:90px;margin-bottom:6px}
+    .bar-d{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;min-width:0;cursor:default}
+    .bar-el{background:var(--elec);border-radius:2px 2px 0 0;min-height:0}
+    .bar-ag{background:var(--agua);border-radius:0;min-height:0}
+    .bar-lbl{font-size:7px;color:var(--mut);text-align:center;margin-top:4px}
+    .dist-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+    .dist-item{background:rgba(255,255,255,.03);border-radius:10px;padding:10px}
+    .dist-bar-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:4px}
+    .dist-bar-fill{height:100%;border-radius:3px}
+
+    /* ── REPORT LIST ── */
+    .sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .sec-t{font-size:13px;font-weight:800}
+    .sec-sub{margin-left:auto;font-size:11px;color:var(--mut)}
+    .export-btn{
+      padding:6px 13px;border-radius:8px;font-size:11px;font-weight:700;
+      background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.2);color:#1FD18A;
+      cursor:pointer;display:flex;align-items:center;gap:5px;transition:opacity .15s;
+    }
+    .export-btn:active{opacity:.7}
+    .rp-row{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:10px;align-items:start;
+      padding:11px 13px;background:var(--card);border:1px solid var(--bdr);
+      border-radius:12px;margin-bottom:7px;
+    }
+    .rp-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:15px}
+    .rp-type{font-size:12px;font-weight:700;margin-bottom:2px}
+    .rp-loc{font-size:11px;color:var(--dim);margin-bottom:3px}
+    .rp-tags{display:flex;gap:5px;flex-wrap:wrap}
+    .tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;border:1px solid}
+    .tag-el{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:var(--elec)}
+    .tag-ag{background:rgba(34,208,240,.08);border-color:rgba(34,208,240,.2);color:var(--agua)}
+    .tag-crit{background:rgba(255,80,80,.08);border-color:rgba(255,80,80,.2);color:#FF8080}
+    .tag-mod{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);color:var(--mut)}
+    .tag-time{color:var(--mut);font-size:10px;font-weight:600}
+
+    /* ── RIGHT COLUMN ── */
+    .info-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:16px;margin-bottom:14px}
+    .info-t{font-size:12px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+    .info-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+    .info-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+    .info-label{font-size:11px;font-weight:700}
+    .info-val{font-size:11px;color:var(--dim);margin-top:1px}
+    .contact-btn{
+      display:flex;align-items:center;gap:8px;
+      background:rgba(101,8,31,.15);border:1px solid rgba(155,16,48,.3);
+      border-radius:10px;padding:11px 13px;text-decoration:none;
+      font-size:12px;font-weight:700;color:#FFD0D8;margin-bottom:7px;
+      transition:background .18s;
+    }
+    .contact-btn:hover{background:rgba(101,8,31,.22)}
+    .note-card{background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.1);border-radius:14px;padding:14px;margin-bottom:14px}
+    .note-t{font-size:11px;font-weight:700;color:#22D0F0;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+    .note-txt{font-size:11px;color:var(--dim);line-height:1.6}
+
+    /* ── TOP ZONES ── */
+    .zone-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr2)}
+    .zone-row:last-child{border-bottom:none}
+    .zone-medal{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+    .zone-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+    .zone-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,#FF4B1F,#F5B731)}
+    .zone-n{font-size:11px;font-weight:800;color:var(--bl);width:28px;text-align:right;flex-shrink:0}
+
+    /* ── FOOTER ── */
+    .footer{border-top:1px solid var(--bdr2);padding:20px;text-align:center;font-size:11px;color:var(--mut);line-height:1.7;margin-top:20px}
+    .footer a{color:var(--dim);text-decoration:none}
+    .footer a:hover{color:var(--tx)}
+
+    /* ── LOADING ── */
+    .loading{text-align:center;padding:32px;color:var(--mut)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(34,208,240,.5);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+    .empty{text-align:center;padding:28px;color:var(--mut);font-size:12px}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="h-logo">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg>
+    </div>
+    <div class="h-name">ApagonesMID</div>
+    <div class="h-sep"></div>
+    <div class="h-press">Sala de Prensa</div>
+    <div class="h-sp"></div>
+    <div class="live-pill">
+      <div class="live-d"></div>
+      <span id="live-txt">En vivo</span>
+    </div>
+    <a href="./index.html" class="h-map-btn">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 1L1 3v10l4-2 4 2 4-2V1l-4 2z"/><path d="M5 1v10M9 3v10"/></svg>
+      Ver mapa
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="1" width="10" height="12" rx="2"/><path d="M5 4h4M5 7h4M5 10h2"/></svg>
+      Datos públicos · Uso libre para medios
+    </div>
+    <h1 class="hero-title">Apagones y servicios en Mérida,<br/>reportados por ciudadanos</h1>
+    <p class="hero-desc">ApagonesMID es una plataforma ciudadana independiente que registra en tiempo real los apagones, fugas de agua y fallas de alumbrado en Mérida, Yucatán — reportados voluntariamente por vecinos.</p>
+    <div class="hero-meta">
+      <span><svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><path d="M6 4v2l1.5 1.5"/></svg> Datos en tiempo real</span>
+      <span><svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1a5 5 0 1 1 0 10A5 5 0 0 1 6 1"/><path d="M6 4v2.5L8 8"/></svg> Mérida, Yucatán</span>
+      <span><svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1L1 4v7h4V8h2v3h4V4z"/></svg> Plataforma ciudadana</span>
+      <span id="last-upd" style="color:rgba(31,209,138,.7)"></span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- COLUMNA IZQUIERDA -->
+  <div class="col-left">
+
+    <!-- KPIs -->
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi"><div class="kpi-n" style="color:var(--elec)" id="k-el">—</div><div class="kpi-l">Apagones activos</div><div class="kpi-dt" id="k-el-dt"></div></div>
+      <div class="kpi"><div class="kpi-n" style="color:var(--agua)" id="k-ag">—</div><div class="kpi-l">Agua activos</div><div class="kpi-dt" id="k-ag-dt"></div></div>
+      <div class="kpi"><div class="kpi-n" style="color:var(--red)" id="k-crit">—</div><div class="kpi-l">Críticos ahora</div><div class="kpi-dt">severidad crítica</div></div>
+      <div class="kpi"><div class="kpi-n" style="color:var(--grn)" id="k-hoy">—</div><div class="kpi-l">Resueltos hoy</div><div class="kpi-dt">últimas 24h</div></div>
+    </div>
+
+    <!-- MAPA -->
+    <div class="map-card">
+      <div class="map-hd">
+        <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="rgba(34,208,240,.7)" stroke-width="1.8" stroke-linecap="round"><path d="M5 1L1 3v10l4-2 4 2 4-2V1l-4 2z"/><path d="M5 1v10M9 3v10"/></svg>
+        <div class="map-hd-t">Incidencias activas — mapa en tiempo real</div>
+        <span id="map-count" style="font-size:11px;color:var(--dim)">Cargando…</span>
+      </div>
+      <div id="medios-map"></div>
+    </div>
+
+    <!-- GRÁFICA 14 DÍAS -->
+    <div class="chart-card">
+      <div class="chart-t">Reportes por día — últimos 14 días</div>
+      <div class="bar-row" id="bar14"></div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--mut);margin-bottom:12px" id="bar14-lbl"></div>
+      <div style="display:flex;gap:14px;font-size:10px;color:var(--dim)">
+        <span><span style="display:inline-block;width:9px;height:9px;background:var(--elec);border-radius:2px;vertical-align:middle;margin-right:4px"></span>Eléctrico</span>
+        <span><span style="display:inline-block;width:9px;height:9px;background:var(--agua);border-radius:2px;vertical-align:middle;margin-right:4px"></span>Agua</span>
+      </div>
+    </div>
+
+    <!-- REPORTES ACTIVOS (sin datos personales) -->
+    <div>
+      <div class="sec-hd">
+        <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="rgba(245,183,49,.7)" stroke-width="1.8" stroke-linecap="round"><path d="M7 1L2 8h4l-1 5 7-8h-5Z"/></svg>
+        <div class="sec-t">Incidencias activas</div>
+        <div class="sec-sub" id="rp-count">—</div>
+        <button class="export-btn" onclick="exportCSV()">
+          <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v7M3 6l3 3 3-3M2 10h8"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+      <div id="rp-list"><div class="loading"><div class="spin"></div>Cargando reportes…</div></div>
+    </div>
+
+  </div>
+
+  <!-- COLUMNA DERECHA -->
+  <div class="col-right">
+
+    <!-- ACERCA DE -->
+    <div class="note-card">
+      <div class="note-t">
+        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><path d="M6 5v4"/><circle cx="6" cy="3.5" r=".4" fill="currentColor" stroke="none"/></svg>
+        Sobre estos datos
+      </div>
+      <div class="note-txt">
+        Los reportes son enviados voluntariamente por ciudadanos de Mérida. No representan datos oficiales de CFE, JAPAY ni el Ayuntamiento.<br/><br/>
+        <strong style="color:var(--tx)">Sin datos personales:</strong> esta vista pública no contiene nombres, teléfonos ni información de contacto de los reportantes.
+      </div>
+    </div>
+
+    <!-- TOP ZONAS -->
+    <div class="info-card">
+      <div class="info-t">
+        <svg viewBox="0 0 13 13" width="12" height="12" fill="none" stroke="rgba(255,107,107,.6)" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 1C6.5 1 1 6 1 9a5.5 4.5 0 0011 0C12 6 6.5 1 6.5 1Z"/></svg>
+        Zonas más afectadas · 30 días
+      </div>
+      <div id="top-zones"><div class="loading" style="padding:16px"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- DISTRIBUCIÓN POR TIPO -->
+    <div class="info-card">
+      <div class="info-t">
+        <svg viewBox="0 0 13 13" width="12" height="12" fill="none" stroke="rgba(34,208,240,.6)" stroke-width="1.8" stroke-linecap="round"><path d="M1 10l3-4 2.5 2.5L9 5l3 3"/></svg>
+        Distribución por tipo
+      </div>
+      <div id="dist-chart"></div>
+    </div>
+
+    <!-- TIEMPO DE RESOLUCIÓN -->
+    <div class="info-card">
+      <div class="info-t">
+        <svg viewBox="0 0 13 13" width="12" height="12" fill="none" stroke="rgba(31,209,138,.6)" stroke-width="1.8" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M6.5 4v2.5l1.5 1.5"/></svg>
+        Tiempos de resolución
+      </div>
+      <div id="res-times"></div>
+    </div>
+
+    <!-- CONTACTO PRENSA -->
+    <div class="info-card">
+      <div class="info-t">
+        <svg viewBox="0 0 13 13" width="12" height="12" fill="none" stroke="rgba(255,200,160,.6)" stroke-width="1.8" stroke-linecap="round"><path d="M12 9a2 2 0 0 1-2 2H4l-3 2V3a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2z"/></svg>
+        Contacto para medios
+      </div>
+      <a href="mailto:medios@apagonesmid.mx" class="contact-btn">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="4" width="12" height="9" rx="2"/><path d="M2 7l6 4 6-4"/></svg>
+        medios@apagonesmid.mx
+      </a>
+      <a href="https://apagonesmid.mx" class="contact-btn" style="background:rgba(34,208,240,.07);border-color:rgba(34,208,240,.2);color:#22D0F0">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2c-2 2-3 4-3 6s1 4 3 6M8 2c2 2 3 4 3 6s-1 4-3 6M2 8h12"/></svg>
+        apagonesmid.mx
+      </a>
+      <div style="font-size:11px;color:var(--mut);line-height:1.5;margin-top:8px">
+        Plataforma operada por <strong style="color:var(--dim)">Namore S.A. de C.V.</strong><br/>
+        Mérida, Yucatán, México.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong style="color:var(--dim)">ApagonesMID</strong> — Plataforma ciudadana de Mérida, Yucatán<br/>
+  Datos en tiempo real reportados por ciudadanos · Sin fines electorales ni partidistas<br/>
+  <a href="./index.html">Mapa principal</a> · <a href="./index.html">Aviso de privacidad</a>
+</div>
+
+<script>
+const SB_URL='https://fybotuqwmzxsajedisus.supabase.co';
+const SB_KEY='sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
+const ELEC_TYPES=['apagon','alumbrado'];
+const AGUA_TYPES=['agua','corte_agua','presion_baja','calidad_agua'];
+const TYPE_LABEL={apagon:'Apagón eléctrico',alumbrado:'Falla de alumbrado',agua:'Fuga de agua',corte_agua:'Sin agua',presion_baja:'Presión baja',calidad_agua:'Calidad del agua'};
+const TYPE_EMOJI={apagon:'⚡',alumbrado:'💡',agua:'💧',corte_agua:'🚰',presion_baja:'💧',calidad_agua:'⚠️'};
+const TYPE_BG={apagon:'rgba(245,183,49,.12)',alumbrado:'rgba(245,183,49,.1)',agua:'rgba(34,208,240,.1)',corte_agua:'rgba(34,208,240,.12)',presion_baja:'rgba(34,208,240,.08)',calidad_agua:'rgba(245,183,49,.08)'};
+const SEV_COLOR={leve:'tag-mod',moderado:'tag-mod',critico:'tag-crit'};
+
+const db=supabase.createClient(SB_URL,SB_KEY);
+let allReports=[], map=null, geoCache={};
+
+// ── INIT MAP ──────────────────────────────────────────
+function initMap(){
+  map=L.map('medios-map',{zoomControl:true,attributionControl:false}).setView([20.967,-89.623],11);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+}
+
+// ── LOAD DATA ──────────────────────────────────────────
+async function loadData(){
+  const{data,error}=await db.from('reports').select('id,type,lat,lng,timestamp,severity,seccion').eq('resolved',false).order('timestamp',{ascending:false});
+  if(error){console.warn(error);return;}
+  allReports=data||[];
+  updateKPIs();
+  updateMap();
+  renderReports();
+  updateLastUpd();
+  loadAnalytics();
+}
+
+function updateKPIs(){
+  const el=allReports.filter(r=>r.type==='apagon').length;
+  const ag=allReports.filter(r=>AGUA_TYPES.includes(r.type)).length;
+  const crit=allReports.filter(r=>r.severity==='critico').length;
+  document.getElementById('k-el').textContent=el;
+  document.getElementById('k-ag').textContent=ag;
+  document.getElementById('k-crit').textContent=crit;
+  document.getElementById('k-el-dt').textContent=el===1?'activo':'activos';
+  document.getElementById('k-ag-dt').textContent=ag===1?'activo':'activos';
+  // Resueltos hoy desde histórico
+  db.from('reports_historico').select('id',{count:'exact',head:true}).gt('resolved_at',Date.now()-86400000)
+    .then(({count})=>document.getElementById('k-hoy').textContent=count||0);
+  document.getElementById('rp-count').textContent=allReports.length+' activos';
+  document.getElementById('map-count').textContent=allReports.length+' incidencias';
+}
+
+function updateMap(){
+  if(!map) return;
+  map.eachLayer(l=>{ if(l._latlng) map.removeLayer(l); });
+  allReports.forEach(r=>{
+    if(!r.lat||!r.lng) return;
+    const isEl=ELEC_TYPES.includes(r.type);
+    const col=isEl?'#F5B731':'#22D0F0';
+    const m=L.circleMarker([r.lat,r.lng],{radius:8,fillColor:col,color:'rgba(0,0,0,.4)',weight:1,fillOpacity:.85});
+    const lbl=TYPE_LABEL[r.type]||r.type;
+    const when=fmtTime(r.timestamp);
+    m.bindPopup(`<div style="font-family:-apple-system,sans-serif;padding:2px">
+      <div style="font-size:13px;font-weight:800;color:${col}">${TYPE_EMOJI[r.type]||'📋'} ${lbl}</div>
+      <div style="font-size:11px;color:#888;margin-top:3px">${when}</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Sec. ${r.seccion||'—'}</div>
+    </div>`,{maxWidth:200});
+    m.addTo(map);
+  });
+}
+
+async function renderReports(){
+  const el=document.getElementById('rp-list');
+  if(!allReports.length){el.innerHTML='<div class="empty">Sin incidencias activas en este momento</div>';return;}
+  el.innerHTML=allReports.slice(0,30).map(r=>{
+    const when=fmtTime(r.timestamp);
+    const sevClass=SEV_COLOR[r.severity||'moderado']||'tag-mod';
+    const typeClass=ELEC_TYPES.includes(r.type)?'tag-el':'tag-ag';
+    return `<div class="rp-row">
+      <div class="rp-ico" style="background:${TYPE_BG[r.type]||'rgba(255,255,255,.06)'}">
+        ${TYPE_EMOJI[r.type]||'📋'}
+      </div>
+      <div>
+        <div class="rp-type">${TYPE_LABEL[r.type]||r.type}</div>
+        <div class="rp-loc" id="rloc-${r.id}">Zona ${r.seccion||'—'}</div>
+        <div class="rp-tags">
+          <span class="tag ${typeClass}">${ELEC_TYPES.includes(r.type)?'Eléctrico':'Agua'}</span>
+          <span class="tag ${sevClass}">${r.severity||'moderado'}</span>
+        </div>
+      </div>
+      <div class="tag-time">${when}</div>
+    </div>`;
+  }).join('');
+  if(allReports.length>30){
+    el.innerHTML+=`<div class="empty">+ ${allReports.length-30} más. Descarga el CSV para el listado completo.</div>`;
+  }
+  // Reverse geocode async
+  allReports.slice(0,20).forEach(async r=>{
+    if(!r.lat||!r.lng) return;
+    const col=await getColonia(r.lat,r.lng);
+    const el2=document.getElementById('rloc-'+r.id);
+    if(el2&&col) el2.textContent=col;
+  });
+}
+
+async function loadAnalytics(){
+  const since30=Date.now()-30*24*3600000;
+  const[{data:hist},{data:actAll}]=await Promise.all([
+    db.from('reports_historico').select('type,timestamp,lat,lng,seccion,resolucion_min').gt('resolved_at',since30).limit(500),
+    db.from('reports').select('type,timestamp,lat,lng,seccion').gt('timestamp',since30).limit(500)
+  ]);
+  const all=[...(actAll||[]),...(hist||[])];
+
+  // 14-day bars
+  const days=14, now=Date.now();
+  const bk=Array(days).fill(0).map(()=>({el:0,ag:0}));
+  all.forEach(r=>{
+    const idx=days-1-Math.floor((now-r.timestamp)/(24*3600000));
+    if(idx>=0&&idx<days){
+      if(ELEC_TYPES.includes(r.type)) bk[idx].el++;
+      else if(AGUA_TYPES.includes(r.type)) bk[idx].ag++;
+    }
+  });
+  const maxD=Math.max(...bk.map(b=>b.el+b.ag),1);
+  document.getElementById('bar14').innerHTML=bk.map((b,i)=>{
+    const d=new Date(now-(days-1-i)*24*3600000);
+    return `<div class="bar-d" title="${d.toLocaleDateString('es-MX')}: ⚡${b.el} 💧${b.ag}">
+      <div class="bar-el" style="height:${(b.el/maxD*100).toFixed(1)}%"></div>
+      <div class="bar-ag" style="height:${(b.ag/maxD*100).toFixed(1)}%"></div>
+      <div class="bar-lbl">${d.getDate()}</div>
+    </div>`;
+  }).join('');
+
+  // Distribución por tipo
+  const tipos={apagon:'⚡ Apagón',alumbrado:'💡 Alumbrado',agua:'💧 Fuga',corte_agua:'🚰 Sin agua',presion_baja:'💧 Presión baja',calidad_agua:'⚠️ Calidad'};
+  const total=all.length||1;
+  const distHtml=Object.entries(tipos).map(([t,lbl])=>{
+    const n=all.filter(r=>r.type===t).length;
+    const pct=(n/total*100).toFixed(0);
+    const col=ELEC_TYPES.includes(t)?'var(--elec)':'var(--agua)';
+    return n>0?`<div style="margin-bottom:9px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="color:var(--dim)">${lbl}</span><strong>${n} <span style="color:var(--mut)">(${pct}%)</span></strong></div>
+      <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${col};border-radius:2px"></div></div>
+    </div>`:''
+  }).join('');
+  document.getElementById('dist-chart').innerHTML=distHtml||'<div class="empty">Sin datos</div>';
+
+  // Top zonas
+  const zones={};
+  all.forEach(r=>{ if(r.seccion){if(!zones[r.seccion])zones[r.seccion]={n:0,lat:r.lat,lng:r.lng};zones[r.seccion].n++;} });
+  const top=Object.entries(zones).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
+  const maxZ=top[0]?.[1]?.n||1;
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣'];
+  const topEl=document.getElementById('top-zones');
+  topEl.innerHTML='';
+  top.forEach(async([sec,d],i)=>{
+    const div=document.createElement('div');
+    div.className='zone-row';
+    div.innerHTML=`
+      <div class="zone-medal">${medals[i]||''}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="zn-${i}">Sec. ${sec}</div>
+        <div class="zone-bar-wrap"><div class="zone-bar" style="width:${(d.n/maxZ*100).toFixed(0)}%"></div></div>
+      </div>
+      <div class="zone-n">${d.n}</div>`;
+    topEl.appendChild(div);
+    if(d.lat&&d.lng){
+      const col=await getColonia(d.lat,d.lng);
+      const el=document.getElementById('zn-'+i);
+      if(el&&col) el.textContent=col;
+    }
+  });
+  if(!top.length) topEl.innerHTML='<div class="empty">Sin datos suficientes</div>';
+
+  // Tiempos de resolución
+  const res=(hist||[]).filter(r=>r.resolucion_min>0);
+  if(res.length){
+    const avg=(res.reduce((s,r)=>s+r.resolucion_min,0)/res.length);
+    const min=Math.min(...res.map(r=>r.resolucion_min));
+    const max=Math.max(...res.map(r=>r.resolucion_min));
+    const fmtMin=m=>m>=60?`${Math.floor(m/60)}h ${m%60?Math.round(m%60)+'m':''}`:`${Math.round(m)}m`;
+    document.getElementById('res-times').innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+        ${[['Promedio',fmtMin(avg),'var(--grn)'],['Mínimo',fmtMin(min),'#1FD18A'],['Máximo',fmtMin(max),'var(--elec)']].map(([l,v,c])=>`
+          <div style="background:rgba(255,255,255,.03);border-radius:9px;padding:9px">
+            <div style="font-size:15px;font-weight:800;color:${c}">${v}</div>
+            <div style="font-size:9px;color:var(--mut);margin-top:2px;text-transform:uppercase;letter-spacing:.3px">${l}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--mut);text-align:center;margin-top:8px">Basado en ${res.length} reportes resueltos · últimos 30 días</div>`;
+  } else {
+    document.getElementById('res-times').innerHTML='<div class="empty">Sin datos de resolución aún</div>';
+  }
+}
+
+function updateLastUpd(){
+  const now=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('last-upd').textContent='Actualizado '+now;
+  document.getElementById('live-txt').textContent='En vivo · '+now;
+}
+
+// ── EXPORT CSV (sin datos personales) ──────────────────
+function exportCSV(){
+  if(!allReports.length){alert('Sin reportes activos para exportar');return;}
+  const headers=['Tipo','Zona/Sección','Latitud','Longitud','Severidad','Fecha y hora','Estado'];
+  const rows=allReports.map(r=>[
+    TYPE_LABEL[r.type]||r.type,
+    r.seccion||'',
+    r.lat||'',r.lng||'',
+    r.severity||'',
+    new Date(r.timestamp).toLocaleString('es-MX'),
+    'Activo'
+  ]);
+  const csv=[headers.join(','),...rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(','))].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='apagones-merida-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// ── REVERSE GEOCODE ────────────────────────────────────
+async function getColonia(lat,lng){
+  const k=Math.round(lat*100)/100+'_'+Math.round(lng*100)/100;
+  if(geoCache[k]) return geoCache[k];
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID-Medios/1.0'}});
+    const d=await r.json();
+    const col=d.address?.suburb||d.address?.neighbourhood||d.address?.road||'';
+    const city=d.address?.city||d.address?.town||'';
+    const result=col||(city&&city.toLowerCase()!=='mérida'&&city.toLowerCase()!=='merida'?city:'');
+    geoCache[k]=result;
+    return result;
+  }catch{return '';}
+}
+
+// ── UTILS ────────────────────────────────────────────
+function fmtTime(ts){
+  const m=Math.floor((Date.now()-ts)/60000);
+  if(m<1) return'Justo ahora';
+  if(m<60) return`Hace ${m} min`;
+  const h=Math.floor(m/60), d=Math.floor(m/1440);
+  if(d>0) return`Hace ${d}d ${h%24?h%24+'h':''}`;
+  return`Hace ${h}h ${m%60?m%60+'m':''}`;
+}
+
+// ── INIT ────────────────────────────────────────────
+initMap();
+loadData();
+setInterval(()=>{ loadData(); }, 60000);
+// Realtime
+db.channel('medios-rt').on('postgres_changes',{event:'*',schema:'public',table:'reports'},()=>{
+  loadData();
+}).subscribe();
+</script>
+</body>
+</html>
