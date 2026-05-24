@@ -10,203 +10,227 @@
       --bg:#07040C;--surf:#0F0817;--card:#160E1E;--card2:#1B1227;
       --bdr:rgba(255,255,255,.07);--bdr2:rgba(255,255,255,.04);
       --tx:#F0E8EC;--dim:rgba(255,255,255,.5);--mut:rgba(255,255,255,.22);
-      --brand:#65081F;--bl:#9B1030;--agua:#22D0F0;--elec:#F5B731;--grn:#1FD18A;
+      --bl:#9B1030;--agua:#22D0F0;--elec:#F5B731;--grn:#1FD18A;
       --f:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
-      --r:16px;--r2:12px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{background:var(--bg);color:var(--tx);font-family:var(--f);min-height:100vh}
     button,input,select,textarea{font-family:var(--f)}
     ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
 
-    /* ── AUTH ── */
+    /* AUTH */
     #auth{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
     .auth-box{width:100%;max-width:360px;background:var(--surf);border:1px solid rgba(101,8,31,.35);border-radius:22px;padding:36px 28px;box-shadow:0 24px 80px rgba(0,0,0,.65)}
-    .auth-seal{width:54px;height:54px;border-radius:16px;margin:0 auto 22px;background:linear-gradient(145deg,rgba(101,8,31,.45),rgba(60,4,20,.35));border:1px solid rgba(180,40,60,.35);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(101,8,31,.35)}
+    .auth-seal{width:54px;height:54px;border-radius:16px;margin:0 auto 22px;background:linear-gradient(145deg,rgba(101,8,31,.45),rgba(60,4,20,.35));border:1px solid rgba(180,40,60,.35);display:flex;align-items:center;justify-content:center}
     .auth-t{font-size:21px;font-weight:800;text-align:center;letter-spacing:-.4px;margin-bottom:3px}
     .auth-s{font-size:12px;color:var(--mut);text-align:center;margin-bottom:28px}
     .auth-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
     .auth-inp{width:100%;padding:14px 16px;background:rgba(255,255,255,.04);border:1.5px solid rgba(101,8,31,.3);border-radius:13px;color:var(--tx);font-size:16px;text-align:center;letter-spacing:.12em;outline:none;transition:border-color .2s}
     .auth-inp:focus{border-color:rgba(240,80,80,.5)}
-    .auth-inp.err{border-color:#FF5555;animation:shake .28s ease}
+    .auth-inp.err{animation:shake .28s ease;border-color:#FF5555}
     @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-    .auth-btn{width:100%;margin-top:14px;padding:15px;background:linear-gradient(135deg,#9B1030,#65081F);border:none;border-radius:13px;color:#FFD0D8;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(101,8,31,.4);transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .auth-btn{width:100%;margin-top:14px;padding:15px;background:linear-gradient(135deg,#9B1030,#65081F);border:none;border-radius:13px;color:#FFD0D8;font-size:14px;font-weight:800;cursor:pointer;transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px}
     .auth-btn:active{transform:scale(.97)}
     .auth-err{font-size:12px;color:#FF8080;text-align:center;margin-top:10px;min-height:16px}
 
-    /* ── TOPBAR ── */
+    /* TOPBAR */
     #app{display:none}
     .topbar{position:sticky;top:0;z-index:200;background:rgba(7,4,12,.96);border-bottom:1px solid rgba(101,8,31,.22);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);height:58px;padding:0 16px;display:flex;align-items:center;gap:12px}
-    .tb-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(101,8,31,.45)}
+    .tb-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(101,8,31,.4)}
     .tb-title{font-size:15px;font-weight:800;letter-spacing:-.2px}
     .tb-sub{font-size:11px;color:var(--mut);display:none}
-    @media(min-width:480px){.tb-sub{display:block}}
+    @media(min-width:500px){.tb-sub{display:block}}
     .tb-sp{flex:1}
-    .tb-btn{padding:7px 13px;border-radius:9px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:opacity .15s;border:1px solid;white-space:nowrap}
+    .tb-btn{padding:7px 13px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;border:1px solid;white-space:nowrap;transition:opacity .15s}
     .tb-btn:active{opacity:.7}
-    .btn-add{background:rgba(34,208,240,.1);border-color:rgba(34,208,240,.28);color:#22D0F0}
-    .btn-fix{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:#F5B731}
+    .btn-new{background:rgba(34,208,240,.1);border-color:rgba(34,208,240,.28);color:#22D0F0}
+    .btn-fix{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:#F5B731;display:none}
     .btn-out{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);color:var(--mut)}
 
-    /* ── PAGE GRID ── */
-    .page{display:grid;grid-template-columns:1fr;grid-template-areas:"stats""form""list";gap:0;max-width:1200px;margin:0 auto;padding:16px 14px 80px}
+    /* GRID */
+    .page{max-width:1200px;margin:0 auto;padding:16px 14px 80px;display:grid;grid-template-columns:1fr;grid-template-areas:"stats""form""list";gap:16px}
     @media(min-width:900px){
-      .page{grid-template-columns:1fr 440px;grid-template-rows:auto 1fr;grid-template-areas:"stats stats""list form";gap:0 20px;padding:20px 24px 40px;align-items:start}
+      .page{grid-template-columns:1fr 460px;grid-template-rows:auto 1fr;grid-template-areas:"stats stats""list form";gap:16px 22px;padding:20px 24px 40px;align-items:start}
     }
-    .area-stats{grid-area:stats;margin-bottom:16px}
-    .area-list{grid-area:list}
-    .area-form{grid-area:form}
-    @media(min-width:900px){.area-form{position:sticky;top:74px;max-height:calc(100vh - 90px);overflow-y:auto;padding-right:2px}}
+    .a-stats{grid-area:stats}
+    .a-list{grid-area:list}
+    .a-form{grid-area:form}
+    @media(min-width:900px){.a-form{position:sticky;top:74px;max-height:calc(100vh - 90px);overflow-y:auto}}
 
-    /* ── STATS ── */
+    /* STATS */
     .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
     @media(max-width:480px){.stats-row{grid-template-columns:repeat(2,1fr)}}
-    .stat-c{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r2);padding:12px;text-align:center}
-    .stat-n{font-size:24px;font-weight:900;letter-spacing:-.5px;line-height:1}
-    .stat-l{font-size:9px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+    .stat-c{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px 10px;text-align:center}
+    .stat-n{font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1}
+    .stat-l{font-size:9px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
 
-    /* ── SEC ── */
-    .sec-t{font-size:11px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    /* SEC TITLES */
+    .sec-t{font-size:11px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;display:flex;align-items:center;gap:6px}
 
-    /* ── SOCIAL CARDS ── */
-    .social-c{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r2);padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px}
-    .social-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .badge-fijo{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--mut);white-space:nowrap}
+    /* SOCIAL */
+    .social-c{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px}
+    .social-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid;white-space:nowrap}
+    .b-fijo{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:var(--mut)}
+    .b-on{background:rgba(31,209,138,.09);border-color:rgba(31,209,138,.25);color:#1FD18A}
+    .b-off{background:rgba(255,80,80,.09);border-color:rgba(255,80,80,.2);color:#FF8080}
+    .b-pau{background:rgba(245,183,49,.09);border-color:rgba(245,183,49,.2);color:#F5B731}
 
-    /* ── AD CARDS ── */
-    .ad-c{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:10px;transition:border-color .2s}
+    /* AD CARDS */
+    .ad-c{background:var(--card);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin-bottom:9px;transition:border-color .2s}
     .ad-c:hover{border-color:rgba(255,255,255,.12)}
     .ad-banner{width:100%;height:50px;object-fit:cover;display:block;background:#0C060A}
-    .ad-placeholder{width:100%;height:50px;background:linear-gradient(135deg,rgba(101,8,31,.12),rgba(0,0,0,.25));display:flex;align-items:center;justify-content:center;gap:8px}
+    .ad-broken{width:100%;height:50px;background:rgba(255,80,80,.06);border-bottom:1px solid rgba(255,80,80,.12);display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:rgba(255,80,80,.5);font-weight:600}
     .ad-body{padding:10px 12px}
     .ad-row{display:flex;align-items:center;gap:8px}
-    .ad-num{width:20px;height:20px;border-radius:6px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--mut);flex-shrink:0}
-    .badge-on{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(31,209,138,.1);border:1px solid rgba(31,209,138,.25);color:#1FD18A;white-space:nowrap}
-    .badge-off{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#FF8080;white-space:nowrap}
-    .badge-pau{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.2);color:#F5B731;white-space:nowrap}
-    .ad-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
-    .act{padding:6px 11px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;-webkit-appearance:none;display:inline-flex;align-items:center;gap:4px;border:1px solid;transition:opacity .15s;touch-action:manipulation}
+    .ad-num{width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--mut);flex-shrink:0}
+    .ad-acts{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.04)}
+    .act{padding:5px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;display:inline-flex;align-items:center;gap:3px;border:1px solid;transition:opacity .15s;touch-action:manipulation}
     .act:active{opacity:.7}
-    .act-edit{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
-    .act-dup{background:rgba(168,85,247,.07);border-color:rgba(168,85,247,.18);color:#C084FC}
-    .act-tog-on{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:#F5B731}
-    .act-tog-off{background:rgba(31,209,138,.08);border-color:rgba(31,209,138,.2);color:#1FD18A}
-    .act-del{background:rgba(255,80,80,.06);border-color:rgba(255,80,80,.16);color:#FF8080}
-    .act-up,.act-dn{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);color:var(--mut);padding:6px 8px}
-    .sched-chip{font-size:9px;padding:2px 7px;border-radius:8px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:#C084FC;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+    .act-e{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.09);color:rgba(255,255,255,.5)}
+    .act-d{background:rgba(168,85,247,.07);border-color:rgba(168,85,247,.18);color:#C084FC}
+    .act-on{background:rgba(31,209,138,.08);border-color:rgba(31,209,138,.2);color:#1FD18A}
+    .act-off{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:#F5B731}
+    .act-del{background:rgba(255,80,80,.06);border-color:rgba(255,80,80,.15);color:#FF8080;padding:5px 8px}
+    .act-mv{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);color:var(--mut);padding:5px 8px}
 
-    /* ── FORM ── */
-    .form-panel{background:var(--surf);border:1px solid rgba(34,208,240,.18);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
-    .form-hd{padding:13px 15px;background:rgba(34,208,240,.05);border-bottom:1px solid rgba(34,208,240,.1);display:flex;align-items:center;gap:9px}
-    .form-hd-ico{width:30px;height:30px;border-radius:8px;background:rgba(34,208,240,.1);border:1px solid rgba(34,208,240,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    /* FORM PANEL */
+    .form-panel{background:var(--surf);border:1px solid rgba(34,208,240,.17);border-radius:16px;overflow:hidden;margin-bottom:16px}
+    .form-hd{padding:13px 15px;background:rgba(34,208,240,.045);border-bottom:1px solid rgba(34,208,240,.1);display:flex;align-items:center;gap:9px}
+    .form-hd-ico{width:28px;height:28px;border-radius:7px;background:rgba(34,208,240,.1);border:1px solid rgba(34,208,240,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .form-body{padding:15px}
     .fl{margin-bottom:12px}
-    .fl-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;display:flex;align-items:center;gap:5px}
-    .fl-opt{font-size:9px;font-weight:600;color:rgba(255,255,255,.2);background:rgba(255,255,255,.05);border-radius:4px;padding:1px 5px}
+    .fl-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+    .fl-opt{font-size:9px;font-weight:600;background:rgba(255,255,255,.05);border-radius:4px;padding:1px 5px;color:rgba(255,255,255,.2)}
     .fl-inp{width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;color:var(--tx);font-size:13px;outline:none;transition:border-color .2s}
     .fl-inp:focus{border-color:rgba(34,208,240,.4)}
-    .img-zone{width:100%;padding:12px;background:rgba(34,208,240,.06);border:1.5px dashed rgba(34,208,240,.22);border-radius:10px;font-size:12px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;transition:background .18s;display:block}
-    .img-zone:hover{background:rgba(34,208,240,.1)}
+    .img-drop{width:100%;padding:11px;background:rgba(34,208,240,.06);border:1.5px dashed rgba(34,208,240,.22);border-radius:10px;font-size:11px;font-weight:700;color:#22D0F0;text-align:center;cursor:pointer;display:block;transition:background .18s}
+    .img-drop:hover,.img-drop:focus-within{background:rgba(34,208,240,.1)}
 
-    /* ── TABS PREVIEW ── */
-    .prev-tabs{display:flex;gap:6px;margin-bottom:10px}
-    .prev-tab{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--mut);transition:all .18s}
-    .prev-tab.active{background:rgba(34,208,240,.12);border-color:rgba(34,208,240,.3);color:#22D0F0}
-    .prev-pane{display:none}
-    .prev-pane.active{display:block}
+    /* ═══════════════════════════════════════════════
+       INLINE CROP+PREVIEW — el corazón del rediseño
+       ═══════════════════════════════════════════════ */
+    .prev-section{margin-bottom:13px}
+    .prev-hd{font-size:10px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .prev-tabs{display:flex;gap:5px;margin-bottom:8px}
+    .prev-tab{padding:5px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--mut);transition:all .18s;-webkit-appearance:none}
+    .prev-tab.on{background:rgba(34,208,240,.12);border-color:rgba(34,208,240,.3);color:#22D0F0}
 
-    /* ── DESKTOP PREVIEW ── */
-    .prev-desktop{background:rgba(0,0,0,.3);border-radius:10px;padding:10px 10px 0;border:1px solid rgba(255,255,255,.07);overflow:hidden}
-    .prev-d-screen{background:#0D0A14;border-radius:7px 7px 0 0;overflow:hidden}
-    .prev-d-map{height:72px;background:linear-gradient(180deg,#0D0A14 0%,#111020 100%);position:relative;display:flex;align-items:center;justify-content:center}
-    .prev-d-bar{height:44px;position:relative;overflow:hidden}
-    #pd-bg{position:absolute;inset:0;background-size:cover;background-position:center}
-    .prev-d-ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.12) 55%,rgba(0,0,0,.38))}
-    .prev-d-content{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;gap:7px}
-    .prev-d-ticker{height:24px;background:#0C0A14;display:flex;align-items:center;padding:0 10px;gap:6px;border-top:1px solid rgba(255,255,255,.04)}
-    .prev-dims{font-size:9px;color:rgba(34,208,240,.4);text-align:center;padding:5px 0 2px;font-family:monospace}
+    /* Desktop view: mapa simulado + barra que ES el canvas de crop */
+    .desktop-frame{background:#0D0A14;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+    .desktop-mapbg{height:68px;background:linear-gradient(180deg,#0D0A14,#111020);position:relative;display:flex;align-items:center;justify-content:center}
+    .map-grid{position:absolute;inset:0;opacity:.1;background-image:linear-gradient(rgba(255,255,255,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.25) 1px,transparent 1px);background-size:18px 18px}
+    .desktop-fab{position:absolute;bottom:8px;right:10px;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center}
 
-    /* ── PHONE PREVIEW ── */
-    .prev-phone-wrap{display:flex;justify-content:center;padding:8px 0 0}
-    .phone-frame{
-      width:200px;flex-shrink:0;
-      background:linear-gradient(145deg,#1C1C2E,#0F0F1A);
-      border-radius:32px;
-      border:2px solid rgba(255,255,255,.12);
-      padding:10px 8px;
-      box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);
+    /* EL CANVAS DE CROP INLINE — ratio 720:88 */
+    .crop-inline-wrap{
       position:relative;
+      width:100%;
+      aspect-ratio:720/88;
+      background:#0C060A;
+      overflow:hidden;
+      cursor:grab;
+      touch-action:none;
+      /* Borde que indica que es interactivo */
+      border:2px solid transparent;
+      transition:border-color .25s;
     }
-    .phone-notch{width:60px;height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin:0 auto 8px}
-    .phone-screen{background:#0D0A14;border-radius:20px;overflow:hidden}
-    .phone-map-area{height:200px;background:linear-gradient(180deg,#0D0A14,#111020);position:relative;overflow:hidden}
-    .phone-map-streets{position:absolute;inset:0;opacity:.15;background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);background-size:24px 24px}
-    .phone-map-label{position:absolute;bottom:50%;left:50%;transform:translate(-50%,50%);font-size:9px;color:rgba(255,255,255,.2);font-weight:700;letter-spacing:2px;text-transform:uppercase}
-    .phone-fab{position:absolute;bottom:14px;right:12px;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(101,8,31,.5)}
-    .phone-bar{height:38px;position:relative;overflow:hidden}
-    #pp-bg{position:absolute;inset:0;background-size:cover;background-position:center}
-    .phone-bar-ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.1) 55%,rgba(0,0,0,.4))}
-    .phone-bar-content{position:absolute;inset:0;display:flex;align-items:center;padding:0 9px;gap:6px}
-    .phone-ticker{height:22px;background:#0C0A14;display:flex;align-items:center;padding:0 8px;gap:5px}
-    .phone-home{height:24px;display:flex;align-items:center;justify-content:center}
-    .phone-home-bar{width:50px;height:3px;background:rgba(255,255,255,.25);border-radius:2px}
-    .publi-badge{flex-shrink:0;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);border-radius:3px;padding:2px 5px;font-size:7px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.3px}
-
-    /* ── HORARIO ── */
-    .sched-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .sched-toggle-btn{
-      display:flex;align-items:center;gap:6px;
-      background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);
-      border-radius:9px;padding:8px 12px;cursor:pointer;font-size:11px;font-weight:700;color:#C084FC;
-      width:100%;text-align:left;-webkit-appearance:none;margin-bottom:10px;
-      transition:background .18s;
+    .crop-inline-wrap.has-img{cursor:grab;border-color:rgba(34,208,240,.3)}
+    .crop-inline-wrap.has-img:active{cursor:grabbing}
+    #crop-canvas{position:absolute;inset:0;width:100%;height:100%}
+    /* Overlay de contenido del anuncio (name + publi) — SOBRE el canvas */
+    .crop-content-ov{
+      position:absolute;inset:0;
+      background:linear-gradient(90deg,rgba(0,0,0,.52) 0%,rgba(0,0,0,.08) 55%,rgba(0,0,0,.32) 100%);
+      display:flex;align-items:center;padding:0 10px;gap:7px;
+      pointer-events:none;
+      transition:opacity .2s;
     }
-    .sched-toggle-btn:hover{background:rgba(168,85,247,.1)}
+    .crop-content-ov.no-overlay{background:none}
+    .crop-ov-texts{flex:1;min-width:0}
+    #ov-title{font-size:11px;font-weight:800;color:white;text-shadow:0 1px 4px rgba(0,0,0,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #ov-url{font-size:8px;color:rgba(255,255,255,.55);margin-top:1px}
+    .publi-b{flex-shrink:0;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:2px 5px;font-size:7px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.3px}
+    /* Placeholder cuando no hay imagen */
+    .crop-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;pointer-events:none}
+    /* Guías de tercios sutiles cuando hay imagen */
+    .crop-guides{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .2s}
+    .crop-inline-wrap.has-img:hover .crop-guides{opacity:1}
+    .cg{position:absolute;background:rgba(34,208,240,.15)}
+    .cg-v{top:0;bottom:0;width:1px}
+    .cg-h{left:0;right:0;height:1px}
+    /* Hint de arrastre */
+    .drag-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s}
+    .crop-inline-wrap.has-img:hover .drag-hint{opacity:1}
+    .drag-hint-inner{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:5px 10px;font-size:9px;font-weight:700;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:4px}
 
-    /* ── NOTES ── */
-    .fl-textarea{width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;color:var(--tx);font-size:12px;outline:none;resize:none;transition:border-color .2s;line-height:1.5}
-    .fl-textarea:focus{border-color:rgba(34,208,240,.3)}
+    /* Ticker simulado */
+    .desktop-ticker{height:24px;background:#0C0A14;display:flex;align-items:center;padding:0 10px;gap:6px;border-top:1px solid rgba(255,255,255,.04)}
 
-    /* ── FORM BTNS ── */
+    /* Zoom controls (bajo el banner inline) */
+    .crop-controls{display:flex;align-items:center;gap:7px;padding:8px 10px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.04)}
+    .z-lbl{font-size:9px;color:var(--mut);font-weight:700;white-space:nowrap}
+    .z-btn{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.6);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-appearance:none;transition:background .15s}
+    .z-btn:hover{background:rgba(255,255,255,.1)}
+    .z-btn:active{opacity:.7}
+    .z-reset{padding:0 9px;font-size:9px;font-weight:700;width:auto;font-family:var(--f);letter-spacing:.3px}
+    .z-dim{font-size:9px;color:rgba(34,208,240,.4);margin-left:auto;font-family:monospace}
+
+    /* Phone preview */
+    .phone-wrap{display:flex;gap:12px;align-items:flex-start;padding:4px 0}
+    .phone-frame{
+      width:180px;flex-shrink:0;
+      background:linear-gradient(145deg,#1A1A2E,#0F0F1A);
+      border-radius:30px;border:2px solid rgba(255,255,255,.12);
+      padding:9px 7px;
+      box-shadow:0 6px 28px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);
+    }
+    .ph-notch{width:52px;height:5px;background:rgba(255,255,255,.14);border-radius:3px;margin:0 auto 7px}
+    .ph-screen{background:#0D0A14;border-radius:18px;overflow:hidden}
+    .ph-map{height:190px;background:linear-gradient(180deg,#0D0A14,#111020);position:relative;overflow:hidden}
+    .ph-streets{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);background-size:22px 22px}
+    .ph-label{position:absolute;bottom:44%;left:50%;transform:translate(-50%,50%);font-size:8px;color:rgba(255,255,255,.18);font-weight:700;letter-spacing:2px;text-transform:uppercase}
+    .ph-fab{position:absolute;bottom:12px;right:10px;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center}
+    /* La barra del teléfono usa el mismo canvas (vía imagen) */
+    .ph-bar{height:36px;position:relative;overflow:hidden;background:#0C060A}
+    #ph-preview-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center}
+    .ph-bar-ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.1) 55%,rgba(0,0,0,.38))}
+    .ph-bar-info{position:absolute;inset:0;display:flex;align-items:center;padding:0 8px;gap:5px}
+    .ph-ticker{height:20px;background:#0C0A14;display:flex;align-items:center;padding:0 8px;gap:5px}
+    .ph-home{height:22px;display:flex;align-items:center;justify-content:center}
+    .ph-home-bar{width:44px;height:3px;background:rgba(255,255,255,.2);border-radius:2px}
+    .phone-info{flex:1;font-size:10px;color:var(--mut);line-height:1.6}
+
+    /* Nota info */
+    .info-note{background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.08);border-radius:9px;padding:8px 11px;font-size:11px;color:rgba(255,255,255,.28);margin-bottom:12px;line-height:1.5}
+
+    /* Horario */
+    .sched-btn{display:flex;align-items:center;gap:7px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.14);border-radius:9px;padding:8px 12px;cursor:pointer;font-size:11px;font-weight:700;color:#C084FC;width:100%;text-align:left;-webkit-appearance:none;margin-bottom:10px;transition:background .18s}
+    .sched-btn:hover{background:rgba(168,85,247,.1)}
+    .sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .sched-chip{font-size:9px;padding:2px 7px;border-radius:7px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:#C084FC;display:inline-flex;align-items:center;gap:3px}
+
+    /* Notas */
+    .fl-ta{width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;color:var(--tx);font-size:12px;outline:none;resize:none;transition:border-color .2s;line-height:1.5}
+    .fl-ta:focus{border-color:rgba(34,208,240,.3)}
+
+    /* Btns */
     .form-btns{display:grid;grid-template-columns:1fr 2fr;gap:9px;margin-top:4px}
-    .f-cancel{padding:12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer}
-    .f-save{padding:12px;border-radius:10px;background:linear-gradient(135deg,rgba(34,208,240,.28),rgba(34,208,240,.14));border:1px solid rgba(34,208,240,.42);color:#22D0F0;font-family:var(--f);font-size:13px;font-weight:800;cursor:pointer;transition:transform .1s}
+    .f-cancel{padding:12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-size:13px;font-weight:600;cursor:pointer}
+    .f-save{padding:12px;border-radius:10px;background:linear-gradient(135deg,rgba(34,208,240,.27),rgba(34,208,240,.13));border:1px solid rgba(34,208,240,.42);color:#22D0F0;font-size:13px;font-weight:800;cursor:pointer;transition:transform .1s}
     .f-save:active{transform:scale(.97)}
     .f-save:disabled{opacity:.4;cursor:not-allowed}
 
-    /* ── CROP MODAL ── */
-    .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:14px;overflow-y:auto}
-    .modal-card{background:#110914;border:1px solid rgba(101,8,31,.4);border-radius:18px;width:100%;max-width:560px;padding:18px;box-shadow:0 20px 80px rgba(0,0,0,.7);margin:auto}
-    .modal-hd{display:flex;align-items:center;gap:10px;margin-bottom:13px}
-    .modal-hd-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .x-btn{width:28px;height:28px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-    .crop-area{position:relative;width:100%;aspect-ratio:720/88;background:#0C060A;border-radius:10px;overflow:hidden;border:2px solid rgba(34,208,240,.3);cursor:grab;touch-action:none;margin-bottom:10px}
-    #crop-canvas{position:absolute;inset:0;width:100%;height:100%}
-    .crop-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(34,208,240,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(34,208,240,.1) 1px,transparent 1px);background-size:33.33% 33.33%}
-    .zoom-row{display:flex;align-items:center;gap:7px;margin-bottom:12px}
-    .z-btn{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .crop-prev-bar{height:38px;border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,.08);position:relative;background:#0C060A;margin-bottom:12px}
-    #cp-canvas{position:absolute;inset:0;width:100%;height:100%}
-    .crop-prev-ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.1) 60%,rgba(0,0,0,.35));pointer-events:none}
-    .crop-prev-info{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;gap:7px;pointer-events:none}
-    .crop-btns{display:grid;grid-template-columns:1fr 2fr;gap:8px}
-    .crop-cancel{padding:11px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer}
-    .crop-apply{padding:11px;border-radius:10px;background:linear-gradient(135deg,rgba(34,208,240,.28),rgba(34,208,240,.14));border:1px solid rgba(34,208,240,.42);color:#22D0F0;font-family:var(--f);font-size:13px;font-weight:800;cursor:pointer}
+    /* Fix modal */
+    .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:14px;overflow-y:auto}
+    .modal-card{background:#110914;border:1px solid rgba(245,183,49,.3);border-radius:18px;width:100%;max-width:480px;padding:18px;box-shadow:0 20px 80px rgba(0,0,0,.7);margin:auto}
+    .modal-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .x-btn{width:28px;height:28px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px}
 
-    /* ── FIX MODAL ── */
-    #fix-modal .modal-card{border-color:rgba(245,183,49,.3)}
-    .fix-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:7px}
-    .fix-thumb{width:60px;height:20px;border-radius:4px;overflow:hidden;flex-shrink:0;background:#0C060A;display:flex;align-items:center;justify-content:center}
-    .fix-thumb img{width:100%;height:100%;object-fit:cover}
-    .fix-actions{display:flex;gap:5px;margin-left:auto;flex-shrink:0}
-
-    /* ── PLACEHOLDER ── */
-    .placeholder-card{background:var(--card);border:1px dashed rgba(255,255,255,.08);border-radius:var(--r);padding:28px 20px;text-align:center;margin-bottom:16px}
-
-    /* ── TOAST ── */
-    #toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:max-content;max-width:92vw}
-    .toast{background:rgba(15,8,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:9px 18px;font-size:13px;font-weight:600;animation:tIn .22s ease;white-space:nowrap}
-    @keyframes tIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+    /* Toast */
+    #toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none;width:max-content;max-width:92vw}
+    .toast{background:rgba(12,6,20,.97);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 16px;font-size:13px;font-weight:600;animation:tIn .2s ease;white-space:nowrap}
+    @keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     .toast.s{border-color:rgba(31,209,138,.3);color:#1FD18A}
     .toast.e{border-color:rgba(255,80,80,.3);color:#FF8080}
     .toast.b{border-color:rgba(34,208,240,.3);color:#22D0F0}
@@ -215,8 +239,10 @@
     .loading{text-align:center;padding:28px;color:var(--mut)}
     @keyframes spin{to{transform:rotate(360deg)}}
     .spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(34,208,240,.5);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
-    .empty{text-align:center;padding:28px;color:var(--mut);font-size:12px;line-height:1.6}
-    .empty strong{color:var(--dim)}
+    .empty{text-align:center;padding:24px;color:var(--mut);font-size:12px;line-height:1.6}
+
+    /* Placeholder form */
+    .phld{background:var(--card);border:1px dashed rgba(255,255,255,.08);border-radius:14px;padding:28px 20px;text-align:center;margin-bottom:14px}
   </style>
 </head>
 <body>
@@ -242,185 +268,199 @@
 <!-- APP -->
 <div id="app">
   <header class="topbar">
-    <div class="tb-logo">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg>
-    </div>
+    <div class="tb-logo"><svg viewBox="0 0 24 24" width="14" height="14" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg></div>
     <div class="tb-title">Anuncios</div>
     <div class="tb-sub">· ApagonesMID</div>
     <div class="tb-sp"></div>
-    <button class="tb-btn btn-fix" id="fix-btn" onclick="openFixModal()" style="display:none">
-      <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 2a5 5 0 1 0 1 4M10 2v3h-3"/></svg>
-      Reparar
+    <button class="tb-btn btn-fix" id="fix-btn" onclick="openFixModal()">
+      <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 2a5 5 0 1 0 1 4M10 2v3h-3"/></svg>Reparar
     </button>
-    <button class="tb-btn btn-add" onclick="openForm()">
-      <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
-      Nuevo
+    <button class="tb-btn btn-new" onclick="openForm()">
+      <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>Nuevo
     </button>
     <button class="tb-btn btn-out" onclick="logout()">Salir</button>
   </header>
 
   <div class="page">
-
     <!-- STATS -->
-    <div class="area-stats">
+    <div class="a-stats">
       <div class="stats-row">
         <div class="stat-c"><div class="stat-n" id="sn-tot" style="color:#F0E8EC">—</div><div class="stat-l">Total</div></div>
         <div class="stat-c"><div class="stat-n" id="sn-act" style="color:#1FD18A">—</div><div class="stat-l">Activos</div></div>
         <div class="stat-c"><div class="stat-n" id="sn-pau" style="color:#F5B731">—</div><div class="stat-l">Pausados</div></div>
-        <div class="stat-c"><div class="stat-n" id="sn-broken" style="color:#FF8080">—</div><div class="stat-l">Con error</div></div>
+        <div class="stat-c"><div class="stat-n" id="sn-err" style="color:#FF8080">—</div><div class="stat-l">Con error</div></div>
       </div>
     </div>
 
     <!-- FORM -->
-    <div class="area-form">
-
+    <div class="a-form">
       <div class="form-panel" id="form-panel" style="display:none">
         <div class="form-hd">
           <div class="form-hd-ico">
-            <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 9l3-3 2 2 2-2 4 4"/></svg>
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 9l3-3 2 2 2-2 4 4"/></svg>
           </div>
           <span id="form-ttl" style="font-size:14px;font-weight:800;flex:1">Nuevo anuncio</span>
-          <button class="x-btn" onclick="closeForm()">✕</button>
+          <button class="x-btn" style="border-color:rgba(255,255,255,.08)" onclick="closeForm()">✕</button>
         </div>
         <div class="form-body">
-
-          <!-- Campos básicos -->
           <div class="fl">
             <div class="fl-lbl">Nombre del anunciante <span class="fl-opt">Opcional</span></div>
-            <input class="fl-inp" id="f-title" type="text" placeholder="Deja vacío para mostrar solo la imagen" maxlength="50" oninput="updatePreview()"/>
+            <input class="fl-inp" id="f-title" type="text" placeholder="Deja vacío para mostrar solo la imagen" maxlength="50" oninput="syncOverlay()"/>
           </div>
           <div class="fl">
-            <div class="fl-lbl">URL al tocar el banner <span class="fl-opt">Opcional</span></div>
-            <input class="fl-inp" id="f-url" type="url" placeholder="https://ejemplo.com" oninput="updatePreview()"/>
+            <div class="fl-lbl">URL al tocar <span class="fl-opt">Opcional</span></div>
+            <input class="fl-inp" id="f-url" type="url" placeholder="https://ejemplo.com" oninput="syncOverlay()"/>
           </div>
           <div class="fl">
-            <div class="fl-lbl">Imagen del banner <span style="color:rgba(34,208,240,.7);font-size:9px">720 × 88 px recomendado</span></div>
-            <label class="img-zone" id="img-zone">
+            <div class="fl-lbl">Imagen <span style="color:rgba(34,208,240,.65);font-size:9px">720 × 88 px recomendado</span></div>
+            <label class="img-drop" id="img-drop">
               <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 9l3-3 2 2 2-2 4 4"/></svg>
-              <span id="img-zone-txt">Seleccionar imagen</span>
-              <input type="file" accept="image/*" id="f-img" onchange="onImgSelect(this)" style="display:none"/>
+              <span id="img-drop-txt">Seleccionar imagen</span>
+              <input type="file" accept="image/*" id="f-img" onchange="onImgPick(this)" style="display:none"/>
             </label>
           </div>
 
-          <!-- VISTA PREVIA con tabs desktop / móvil -->
-          <div style="margin-bottom:12px">
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:5px">
+          <!-- ═══ INLINE CROP + PREVIEW ═══ -->
+          <div class="prev-section">
+            <div class="prev-hd">
               <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg>
-              Vista previa
+              Vista previa interactiva
             </div>
             <div class="prev-tabs">
-              <button class="prev-tab active" onclick="switchPrev('desktop',this)">
-                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="1" y="2" width="10" height="7" rx="1"/><path d="M4 9v1M8 9v1M3 10h6"/></svg>
-                Desktop
+              <button class="prev-tab on" id="tab-desk" onclick="switchTab('desk')">
+                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="1" y="2" width="10" height="7" rx="1"/><path d="M4 9v1M8 9v1M3 10h6"/></svg>Desktop
               </button>
-              <button class="prev-tab" onclick="switchPrev('mobile',this)">
-                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="3" y="1" width="6" height="10" rx="1.5"/><circle cx="6" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>
-                Móvil
+              <button class="prev-tab" id="tab-mob" onclick="switchTab('mob')">
+                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="3" y="1" width="6" height="10" rx="1.5"/><circle cx="6" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>Móvil
               </button>
+              <span id="crop-hint" style="margin-left:auto;font-size:10px;color:rgba(34,208,240,.5);display:none">
+                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><path d="M2 7l3 3 5-6"/></svg>
+                Arrastra y ajusta el zoom
+              </span>
             </div>
 
-            <!-- Desktop preview -->
-            <div class="prev-pane active" id="pane-desktop">
-              <div class="prev-desktop">
-                <div class="prev-d-screen">
-                  <div class="prev-d-map">
-                    <div style="position:absolute;inset:0;opacity:.1;background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);background-size:20px 20px"></div>
-                    <span style="font-size:8px;color:rgba(255,255,255,.15);font-weight:700;letter-spacing:2px;text-transform:uppercase">MÉRIDA</span>
-                    <div style="position:absolute;bottom:12px;right:10px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center">
-                      <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v5M6 6l-2 2M6 6l2 2"/></svg>
-                    </div>
-                  </div>
-                  <div class="prev-d-bar">
-                    <div id="pd-bg"></div>
-                    <div class="prev-d-ov"></div>
-                    <div class="prev-d-content">
-                      <div style="flex:1;min-width:0">
-                        <div id="pd-title" style="font-size:11px;font-weight:800;color:white;text-shadow:0 1px 4px rgba(0,0,0,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:italic;color:rgba(255,255,255,.3)">Nombre del anunciante…</div>
-                        <div id="pd-url" style="font-size:8px;color:rgba(255,255,255,.35)">ejemplo.com</div>
-                      </div>
-                      <div class="publi-badge">PUBLI</div>
-                    </div>
-                  </div>
-                  <div class="prev-d-ticker">
-                    <div style="width:5px;height:5px;border-radius:50%;background:#1FD18A;flex-shrink:0"></div>
-                    <div style="font-size:8px;color:rgba(255,255,255,.3);overflow:hidden;white-space:nowrap">⚡ Apagón · Col. García Ginerés · Hace 12 min</div>
+            <!-- DESKTOP TAB -->
+            <div id="pane-desk">
+              <div class="desktop-frame">
+                <div class="desktop-mapbg">
+                  <div class="map-grid"></div>
+                  <span style="font-size:8px;color:rgba(255,255,255,.15);font-weight:700;letter-spacing:2px;text-transform:uppercase">MÉRIDA</span>
+                  <div class="desktop-fab">
+                    <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
                   </div>
                 </div>
-                <div class="prev-dims">← 720 px de ancho · 88 px de alto →</div>
+
+                <!-- ESTE ES EL ÁREA DE CROP INLINE -->
+                <div class="crop-inline-wrap" id="crop-area">
+                  <canvas id="crop-canvas"></canvas>
+                  <!-- Overlay con nombre y PUBLI, encima del canvas -->
+                  <div class="crop-content-ov" id="crop-ov">
+                    <div class="crop-ov-texts">
+                      <div id="ov-title" style="display:none"></div>
+                      <div id="ov-url" style="display:none"></div>
+                    </div>
+                    <div class="publi-b">PUBLI</div>
+                  </div>
+                  <!-- Guías de tercios -->
+                  <div class="crop-guides">
+                    <div class="cg cg-v" style="left:33.3%"></div>
+                    <div class="cg cg-v" style="left:66.6%"></div>
+                    <div class="cg cg-h" style="top:33.3%"></div>
+                    <div class="cg cg-h" style="top:66.6%"></div>
+                  </div>
+                  <!-- Placeholder sin imagen -->
+                  <div class="crop-placeholder" id="crop-ph">
+                    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="14" height="14" rx="2"/><path d="M1 11l4-4 3 3 3-3 4 4"/><circle cx="5.5" cy="5.5" r="1.5" fill="rgba(255,255,255,.2)" stroke="none"/></svg>
+                    <span style="font-size:9px;color:rgba(255,255,255,.2)">Selecciona una imagen</span>
+                  </div>
+                  <!-- Hint de drag cuando hay imagen -->
+                  <div class="drag-hint" id="drag-hint">
+                    <div class="drag-hint-inner">
+                      <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v2M6 9v2M1 6h2M9 6h2M3 3l1.5 1.5M7.5 7.5L9 9M9 3L7.5 4.5M3 9l1.5-1.5"/></svg>
+                      Arrastra para reposicionar
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Controles de zoom DENTRO del frame, bajo el canvas -->
+                <div class="crop-controls">
+                  <span class="z-lbl">Zoom</span>
+                  <button class="z-btn" onclick="zoomStep(-10)">−</button>
+                  <input type="range" id="zoom-slider" min="100" max="350" value="100" step="5"
+                    style="flex:1;accent-color:#22D0F0;height:3px;cursor:pointer"
+                    oninput="zoomSet(this.value)"/>
+                  <button class="z-btn" onclick="zoomStep(10)">+</button>
+                  <button class="z-btn z-reset" onclick="cropReset()">Reset</button>
+                  <span class="z-dim" id="z-dim">720 × 88</span>
+                </div>
+                <div class="desktop-ticker">
+                  <div style="width:5px;height:5px;border-radius:50%;background:#1FD18A;flex-shrink:0"></div>
+                  <div style="font-size:8px;color:rgba(255,255,255,.28);overflow:hidden;white-space:nowrap">⚡ Apagón · Col. García Ginerés · Hace 12 min · 💧 Fuga de agua · Privada del Kinder</div>
+                </div>
               </div>
             </div>
 
-            <!-- Mobile preview -->
-            <div class="prev-pane" id="pane-mobile">
-              <div class="prev-phone-wrap">
+            <!-- MÓVIL TAB -->
+            <div id="pane-mob" style="display:none">
+              <div class="phone-wrap">
                 <div class="phone-frame">
-                  <div class="phone-notch"></div>
-                  <div class="phone-screen">
-                    <div class="phone-map-area">
-                      <div class="phone-map-streets"></div>
-                      <div class="phone-map-label">MÉRIDA</div>
-                      <div class="phone-fab">
-                        <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
-                      </div>
+                  <div class="ph-notch"></div>
+                  <div class="ph-screen">
+                    <div class="ph-map">
+                      <div class="ph-streets"></div>
+                      <div class="ph-label">MÉRIDA</div>
+                      <div class="ph-fab"><svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg></div>
                     </div>
-                    <div class="phone-bar">
-                      <div id="pp-bg"></div>
-                      <div class="phone-bar-ov"></div>
-                      <div class="phone-bar-content">
+                    <div class="ph-bar">
+                      <!-- Usa imagen generada del canvas -->
+                      <img id="ph-preview-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center"/>
+                      <div class="ph-bar-ov"></div>
+                      <div class="ph-bar-info">
                         <div style="flex:1;min-width:0">
-                          <div id="pp-title" style="font-size:10px;font-weight:800;color:white;text-shadow:0 1px 3px rgba(0,0,0,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:italic;color:rgba(255,255,255,.3)">Nombre…</div>
-                          <div id="pp-url" style="font-size:7px;color:rgba(255,255,255,.4)">ejemplo.com</div>
+                          <div id="ph-title" style="font-size:10px;font-weight:800;color:white;text-shadow:0 1px 3px rgba(0,0,0,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:none"></div>
+                          <div id="ph-url" style="font-size:7px;color:rgba(255,255,255,.5);display:none"></div>
                         </div>
-                        <div class="publi-badge" style="font-size:6px;padding:1px 4px">PUBLI</div>
+                        <div class="publi-b" style="font-size:6px;padding:1px 4px">PUBLI</div>
                       </div>
                     </div>
-                    <div class="phone-ticker">
+                    <div class="ph-ticker">
                       <div style="width:4px;height:4px;border-radius:50%;background:#1FD18A;flex-shrink:0"></div>
-                      <div style="font-size:7px;color:rgba(255,255,255,.3);overflow:hidden;white-space:nowrap">⚡ Apagón · Col. García Ginerés</div>
+                      <div style="font-size:7px;color:rgba(255,255,255,.28);overflow:hidden;white-space:nowrap">⚡ Apagón · Col. García Ginerés</div>
                     </div>
-                    <div class="phone-home"><div class="phone-home-bar"></div></div>
+                    <div class="ph-home"><div class="ph-home-bar"></div></div>
                   </div>
                 </div>
-                <div style="flex:1;padding-left:14px;display:flex;flex-direction:column;justify-content:center;gap:8px">
-                  <div style="font-size:10px;color:var(--dim);font-weight:700">Vista en iPhone</div>
-                  <div style="font-size:10px;color:var(--mut);line-height:1.5">El banner aparece sobre el ticker de reportes, en la parte inferior de la pantalla.</div>
-                  <div style="font-size:9px;color:rgba(34,208,240,.5);background:rgba(34,208,240,.06);border-radius:7px;padding:6px 8px;line-height:1.5">
-                    💡 Si el texto se corta, acorta el nombre del anunciante.
-                  </div>
+                <div class="phone-info">
+                  <strong style="color:var(--dim)">Vista en iPhone</strong><br/>
+                  El banner aparece sobre el ticker, en la parte inferior de pantalla.<br/><br/>
+                  <span style="color:rgba(34,208,240,.55)">💡 Ajusta el encuadre en la pestaña Desktop — el teléfono refleja el mismo resultado.</span>
                 </div>
               </div>
             </div>
           </div>
+          <!-- / INLINE CROP + PREVIEW -->
 
-          <!-- Horario opcional -->
-          <button class="sched-toggle-btn" onclick="toggleSched()" id="sched-toggle-btn">
+          <!-- Horario -->
+          <button class="sched-btn" id="sched-btn" onclick="toggleSched()">
             <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="2" width="10" height="9" rx="1.5"/><path d="M4 1v2M8 1v2M1 5h10"/></svg>
-            <span id="sched-toggle-txt">Agregar horario de publicación</span>
-            <svg id="sched-chevron" viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-left:auto;transition:transform .2s"><path d="M2 4l3 3 3-3"/></svg>
+            <span id="sched-txt">Agregar horario de publicación</span>
+            <svg id="sched-chev" viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-left:auto;transition:transform .2s"><path d="M2 4l3 3 3-3"/></svg>
           </button>
           <div id="sched-fields" style="display:none;margin-bottom:12px">
-            <div class="sched-row">
-              <div class="fl" style="margin-bottom:0">
-                <div class="fl-lbl">Desde</div>
-                <input class="fl-inp" id="f-sched-start" type="datetime-local"/>
-              </div>
-              <div class="fl" style="margin-bottom:0">
-                <div class="fl-lbl">Hasta</div>
-                <input class="fl-inp" id="f-sched-end" type="datetime-local"/>
-              </div>
+            <div class="sched-grid">
+              <div class="fl" style="margin-bottom:0"><div class="fl-lbl">Desde</div><input class="fl-inp" id="f-sch-s" type="datetime-local"/></div>
+              <div class="fl" style="margin-bottom:0"><div class="fl-lbl">Hasta</div><input class="fl-inp" id="f-sch-e" type="datetime-local"/></div>
             </div>
-            <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:6px">Deja vacío para publicar sin límite de tiempo</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.18);margin-top:5px">Deja vacío para publicar sin límite de tiempo</div>
           </div>
 
           <!-- Notas internas -->
           <div class="fl">
             <div class="fl-lbl">Notas internas <span class="fl-opt">No se muestran al público</span></div>
-            <textarea class="fl-textarea" id="f-notes" rows="2" placeholder="Ej. Cliente: Panadería del Sol · Contrato hasta junio · Tel 999-000-0000"></textarea>
+            <textarea class="fl-ta" id="f-notes" rows="2" placeholder="Ej. Panadería del Sol · Contrato hasta junio · Tel 999-000-0000"></textarea>
           </div>
 
-          <div style="background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.08);border-radius:9px;padding:8px 11px;font-size:11px;color:rgba(255,255,255,.28);margin-bottom:12px;line-height:1.5">
-            💡 El banner aparece sobre el ticker del mapa. Si no hay nombre, se muestra solo la imagen. No interrumpe el uso del mapa.
-          </div>
+          <div class="info-note">💡 El banner aparece sobre el ticker del mapa. Si no hay nombre, se muestra solo la imagen. No interrumpe el uso del mapa.</div>
 
           <div class="form-btns">
             <button class="f-cancel" onclick="closeForm()">Cancelar</button>
@@ -430,45 +470,42 @@
       </div>
 
       <!-- Placeholder -->
-      <div id="form-placeholder" style="display:none">
-        <div class="placeholder-card">
-          <div style="width:42px;height:42px;border-radius:12px;background:rgba(34,208,240,.08);border:1px solid rgba(34,208,240,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
-            <svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="rgba(34,208,240,.5)" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="10" rx="1"/><path d="M4 5.5l12-4v13l-12-4"/></svg>
+      <div id="form-phld" style="display:none">
+        <div class="phld">
+          <div style="width:40px;height:40px;border-radius:11px;background:rgba(34,208,240,.08);border:1px solid rgba(34,208,240,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 11px">
+            <svg viewBox="0 0 18 18" width="17" height="17" fill="none" stroke="rgba(34,208,240,.45)" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="10" rx="1"/><path d="M4 5.5l12-4v13l-12-4"/></svg>
           </div>
-          <div style="font-size:13px;font-weight:700;color:var(--dim);margin-bottom:6px">Gestión de anuncios</div>
-          <div style="font-size:11px;color:var(--mut);margin-bottom:14px;line-height:1.5">Toca <strong style="color:var(--dim)">Nuevo</strong> para publicar, o edita uno de la lista.</div>
-          <button class="tb-btn btn-add" onclick="openForm()" style="margin:0 auto">
-            <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
-            Crear primer anuncio
+          <div style="font-size:13px;font-weight:700;color:var(--dim);margin-bottom:5px">Gestión de anuncios</div>
+          <div style="font-size:11px;color:var(--mut);margin-bottom:13px;line-height:1.5">Toca <strong style="color:var(--dim)">Nuevo</strong> para crear, o edita uno de la lista.</div>
+          <button class="tb-btn btn-new" onclick="openForm()" style="margin:0 auto">
+            <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>Crear primer anuncio
           </button>
         </div>
       </div>
-
     </div>
 
     <!-- LIST -->
-    <div class="area-list">
+    <div class="a-list">
       <div class="sec-t">
-        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="rgba(255,200,220,.5)" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><path d="M6 4v2l1.5 1.5"/></svg>
-        Slides de redes (fijos)
+        <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="rgba(255,200,220,.5)" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><path d="M6 4v2l1.5 1.5"/></svg>
+        Slides fijos de redes
       </div>
       <div class="social-c">
         <div class="social-ico" style="background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d)">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
         </div>
-        <div style="flex:1"><div style="font-size:11px;font-weight:700">Instagram @apagonesmid</div><div style="font-size:9px;color:var(--mut)">Slides 1 y 2 · 2× frecuencia</div></div>
-        <span class="badge-fijo">Fijo</span>
+        <div style="flex:1"><div style="font-size:11px;font-weight:700">Instagram @apagonesmid</div><div style="font-size:9px;color:var(--mut)">Slides 1-2 · 2× frecuencia</div></div>
+        <span class="badge b-fijo">Fijo</span>
       </div>
       <div class="social-c" style="margin-bottom:18px">
         <div class="social-ico" style="background:#1877F2">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         </div>
         <div style="flex:1"><div style="font-size:11px;font-weight:700">Facebook ApagonesMID</div><div style="font-size:9px;color:var(--mut)">Slide 3 · 1× frecuencia</div></div>
-        <span class="badge-fijo">Fijo</span>
+        <span class="badge b-fijo">Fijo</span>
       </div>
-
       <div class="sec-t">
-        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="rgba(34,208,240,.5)" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="4" rx="1"/><path d="M4 5l7-2v6l-7-2"/></svg>
+        <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="rgba(34,208,240,.5)" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="4" rx="1"/><path d="M4 5l7-2v6l-7-2"/></svg>
         Anuncios de pago
       </div>
       <div id="ads-list"><div class="loading"><div class="spin"></div>Cargando…</div></div>
@@ -476,64 +513,19 @@
   </div>
 </div>
 
-<!-- CROP MODAL -->
-<div id="crop-modal" class="modal-bg">
-  <div class="modal-card">
-    <div class="modal-hd">
-      <div class="modal-hd-ico" style="background:rgba(34,208,240,.1);border:1px solid rgba(34,208,240,.2)">
-        <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M1 8l3-3 2 2 2-2 3 3"/></svg>
-      </div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:800">Ajustar banner</div><div style="font-size:10px;color:var(--mut)">Arrastra · Zoom · Vista previa en tiempo real</div></div>
-      <button class="x-btn" onclick="closeCrop()">✕</button>
-    </div>
-    <div class="crop-area" id="crop-area">
-      <canvas id="crop-canvas"></canvas>
-      <div class="crop-grid"></div>
-    </div>
-    <div class="zoom-row">
-      <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="var(--mut)" stroke-width="1.8" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M9.5 9.5L7.5 7.5"/></svg>
-      <input type="range" id="c-zoom" min="100" max="350" value="100" step="5" style="flex:1;accent-color:#22D0F0;height:3px;cursor:pointer" oninput="cZoom(this.value)"/>
-      <button class="z-btn" onclick="cZoomStep(-10)">−</button>
-      <button class="z-btn" onclick="cZoomStep(10)">+</button>
-      <button class="z-btn" style="font-size:9px;font-weight:700;width:auto;padding:0 9px;font-family:var(--f)" onclick="cReset()">Reset</button>
-    </div>
-    <div style="font-size:10px;color:var(--mut);margin-bottom:5px">Vista previa en la barra del mapa:</div>
-    <div class="crop-prev-bar">
-      <canvas id="cp-canvas"></canvas>
-      <div class="crop-prev-ov"></div>
-      <div class="crop-prev-info">
-        <div style="flex:1;min-width:0">
-          <div id="cp-title" style="font-size:11px;font-weight:800;color:white;text-shadow:0 1px 3px rgba(0,0,0,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-          <div id="cp-url" style="font-size:9px;color:rgba(255,255,255,.5)"></div>
-        </div>
-        <div class="publi-badge">PUBLI</div>
-      </div>
-    </div>
-    <div class="crop-btns">
-      <button class="crop-cancel" onclick="closeCrop()">Cancelar</button>
-      <button class="crop-apply" onclick="applyCrop()">
-        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M10 2L5 9 2 6"/></svg>
-        Usar esta imagen
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- FIX MODAL -->
 <div id="fix-modal" class="modal-bg">
-  <div class="modal-card" style="border-color:rgba(245,183,49,.3)">
+  <div class="modal-card">
     <div class="modal-hd">
-      <div class="modal-hd-ico" style="background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.2)">
-        <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="#F5B731" stroke-width="1.8" stroke-linecap="round"><path d="M10 2a5 5 0 1 0 1 4M10 2v3h-3"/></svg>
-      </div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:800">Reparar anuncios</div><div style="font-size:10px;color:var(--mut)">Anuncios con imagen negra o sin imagen</div></div>
+      <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.2);display:flex;align-items:center;justify-content:center">⚠️</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800">Reparar anuncios</div><div style="font-size:10px;color:var(--mut)">Imagen negra o vacía</div></div>
       <button class="x-btn" onclick="closeFixModal()">✕</button>
     </div>
-    <div style="background:rgba(245,183,49,.06);border:1px solid rgba(245,183,49,.15);border-radius:10px;padding:10px 12px;font-size:11px;color:rgba(255,183,49,.7);margin-bottom:14px;line-height:1.5">
-      ⚠️ Estos anuncios tienen la imagen vacía o dañada. Sube una imagen nueva para cada uno, o elimínalos si ya no son necesarios.
+    <div style="background:rgba(245,183,49,.06);border:1px solid rgba(245,183,49,.13);border-radius:9px;padding:9px 12px;font-size:11px;color:rgba(255,183,49,.65);margin-bottom:12px;line-height:1.5">
+      Estos anuncios no tienen imagen válida. Sube una nueva o elimínalos.
     </div>
     <div id="fix-list"></div>
-    <button onclick="closeFixModal()" style="width:100%;margin-top:10px;padding:11px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer">Cerrar</button>
+    <button onclick="closeFixModal()" style="width:100%;margin-top:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-size:13px;font-weight:600;cursor:pointer">Cerrar</button>
   </div>
 </div>
 
@@ -544,16 +536,21 @@ const SB_URL='https://fybotuqwmzxsajedisus.supabase.co';
 const SB_KEY='sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
 const ADMIN_PW='ArtosdeMorena_2026';
 const db=supabase.createClient(SB_URL,SB_KEY);
-let ads=[], editId=null, pendingImg='', fixTargetId=null;
 
-// ── AUTH ────────────────────────────────────────────
+let ads=[], editId=null, pendingImg='', fixId=null;
+// Estado del crop INLINE
+let _img=null, _ox=0, _oy=0, _sc=1;
+let _drag=null, _doff=null;
+let _prevTab='desk';
+
+// ── AUTH ──────────────────────────────────────────────
 function login(){
   const v=document.getElementById('ai').value;
   if(v===ADMIN_PW){
     document.getElementById('auth').style.display='none';
     document.getElementById('app').style.display='block';
     loadAds();
-    if(isDesktop()) showPlaceholder();
+    if(isDesk()) showPhld();
   } else {
     const inp=document.getElementById('ai');
     inp.classList.add('err');
@@ -562,17 +559,16 @@ function login(){
     inp.value='';
   }
 }
-document.getElementById('ai').addEventListener('keydown',e=>{ if(e.key==='Enter')login(); });
-function logout(){ document.getElementById('auth').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('ai').value=''; }
+document.getElementById('ai').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+function logout(){document.getElementById('auth').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('ai').value='';}
+function isDesk(){return window.innerWidth>=900;}
+function showPhld(){document.getElementById('form-phld').style.display='block';document.getElementById('form-panel').style.display='none';}
 
-function isDesktop(){ return window.innerWidth>=900; }
-function showPlaceholder(){ document.getElementById('form-placeholder').style.display='block';document.getElementById('form-panel').style.display='none'; }
-
-// ── DATA ────────────────────────────────────────────
+// ── DATA ──────────────────────────────────────────────
 async function loadAds(){
   document.getElementById('ads-list').innerHTML='<div class="loading"><div class="spin"></div>Cargando…</div>';
   const{data,error}=await db.from('ad_slots').select('*').order('sort_order').order('created_at');
-  if(error){ toast('Error: '+error.message,'e'); return; }
+  if(error){toast('Error: '+error.message,'e');return;}
   ads=data||[];
   renderStats();
   renderAds();
@@ -583,47 +579,48 @@ function renderStats(){
   document.getElementById('sn-tot').textContent=ads.length;
   document.getElementById('sn-act').textContent=ads.filter(a=>a.active&&!a.paused).length;
   document.getElementById('sn-pau').textContent=ads.filter(a=>!a.active||a.paused).length;
-  document.getElementById('sn-broken').textContent=broken;
-  document.getElementById('fix-btn').style.display=broken>0?'flex':'none';
+  document.getElementById('sn-err').textContent=broken;
+  const fb=document.getElementById('fix-btn');
+  fb.style.display=broken>0?'flex':'none';
 }
 
 function renderAds(){
   const el=document.getElementById('ads-list');
-  if(!ads.length){ el.innerHTML='<div class="empty">Sin anuncios de pago.<br/>Toca <strong>Nuevo</strong> para publicar el primero.</div>'; return; }
+  if(!ads.length){el.innerHTML='<div class="empty">Sin anuncios de pago.<br/>Toca <strong>Nuevo</strong> para publicar el primero.</div>';return;}
   el.innerHTML=ads.map((ad,i)=>{
-    const num=4+i;
+    const n=4+i;
     const broken=!ad.img_data||ad.img_data.length<100;
-    const status=broken?'<span class="badge-off">Sin imagen</span>':!ad.active?'<span class="badge-off">Inactivo</span>':ad.paused?'<span class="badge-pau">Pausado</span>':'<span class="badge-on">Activo</span>';
+    const status=broken?'<span class="badge b-off">Sin imagen</span>':!ad.active?'<span class="badge b-off">Inactivo</span>':ad.paused?'<span class="badge b-pau">Pausado</span>':'<span class="badge b-on">Activo</span>';
     const togLbl=(!ad.active||ad.paused)?'Activar':'Pausar';
-    const togCls=(!ad.active||ad.paused)?'act-tog-off':'act-tog-on';
-    const schedChip=ad.sched_end?`<span class="sched-chip"><svg viewBox="0 0 10 10" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1.5" width="8" height="7" rx="1"/><path d="M3 .5v2M7 .5v2"/></svg>${new Date(ad.sched_end).toLocaleDateString('es-MX',{day:'numeric',month:'short'})}</span>`:'';
-    return `<div class="ad-c" id="adcard-${ad.id}">
+    const togCls=(!ad.active||ad.paused)?'act-on':'act-off';
+    const schedChip=ad.sched_end?`<span class="sched-chip">📅 hasta ${new Date(ad.sched_end).toLocaleDateString('es-MX',{day:'numeric',month:'short'})}</span>`:'';
+    return`<div class="ad-c">
       ${broken
-        ?`<div class="ad-placeholder"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(255,80,80,.4)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M6 6l4 4M10 6l-4 4"/></svg><span style="font-size:9px;color:rgba(255,80,80,.5)">Sin imagen</span></div>`
+        ?`<div class="ad-broken"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 5l4 4M9 5l-4 4"/></svg>Sin imagen</div>`
         :`<img class="ad-banner" src="${ad.img_data}" alt="${ad.title||'Anuncio'}" loading="lazy"/>`}
       <div class="ad-body">
         <div class="ad-row">
-          <div class="ad-num">${num}</div>
+          <div class="ad-num">${n}</div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.title||'<span style="color:var(--mut);font-style:italic">Solo imagen</span>'}</div>
+            <div style="font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.title||'<em style="color:var(--mut)">Solo imagen</em>'}</div>
             <div style="font-size:10px;color:rgba(34,208,240,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.url||'Sin URL'}</div>
             ${schedChip?`<div style="margin-top:3px">${schedChip}</div>`:''}
           </div>
           ${status}
         </div>
-        ${ad.notes?`<div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:5px;padding:5px 7px;background:rgba(255,255,255,.03);border-radius:6px;border:1px solid rgba(255,255,255,.04)">${ad.notes}</div>`:''}
-        <div class="ad-actions">
-          <button class="act act-edit" onclick="startEdit('${ad.id}')">
-            <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2l2 2-6 6H2V8z"/></svg>Editar
+        ${ad.notes?`<div style="font-size:10px;color:rgba(255,255,255,.22);margin-top:5px;padding:4px 7px;background:rgba(255,255,255,.03);border-radius:6px;border:1px solid rgba(255,255,255,.04)">${ad.notes}</div>`:''}
+        <div class="ad-acts">
+          <button class="act act-e" onclick="startEdit('${ad.id}')">
+            <svg viewBox="0 0 10 10" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2l1 1-5 5H1V6z"/></svg>Editar
           </button>
-          <button class="act act-dup" onclick="dupAd('${ad.id}')">
-            <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="3" width="8" height="8" rx="1.5"/><path d="M3 3V2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-1"/></svg>Duplicar
+          <button class="act act-d" onclick="dupAd('${ad.id}')">
+            <svg viewBox="0 0 10 10" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="3" width="6" height="6" rx="1"/><path d="M3 3V2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H7"/></svg>Duplicar
           </button>
           <button class="act ${togCls}" onclick="toggleAd('${ad.id}')">${togLbl}</button>
-          ${i>0?`<button class="act act-up" onclick="moveAd('${ad.id}',-1)" title="Subir">↑</button>`:''}
-          ${i<ads.length-1?`<button class="act act-dn" onclick="moveAd('${ad.id}',1)" title="Bajar">↓</button>`:''}
+          ${i>0?`<button class="act act-mv" onclick="moveAd('${ad.id}',-1)" title="Subir">↑</button>`:''}
+          ${i<ads.length-1?`<button class="act act-mv" onclick="moveAd('${ad.id}',1)" title="Bajar">↓</button>`:''}
           <button class="act act-del" onclick="deleteAd('${ad.id}')">
-            <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7"/></svg>
+            <svg viewBox="0 0 10 10" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 2.5h7M4 2.5V2h2v.5M2.5 2.5l.5 6h4l.5-6"/></svg>
           </button>
         </div>
       </div>
@@ -631,198 +628,268 @@ function renderAds(){
   }).join('');
 }
 
-// ── FORM ────────────────────────────────────────────
+// ── FORM ──────────────────────────────────────────────
 function openForm(){
-  editId=null; pendingImg='';
+  editId=null; pendingImg=''; _img=null; _ox=0; _oy=0; _sc=1;
   document.getElementById('f-title').value='';
   document.getElementById('f-url').value='';
   document.getElementById('f-notes').value='';
-  document.getElementById('f-sched-start').value='';
-  document.getElementById('f-sched-end').value='';
-  document.getElementById('img-zone-txt').textContent='Seleccionar imagen';
+  document.getElementById('f-sch-s').value='';
+  document.getElementById('f-sch-e').value='';
+  document.getElementById('img-drop-txt').textContent='Seleccionar imagen';
   document.getElementById('form-ttl').textContent='Nuevo anuncio';
   document.getElementById('f-save-t').textContent='Publicar anuncio';
   document.getElementById('sched-fields').style.display='none';
-  document.getElementById('sched-chevron').style.transform='';
-  document.getElementById('form-placeholder').style.display='none';
+  document.getElementById('sched-chev').style.transform='';
+  document.getElementById('sched-txt').textContent='Agregar horario de publicación';
+  document.getElementById('form-phld').style.display='none';
   document.getElementById('form-panel').style.display='block';
-  clearPreviewImg();
-  updatePreview();
-  if(!isDesktop()) document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  clearCropCanvas();
+  syncOverlay();
+  if(!isDesk()) document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function startEdit(id){
   const ad=ads.find(a=>a.id===id);
   if(!ad) return;
-  editId=id; pendingImg='';
+  editId=id; pendingImg=''; _ox=0; _oy=0; _sc=1;
   document.getElementById('f-title').value=ad.title||'';
   document.getElementById('f-url').value=ad.url||'';
   document.getElementById('f-notes').value=ad.notes||'';
-  document.getElementById('f-sched-start').value=ad.sched_start?new Date(ad.sched_start).toISOString().slice(0,16):'';
-  document.getElementById('f-sched-end').value=ad.sched_end?new Date(ad.sched_end).toISOString().slice(0,16):'';
-  const hasSched=ad.sched_start||ad.sched_end;
+  document.getElementById('f-sch-s').value=ad.sched_start?new Date(ad.sched_start).toISOString().slice(0,16):'';
+  document.getElementById('f-sch-e').value=ad.sched_end?new Date(ad.sched_end).toISOString().slice(0,16):'';
+  const hasSched=!!(ad.sched_start||ad.sched_end);
   document.getElementById('sched-fields').style.display=hasSched?'block':'none';
-  document.getElementById('sched-chevron').style.transform=hasSched?'rotate(180deg)':'';
-  document.getElementById('img-zone-txt').textContent=ad.img_data?'Imagen actual — toca para cambiar':'Seleccionar imagen';
+  document.getElementById('sched-chev').style.transform=hasSched?'rotate(180deg)':'';
+  document.getElementById('sched-txt').textContent=hasSched?'Quitar horario':'Agregar horario de publicación';
+  document.getElementById('img-drop-txt').textContent=ad.img_data?'Imagen actual — toca para cambiar':'Seleccionar imagen';
   document.getElementById('form-ttl').textContent='Editar anuncio';
   document.getElementById('f-save-t').textContent='Guardar cambios';
-  document.getElementById('form-placeholder').style.display='none';
+  document.getElementById('form-phld').style.display='none';
   document.getElementById('form-panel').style.display='block';
-  if(ad.img_data) setPreviewImg(ad.img_data);
-  else clearPreviewImg();
-  updatePreview();
-  if(!isDesktop()) document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  // Cargar imagen actual en el canvas inline
+  if(ad.img_data){
+    const img=new Image();
+    img.onload=()=>{ _img=img; drawCrop(); showCropHint(); };
+    img.src=ad.img_data;
+  } else {
+    clearCropCanvas();
+  }
+  syncOverlay();
+  if(!isDesk()) document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function closeForm(){
   document.getElementById('form-panel').style.display='none';
-  if(isDesktop()) showPlaceholder();
-  editId=null; pendingImg='';
+  if(isDesk()) showPhld();
+  editId=null; pendingImg=''; _img=null;
 }
 
 function toggleSched(){
   const f=document.getElementById('sched-fields');
-  const ch=document.getElementById('sched-chevron');
+  const ch=document.getElementById('sched-chev');
   const open=f.style.display==='none';
   f.style.display=open?'block':'none';
   ch.style.transform=open?'rotate(180deg)':'';
-  document.getElementById('sched-toggle-txt').textContent=open?'Quitar horario de publicación':'Agregar horario de publicación';
+  document.getElementById('sched-txt').textContent=open?'Quitar horario':'Agregar horario de publicación';
 }
 
-// ── PREVIEW ────────────────────────────────────────────
-function switchPrev(mode, btn){
-  document.querySelectorAll('.prev-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.prev-pane').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('pane-'+mode).classList.add('active');
+// ── TABS PREVIEW ──────────────────────────────────────
+function switchTab(tab){
+  _prevTab=tab;
+  ['desk','mob'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('on',t===tab);
+    document.getElementById('pane-'+t).style.display=t===tab?'':'none';
+  });
+  if(tab==='mob') updatePhonePreview();
 }
 
-function updatePreview(){
-  const title=document.getElementById('f-title')?.value.trim()||'';
-  const url=document.getElementById('f-url')?.value.trim()||'';
+// ── CROP INLINE ───────────────────────────────────────
+function initCropDrag(){
+  const area=document.getElementById('crop-area');
+  if(!area||area._dragsInit) return;
+  area._dragsInit=true;
+  // Mouse
+  area.addEventListener('mousedown',e=>{
+    if(!_img) return;
+    _drag={x:e.clientX,y:e.clientY};_doff={x:_ox,y:_oy};
+    area.style.cursor='grabbing';e.preventDefault();
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!_drag) return;
+    _ox=_doff.x+(e.clientX-_drag.x);
+    _oy=_doff.y+(e.clientY-_drag.y);
+    drawCrop();
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!_drag) return;
+    _drag=null;
+    const area2=document.getElementById('crop-area');
+    if(area2) area2.style.cursor=_img?'grab':'default';
+    capturePending();
+  });
+  // Touch
+  area.addEventListener('touchstart',e=>{
+    if(!_img||e.touches.length!==1) return;
+    _drag={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    _doff={x:_ox,y:_oy};e.preventDefault();
+  },{passive:false});
+  area.addEventListener('touchmove',e=>{
+    if(!_drag||e.touches.length!==1) return;
+    _ox=_doff.x+(e.touches[0].clientX-_drag.x);
+    _oy=_doff.y+(e.touches[0].clientY-_drag.y);
+    drawCrop();e.preventDefault();
+  },{passive:false});
+  area.addEventListener('touchend',()=>{
+    _drag=null; capturePending();
+  });
+}
+
+function drawCrop(){
+  const c=document.getElementById('crop-canvas');
+  if(!c) return;
+  const W=c.offsetWidth||400, H=c.offsetHeight||49;
+  if(c.width!==W||c.height!==H){c.width=W;c.height=H;}
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,W,H);
+  if(!_img) return;
+  const dw=_img.width*(H/_img.height)*_sc;
+  const dh=H*_sc;
+  ctx.drawImage(_img,(W-dw)/2+_ox,(H-dh)/2+_oy,dw,dh);
+  // Actualizar el teléfono si está visible
+  if(_prevTab==='mob') updatePhonePreview();
+}
+
+function clearCropCanvas(){
+  const c=document.getElementById('crop-canvas');
+  if(!c) return;
+  const W=c.offsetWidth||400, H=c.offsetHeight||49;
+  c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,W,H);
+  document.getElementById('crop-ph').style.display='flex';
+  document.getElementById('crop-area').classList.remove('has-img');
+  document.getElementById('crop-hint').style.display='none';
+  document.getElementById('zoom-slider').value=100;
+  _sc=1; _ox=0; _oy=0;
+}
+
+function showCropHint(){
+  document.getElementById('crop-ph').style.display='none';
+  document.getElementById('crop-area').classList.add('has-img');
+  document.getElementById('crop-hint').style.display='flex';
+}
+
+// Captura la imagen final después de drag/zoom
+function capturePending(){
+  if(!_img) return;
+  const TW=720, TH=88;
+  const c=document.createElement('canvas');
+  c.width=TW; c.height=TH;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,TW,TH);
+  const area=document.getElementById('crop-canvas');
+  const aW=area?area.offsetWidth:400, aH=area?area.offsetHeight:49;
+  const dw=_img.width*(TH/_img.height)*_sc*(TW/aW);
+  const dh=TH*_sc;
+  ctx.drawImage(_img,(TW-dw)/2+_ox*(TW/aW),(TH-dh)/2+_oy,dw,dh);
+  pendingImg=c.toDataURL('image/jpeg',0.82);
+  updatePhonePreview();
+}
+
+function updatePhonePreview(){
+  const phImg=document.getElementById('ph-preview-img');
+  if(phImg&&pendingImg) phImg.src=pendingImg;
+  else if(phImg&&_img){
+    // Generar mini versión si no hay pending aún
+    const c2=document.createElement('canvas');
+    c2.width=360;c2.height=44;
+    const ctx2=c2.getContext('2d');
+    ctx2.fillStyle='#0C060A';ctx2.fillRect(0,0,360,44);
+    const area=document.getElementById('crop-canvas');
+    const aW=area?area.offsetWidth:400,aH=area?area.offsetHeight:49;
+    const dw=_img.width*(44/_img.height)*_sc*(360/aW);
+    ctx2.drawImage(_img,(360-dw)/2+_ox*(360/aW),(44-44*_sc)/2+_oy,dw,44*_sc);
+    phImg.src=c2.toDataURL('image/jpeg',0.7);
+  }
+}
+
+// Zoom
+function zoomSet(v){ _sc=parseInt(v)/100; drawCrop(); capturePending(); }
+function zoomStep(d){
+  const sl=document.getElementById('zoom-slider');
+  if(sl){sl.value=Math.min(350,Math.max(100,parseInt(sl.value)+d));_sc=parseInt(sl.value)/100;}
+  drawCrop(); capturePending();
+}
+function cropReset(){
+  _ox=0;_oy=0;_sc=1;
+  const sl=document.getElementById('zoom-slider');if(sl)sl.value=100;
+  drawCrop(); capturePending();
+}
+
+// ── OVERLAY SYNC (nombre y URL sobre el banner) ────────
+function syncOverlay(){
+  const title=(document.getElementById('f-title')?.value||'').trim();
+  const url=(document.getElementById('f-url')?.value||'').trim();
   const domain=url.replace(/^https?:\/\//,'').split('/')[0];
-  // Desktop
-  const pdt=document.getElementById('pd-title'), pdu=document.getElementById('pd-url');
-  if(pdt){ pdt.textContent=title||'Solo imagen'; pdt.style.color=title?'white':'rgba(255,255,255,.35)'; pdt.style.fontStyle=title?'normal':'italic'; }
-  if(pdu){ pdu.textContent=domain||''; pdu.style.display=domain?'':'none'; }
-  // Phone
-  const ppt=document.getElementById('pp-title'), ppu=document.getElementById('pp-url');
-  if(ppt){ ppt.textContent=title||''; ppt.style.display=title?'block':'none'; }
-  if(ppu){ ppu.textContent=domain||''; ppu.style.display=domain?'block':'none'; }
-  // Crop preview
-  const cpt=document.getElementById('cp-title'), cpu=document.getElementById('cp-url');
-  if(cpt) cpt.textContent=title||'';
-  if(cpu) cpu.textContent=domain||'';
+
+  // Desktop overlay
+  const ot=document.getElementById('ov-title'),ou=document.getElementById('ov-url');
+  const ov=document.getElementById('crop-ov');
+  if(ot){ot.textContent=title;ot.style.display=title?'block':'none';}
+  if(ou){ou.textContent=domain;ou.style.display=domain?'block':'none';}
+  if(ov) ov.classList.toggle('no-overlay',!title&&!domain);
+
+  // Phone overlay
+  const pt=document.getElementById('ph-title'),pu=document.getElementById('ph-url');
+  if(pt){pt.textContent=title;pt.style.display=title?'block':'none';}
+  if(pu){pu.textContent=domain;pu.style.display=domain?'block':'none';}
 }
 
-function setPreviewImg(dataUrl){
-  ['pd-bg','pp-bg'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.backgroundImage=`url('${dataUrl}')`;
-  });
-}
-function clearPreviewImg(){
-  ['pd-bg','pp-bg'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.backgroundImage='';
-  });
-}
-
-// ── CROP ────────────────────────────────────────────
-let _img=null,_ox=0,_oy=0,_sc=1,_drag=null,_doff=null;
-
-function onImgSelect(input){
+// ── IMAGEN SELECCIONADA ────────────────────────────────
+function onImgPick(input){
   const file=input.files[0];
   if(!file) return;
   if(!file.type.startsWith('image/')){ toast('Solo imágenes','e'); return; }
   if(file.size>10*1024*1024){ toast('Máx 10 MB','e'); return; }
   const reader=new FileReader();
-  reader.onload=ev=>{ const img=new Image(); img.onload=()=>{ _img=img; _ox=0; _oy=0; _sc=1; openCrop(); }; img.src=ev.target.result; };
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      _img=img; _ox=0; _oy=0; _sc=1;
+      const sl=document.getElementById('zoom-slider');if(sl)sl.value=100;
+      // Init drag una sola vez
+      initCropDrag();
+      showCropHint();
+      drawCrop();
+      capturePending();
+      document.getElementById('img-drop-txt').textContent='Imagen cargada ✓ — toca para cambiar';
+      const kb=Math.round(file.size/1024);
+      toast(`Imagen lista — ${kb} KB · Ajusta el encuadre en la vista previa`,'b');
+    };
+    img.onerror=()=>toast('No se pudo leer la imagen','e');
+    img.src=ev.target.result;
+  };
   reader.readAsDataURL(file);
 }
 
-function openCrop(keepOffset){
-  document.getElementById('crop-modal').style.display='flex';
-  if(!keepOffset){ _ox=0;_oy=0;_sc=1; const sl=document.getElementById('c-zoom');if(sl)sl.value=100; }
-  updatePreview();
-  requestAnimationFrame(()=>{ cDraw(); initCropDrag(); });
-}
-
-function closeCrop(){ document.getElementById('crop-modal').style.display='none'; _drag=null; }
-
-function cDraw(){
-  const c=document.getElementById('crop-canvas');
-  if(!c||!_img) return;
-  const W=c.offsetWidth||400,H=c.offsetHeight||49;
-  c.width=W; c.height=H;
-  const ctx=c.getContext('2d');
-  ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,W,H);
-  const dw=_img.width*(H/_img.height)*_sc;
-  ctx.drawImage(_img,(W-dw)/2+_ox,(H-H*_sc)/2+_oy,dw,H*_sc);
-  const pc=document.getElementById('cp-canvas');
-  if(pc){
-    pc.width=pc.offsetWidth||400; pc.height=pc.offsetHeight||38;
-    const pctx=pc.getContext('2d');
-    pctx.fillStyle='#0C060A'; pctx.fillRect(0,0,pc.width,pc.height);
-    const pw=_img.width*(pc.height/_img.height)*_sc;
-    pctx.drawImage(_img,(pc.width-pw)/2+_ox*(pc.width/W),(pc.height-pc.height*_sc)/2+_oy*(pc.height/H),pw,pc.height*_sc);
-  }
-}
-
-function cZoom(v){ _sc=parseInt(v)/100; cDraw(); }
-function cZoomStep(d){ const sl=document.getElementById('c-zoom');if(sl){sl.value=Math.min(350,Math.max(100,parseInt(sl.value)+d));_sc=parseInt(sl.value)/100;} cDraw(); }
-function cReset(){ _ox=0;_oy=0;_sc=1;const sl=document.getElementById('c-zoom');if(sl)sl.value=100; cDraw(); }
-
-function initCropDrag(){
-  const area=document.getElementById('crop-area');
-  if(!area) return;
-  area.onmousedown=e=>{ _drag={x:e.clientX,y:e.clientY};_doff={x:_ox,y:_oy};area.style.cursor='grabbing';e.preventDefault(); };
-  document.onmousemove=e=>{ if(!_drag)return; _ox=_doff.x+(e.clientX-_drag.x);_oy=_doff.y+(e.clientY-_drag.y);cDraw(); };
-  document.onmouseup=()=>{ _drag=null;if(area)area.style.cursor='grab'; };
-  area.ontouchstart=e=>{ if(e.touches.length!==1)return;_drag={x:e.touches[0].clientX,y:e.touches[0].clientY};_doff={x:_ox,y:_oy};e.preventDefault(); };
-  area.ontouchmove=e=>{ if(!_drag||e.touches.length!==1)return;_ox=_doff.x+(e.touches[0].clientX-_drag.x);_oy=_doff.y+(e.touches[0].clientY-_drag.y);cDraw();e.preventDefault(); };
-  area.ontouchend=()=>{ _drag=null; };
-}
-
-function applyCrop(){
-  const TW=720,TH=88;
-  const c=document.createElement('canvas');
-  c.width=TW;c.height=TH;
-  const ctx=c.getContext('2d');
-  ctx.fillStyle='#0C060A';ctx.fillRect(0,0,TW,TH);
-  const area=document.getElementById('crop-canvas');
-  const aW=area?area.offsetWidth:400,aH=area?area.offsetHeight:49;
-  const dw=_img.width*(TH/_img.height)*_sc*(TW/aW);
-  ctx.drawImage(_img,(TW-dw)/2+_ox*(TW/aW),(TH-TH*_sc)/2+_oy,dw,TH*_sc);
-  const compressed=c.toDataURL('image/jpeg',0.82);
-  pendingImg=compressed;
-  setPreviewImg(compressed);
-  document.getElementById('img-zone-txt').textContent='Imagen lista ✓ — toca para cambiar';
-  const kb=Math.round(compressed.length*0.75/1024);
-  toast('✅ Imagen lista — '+kb+' KB','s');
-  // Si es un fix, guardarlo directamente
-  if(fixTargetId){ saveFixImg(fixTargetId,compressed); return; }
-  closeCrop();
-}
-
-// ── SAVE ────────────────────────────────────────────
+// ── SAVE ──────────────────────────────────────────────
 async function saveAd(){
   const title=document.getElementById('f-title').value.trim();
   const url=document.getElementById('f-url').value.trim();
   const notes=document.getElementById('f-notes').value.trim();
-  const schedStart=document.getElementById('f-sched-start').value;
-  const schedEnd=document.getElementById('f-sched-end').value;
+  const schedStart=document.getElementById('f-sch-s').value;
+  const schedEnd=document.getElementById('f-sch-e').value;
+
+  // Generar imagen final desde el canvas (siempre la posición actual)
+  if(_img) capturePending();
   let imgData=pendingImg;
   if(!imgData&&editId){ imgData=ads.find(a=>a.id===editId)?.img_data||''; }
-  if(!imgData){ toast('Selecciona y recorta una imagen','w'); return; }
-  const payload={
-    title:title||'',
-    url:url||'',
-    img_data:imgData,
-    notes:notes||'',
+  if(!imgData){ toast('Selecciona una imagen primero','w'); return; }
+
+  const payload={title,url,img_data:imgData,notes,
     sched_start:schedStart?new Date(schedStart).getTime():null,
-    sched_end:schedEnd?new Date(schedEnd).getTime():null,
-  };
+    sched_end:schedEnd?new Date(schedEnd).getTime():null};
   const btn=document.getElementById('f-save');
   btn.disabled=true;
   document.getElementById('f-save-t').textContent='Guardando…';
@@ -839,106 +906,110 @@ async function saveAd(){
     }
     closeForm();
     await loadAds();
-  } catch(err){ toast('Error: '+err.message,'e'); }
+  }catch(err){toast('Error: '+err.message,'e');}
   btn.disabled=false;
   document.getElementById('f-save-t').textContent=editId?'Guardar cambios':'Publicar anuncio';
 }
 
+// ── AD OPERATIONS ─────────────────────────────────────
 async function toggleAd(id){
-  const ad=ads.find(a=>a.id===id);
-  if(!ad) return;
-  const nowActive=!ad.active||ad.paused;
-  const{error}=await db.from('ad_slots').update({active:true,paused:!nowActive}).eq('id',id);
-  if(error){ toast('Error: '+error.message,'e'); return; }
-  toast(nowActive?'Anuncio activado':'Anuncio pausado','b');
+  const ad=ads.find(a=>a.id===id);if(!ad)return;
+  const on=!ad.active||ad.paused;
+  const{error}=await db.from('ad_slots').update({active:true,paused:!on}).eq('id',id);
+  if(error){toast('Error: '+error.message,'e');return;}
+  toast(on?'Anuncio activado':'Anuncio pausado','b');
   await loadAds();
 }
 
 async function deleteAd(id){
-  if(!confirm('¿Eliminar este anuncio?')) return;
+  if(!confirm('¿Eliminar este anuncio?'))return;
   const{error}=await db.from('ad_slots').delete().eq('id',id);
-  if(error){ toast('Error: '+error.message,'e'); return; }
+  if(error){toast('Error: '+error.message,'e');return;}
   if(editId===id) closeForm();
   toast('Anuncio eliminado','b');
   await loadAds();
 }
 
 async function dupAd(id){
-  const ad=ads.find(a=>a.id===id);
-  if(!ad) return;
+  const ad=ads.find(a=>a.id===id);if(!ad)return;
   const newId='ad_'+Date.now().toString(36);
   const{error}=await db.from('ad_slots').insert([{...ad,id:newId,title:(ad.title?ad.title+' (copia)':''),active:false,sort_order:ads.length,created_at:Date.now()}]);
-  if(error){ toast('Error: '+error.message,'e'); return; }
-  toast('Anuncio duplicado — está inactivo por defecto','b');
+  if(error){toast('Error: '+error.message,'e');return;}
+  toast('Duplicado — está inactivo por defecto','b');
   await loadAds();
 }
 
-async function moveAd(id, dir){
+async function moveAd(id,dir){
   const idx=ads.findIndex(a=>a.id===id);
-  const newIdx=idx+dir;
-  if(newIdx<0||newIdx>=ads.length) return;
-  const updates=[
-    {id:ads[idx].id, sort_order:newIdx},
-    {id:ads[newIdx].id, sort_order:idx},
-  ];
-  await Promise.all(updates.map(u=>db.from('ad_slots').update({sort_order:u.sort_order}).eq('id',u.id)));
+  const nIdx=idx+dir;
+  if(nIdx<0||nIdx>=ads.length)return;
+  await Promise.all([
+    db.from('ad_slots').update({sort_order:nIdx}).eq('id',ads[idx].id),
+    db.from('ad_slots').update({sort_order:idx}).eq('id',ads[nIdx].id)
+  ]);
   await loadAds();
 }
 
-// ── FIX MODAL ────────────────────────────────────────────
+// ── FIX MODAL ─────────────────────────────────────────
 function openFixModal(){
   const broken=ads.filter(a=>!a.img_data||a.img_data.length<100);
-  const list=document.getElementById('fix-list');
-  list.innerHTML=broken.map(ad=>`
-    <div class="fix-item" id="fix-row-${ad.id}">
-      <div class="fix-thumb">
-        ${ad.img_data&&ad.img_data.length>100?`<img src="${ad.img_data}"/>`:'<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="rgba(255,80,80,.5)" stroke-width="1.5" stroke-linecap="round"><path d="M5 5l2 2M7 5l-2 2"/></svg>'}
+  document.getElementById('fix-list').innerHTML=broken.map(ad=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:7px">
+      <div style="width:56px;height:19px;border-radius:4px;background:rgba(255,80,80,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="rgba(255,80,80,.5)" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l4 4M8 4l-4 4"/></svg>
       </div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.title||'Sin título'}</div>
-        <div style="font-size:10px;color:rgba(255,80,80,.6)">Sin imagen válida</div>
-      </div>
-      <div class="fix-actions">
-        <label class="act act-edit" style="cursor:pointer">
-          <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M1 8l3-3 2 2 2-2 3 3"/></svg> Nueva imagen
-          <input type="file" accept="image/*" onchange="fixAdImg('${ad.id}',this)" style="display:none"/>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700">${ad.title||'Sin título'}</div></div>
+      <div style="display:flex;gap:5px">
+        <label style="padding:5px 10px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.5);font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:3px">
+          <svg viewBox="0 0 10 10" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="8" height="8" rx="1.5"/><path d="M1 7l2-2 1.5 1.5 2-2 2.5 2.5"/></svg>Nueva imagen
+          <input type="file" accept="image/*" onchange="fixImg('${ad.id}',this)" style="display:none"/>
         </label>
-        <button class="act act-del" onclick="deleteAd('${ad.id}');closeFixModal()">
-          <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7"/></svg>
+        <button onclick="deleteAd('${ad.id}');closeFixModal()" style="padding:5px 8px;border-radius:7px;background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.15);color:#FF8080;font-size:10px;font-weight:700;cursor:pointer">
+          <svg viewBox="0 0 10 10" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 2.5h7M4 2.5V2h2v.5M2.5 2.5l.5 6h4l.5-6"/></svg>
         </button>
       </div>
     </div>`).join('');
   document.getElementById('fix-modal').style.display='flex';
 }
-function closeFixModal(){ document.getElementById('fix-modal').style.display='none'; fixTargetId=null; }
+function closeFixModal(){document.getElementById('fix-modal').style.display='none';}
 
-function fixAdImg(id, input){
-  fixTargetId=id;
-  const file=input.files[0];
-  if(!file) return;
+function fixImg(id,input){
+  const file=input.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=ev=>{ const img=new Image(); img.onload=()=>{ _img=img; _ox=0;_oy=0;_sc=1; closeFixModal(); openCrop(); }; img.src=ev.target.result; };
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=async()=>{
+      const TW=720,TH=88,c=document.createElement('canvas');
+      c.width=TW;c.height=TH;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle='#0C060A';ctx.fillRect(0,0,TW,TH);
+      // Auto-fit centrado
+      const sw=img.height*(TW/TH),sx=(img.width-sw)/2>0?(img.width-sw)/2:0;
+      const sh=img.width*(TH/TW),sy=(img.height-sh)/2>0?(img.height-sh)/2:0;
+      if(img.width/img.height>TW/TH) ctx.drawImage(img,sx,0,sw,img.height,0,0,TW,TH);
+      else ctx.drawImage(img,0,sy,img.width,sh,0,0,TW,TH);
+      const{error}=await db.from('ad_slots').update({img_data:c.toDataURL('image/jpeg',0.82)}).eq('id',id);
+      if(error){toast('Error: '+error.message,'e');return;}
+      toast('✅ Imagen reparada','s');
+      closeFixModal();
+      await loadAds();
+    };
+    img.src=ev.target.result;
+  };
   reader.readAsDataURL(file);
 }
 
-async function saveFixImg(id,dataUrl){
-  const{error}=await db.from('ad_slots').update({img_data:dataUrl}).eq('id',id);
-  if(error){ toast('Error: '+error.message,'e'); return; }
-  toast('✅ Imagen actualizada','s');
-  fixTargetId=null;
-  closeCrop();
-  await loadAds();
-}
-
-// ── UTILS ────────────────────────────────────────────
+// ── UTILS ──────────────────────────────────────────────
 function toast(msg,type='i'){
-  const c=document.getElementById('toasts');
-  const t=document.createElement('div');
-  t.className='toast '+(type||'i'); t.textContent=msg; c.appendChild(t);
+  const c=document.getElementById('toasts'),t=document.createElement('div');
+  t.className='toast '+(type||'i');t.textContent=msg;c.appendChild(t);
   setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},2800);
   setTimeout(()=>t.remove(),3200);
 }
-window.addEventListener('resize',()=>{ if(isDesktop()&&document.getElementById('form-panel').style.display==='none') showPlaceholder(); });
+
+// Init drag en el canvas tan pronto se monta el DOM
+document.addEventListener('DOMContentLoaded',()=>{ initCropDrag(); });
+window.addEventListener('resize',()=>{ if(isDesk()&&document.getElementById('form-panel').style.display==='none') showPhld(); if(_img) drawCrop(); });
 </script>
 </body>
 </html>
