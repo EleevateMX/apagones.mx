@@ -4552,9 +4552,10 @@ async function exportHistFiltered(format){
 #uh-overlay.open{opacity:1;pointer-events:all}
 .uh-header{
   padding:16px 18px 12px;
-  border-bottom:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(245,183,49,.12);
   display:flex;align-items:center;gap:10px;
   flex-shrink:0;
+  background:rgba(10,6,18,1);
 }
 .uh-header-ico{
   width:32px;height:32px;border-radius:9px;
@@ -4591,7 +4592,7 @@ async function exportHistFiltered(format){
 /* Detalle de noticia */
 .uh-detail{
   position:absolute;inset:0;
-  background:rgba(10,6,18,.99);
+  background:#07040C;
   transform:translateX(100%);transition:transform .28s cubic-bezier(.22,.8,.3,1);
   display:flex;flex-direction:column;z-index:1;
 }
@@ -9122,15 +9123,78 @@ let _uhLastSeen  = parseInt(localStorage.getItem('uh_last_seen') || '0');
 
 // Cargar noticias al iniciar (después de que db esté lista)
 async function initUltimaHora(){
+  // 1. Pedir permiso de notificaciones (solo si no se ha pedido antes)
+  if('Notification' in window && Notification.permission === 'default'){
+    // Esperar interacción del usuario para no ser intrusivo
+    const askAfter = 8000; // 8 segundos después de cargar
+    setTimeout(()=>{
+      if(Notification.permission === 'default'){
+        Notification.requestPermission().then(perm=>{
+          if(perm === 'granted') toast('🔔 Notificaciones activadas','s');
+        });
+      }
+    }, askAfter);
+  }
+
+  // 2. Escuchar mensajes del SW (cuando llega notificación y se toca)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.addEventListener('message', e=>{
+      if(e.data?.type === 'OPEN_UH'){
+        // La notificación fue tocada — abrir el panel y mostrar el artículo
+        openUH();
+        if(e.data.id){
+          setTimeout(()=>openUHDetail(e.data.id), 400);
+        }
+      }
+    });
+  }
+
+  // 3. Si la app fue abierta desde una notificación (?uh=id)
+  const uhParam = new URLSearchParams(location.search).get('uh');
+  if(uhParam){
+    // Esperar a que se carguen las noticias y luego abrir
+    setTimeout(async()=>{
+      await loadUHNoticias();
+      openUH();
+      setTimeout(()=>openUHDetail(uhParam), 400);
+    }, 1500);
+    // Limpiar la URL sin recargar
+    history.replaceState(null,'', location.pathname);
+  }
+
   await loadUHNoticias();
-  // Realtime — nueva noticia → actualizar badge y lista
+
+  // 4. Realtime — nueva noticia publicada
   db.channel('uh-rt').on('postgres_changes',{
     event:'INSERT', schema:'public', table:'ultima_hora'
-  }, payload => {
-    loadUHNoticias();
-    // Notificación visual si el panel no está abierto
-    if(!_uhPanelOpen) showUHToast(payload.new);
+  }, async payload => {
+    await loadUHNoticias();
+    const n = payload.new;
+    if(!n || !n.activa) return;
+
+    // Toast en pantalla (siempre)
+    if(!_uhPanelOpen) showUHToast(n);
+
+    // Notificación del sistema (si tenemos permiso)
+    sendUHPushNotification(n);
   }).subscribe();
+}
+
+function sendUHPushNotification(n){
+  if(!('serviceWorker' in navigator) || !('Notification' in window)) return;
+  if(Notification.permission !== 'granted') return;
+  // Enviar al SW para que muestre la notificación nativa
+  navigator.serviceWorker.ready.then(reg => {
+    reg.active?.postMessage({
+      type: 'UH_NOTIFY',
+      id: n.id,
+      titulo: n.titulo || 'Nueva noticia',
+      desc: n.descripcion ? n.descripcion.slice(0,100)+(n.descripcion.length>100?'…':'') : '',
+      urgente: !!n.urgente,
+      img: (n.img_data && n.img_data.length > 100) ? undefined : undefined
+      // img_data es base64 muy pesado para pasar al SW — omitir
+    });
+  });
 }
 
 async function loadUHNoticias(){
@@ -9277,6 +9341,13 @@ function fmtUHTime(ts){
 }
 
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Refrescar UH cuando la app vuelve a primer plano
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible' && typeof loadUHNoticias==='function'){
+    loadUHNoticias();
+  }
+});
 </script>
 
 <!-- ═══════════════ HELP MODAL: ¿Cómo reportar? ═══════════════ -->
@@ -9550,6 +9621,15 @@ function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&l
         <div class="mm-btn-content">
           <div class="mm-btn-name" style="color:var(--dim)">Panel admin</div>
           <div class="mm-btn-sub">Dashboard de gestión</div>
+        </div>
+      </a>
+      <a href="./noticias.html" target="_blank" class="mm-btn" style="text-decoration:none">
+        <div class="mm-btn-icon" style="background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.15)">
+          <svg viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="var(--elec)" stroke-width="2" stroke-linecap="round"><path d="M11 3a7 7 0 0 0-7 7v3l-2 3h18l-2-3v-3a7 7 0 0 0-7-7z"/><path d="M9 18a2 2 0 0 0 4 0"/></svg>
+        </div>
+        <div class="mm-btn-content">
+          <div class="mm-btn-name">Publicar noticia</div>
+          <div class="mm-btn-sub">Editor de Última Hora</div>
         </div>
       </a>
       <a href="./medios.html" target="_blank" class="mm-btn" style="text-decoration:none">

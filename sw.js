@@ -1,5 +1,5 @@
-// Apagones Mid — Service Worker v61 (forced cache refresh)
-const CACHE = 'apagones-mid-v61';
+// Apagones Mid — Service Worker v62
+const CACHE = 'apagones-mid-v62';
 const TILE_CACHE = 'apagones-tiles-v1';
 
 const STATIC = [
@@ -17,7 +17,6 @@ const STATIC = [
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
 ];
 
-// Pre-cache Mérida tiles zoom 10-12 (small area, manageable size)
 const MERIDA_TILES = [];
 for (let z = 10; z <= 12; z++) {
   const scale = Math.pow(2, z);
@@ -27,9 +26,8 @@ for (let z = 10; z <= 12; z++) {
   for (let dx = -2; dx <= 2; dx++) {
     for (let dy = -2; dy <= 2; dy++) {
       const x = x0 + dx, y = y0 + dy;
-      if (x >= 0 && y >= 0 && x < scale && y < scale) {
+      if (x >= 0 && y >= 0 && x < scale && y < scale)
         MERIDA_TILES.push(`https://a.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}.png`);
-      }
     }
   }
 }
@@ -45,96 +43,92 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE && k !== TILE_CACHE).map(k => {
-        console.log('SW: deleting old cache', k);
-        return caches.delete(k);
-      }))
+      Promise.all(keys.filter(k => k !== CACHE && k !== TILE_CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
-     .then(() => {
-       // Force reload of all controlled windows
-       return self.clients.matchAll({type:'window'}).then(clients => {
-         clients.forEach(c => c.navigate(c.url));
-       });
-     })
   );
 });
 
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-
-  // Supabase — network only
   if (url.hostname.includes('supabase.co') || url.hostname.includes('open-meteo.com')) {
     e.respondWith(fetch(e.request).catch(() => new Response('{}', {headers:{'Content-Type':'application/json'}})));
     return;
   }
-
-  // Map tiles — cache first, then network, store in tile cache
   if (url.hostname.includes('cartocdn.com') || url.hostname.includes('openstreetmap.org')) {
-    e.respondWith(
-      caches.open(TILE_CACHE).then(c =>
-        c.match(e.request).then(cached => {
-          if (cached) return cached;
-          return fetch(e.request).then(resp => {
-            if (resp.ok) c.put(e.request, resp.clone());
-            return resp;
-          }).catch(() => new Response('', {status:404}));
-        })
-      )
-    );
+    e.respondWith(caches.open(TILE_CACHE).then(c => c.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(resp => { if (resp.ok) c.put(e.request, resp.clone()); return resp; }).catch(() => new Response('', {status:404}));
+    })));
     return;
   }
-
-  // index.html and main HTML files: NETWORK FIRST so updates show immediately
   const isHTML = e.request.mode === 'navigate' ||
     (e.request.headers.get('accept') || '').includes('text/html') ||
-    url.pathname.endsWith('.html') ||
-    url.pathname === '/' || url.pathname.endsWith('/');
-
+    url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname.endsWith('/');
   if (isHTML) {
-    e.respondWith(
-      fetch(e.request).then(resp => {
-        if (resp.ok) {
-          const clone = resp.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return resp;
-      }).catch(() => caches.match(e.request).then(c => c || caches.match('./index.html')))
-    );
+    e.respondWith(fetch(e.request).then(resp => {
+      if (resp.ok) { const clone = resp.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
+      return resp;
+    }).catch(() => caches.match(e.request).then(c => c || caches.match('./index.html'))));
     return;
   }
-
-  // Everything else — cache first
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(resp => {
-      if (resp.ok && e.request.method === 'GET') {
-        const clone = resp.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-      }
-      return resp;
-    }).catch(() => caches.match('./index.html')))
-  );
+  e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request).then(resp => {
+    if (resp.ok && e.request.method === 'GET') { const clone = resp.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
+    return resp;
+  }).catch(() => caches.match('./index.html'))));
 });
 
-// Push notifications
+// ── PUSH (servidor externo) ───────────────────────────
 self.addEventListener('push', e => {
   const data = e.data?.json() || {};
-  e.waitUntil(self.registration.showNotification(data.title || '⚡ Apagones MX', {
-    body: data.body || 'Nueva incidencia en tu zona',
+  e.waitUntil(self.registration.showNotification(data.title || '⚡ ApagonesMID', {
+    body: data.body || 'Nueva noticia de última hora',
     icon: './icon-192.png', badge: './icon-192.png',
-    tag: data.tag || 'apagones-mx', vibrate: [200,100,200],
-    data: { url: './' }
+    tag: data.tag || 'uh-push', vibrate: [200,100,200],
+    data: { uhId: data.uhId || null, url: './' }
   }));
 });
 
-self.addEventListener('notificationclick', e => {
-  e.notification.close();
-  e.waitUntil(clients.openWindow(e.notification.data?.url || './'));
+// ── ÚLTIMA HORA — notificación desde la propia página ─
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') { self.skipWaiting(); return; }
+
+  if (e.data?.type === 'UH_NOTIFY') {
+    const d = e.data;
+    const opts = {
+      body: d.desc || 'Toca para leer la nota completa.',
+      icon: './icon-192.png',
+      badge: './icon-192.png',
+      image: d.img || undefined,        // imagen grande si existe
+      tag: 'uh-' + (d.id || Date.now()),
+      vibrate: d.urgente ? [300,100,300,100,300] : [200,100,200],
+      requireInteraction: !!d.urgente,  // urgente: no desaparece solo
+      silent: false,
+      data: { uhId: d.id, urgente: d.urgente }
+    };
+    e.waitUntil(self.registration.showNotification(
+      (d.urgente ? '🔴 URGENTE — ' : '📰 Última Hora: ') + (d.titulo || 'Nueva noticia'),
+      opts
+    ));
+    return;
+  }
 });
 
-
-// Receive command from page to skip waiting and activate immediately
-self.addEventListener('message', e => {
-  if(e.data && e.data.type === 'SKIP_WAITING'){
-    self.skipWaiting();
-  }
+// ── CLICK EN NOTIFICACIÓN → abrir/enfocar la app ──────
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const uhId = e.notification.data?.uhId;
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      // Si la app ya está abierta, enfocarla y pasarle el ID de la noticia
+      for (const c of list) {
+        if (c.url.includes('apagonesmid') || c.url.includes('localhost') || c.url.includes('127.0.0.1')) {
+          if (uhId) c.postMessage({ type: 'OPEN_UH', id: uhId });
+          return c.focus();
+        }
+      }
+      // Si no está abierta, abrir una nueva pestaña con el parámetro
+      const target = uhId ? `./?uh=${uhId}` : './';
+      return clients.openWindow(target);
+    })
+  );
 });
