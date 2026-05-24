@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+  <title>ApagonesMID · Gestión de Anuncios</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    :root{
+      --bg:#080510;--surf:#100A16;--card:#160E1E;--bdr:rgba(255,255,255,.08);
+      --tx:#F0E8EC;--dim:rgba(255,255,255,.45);--mut:rgba(255,255,255,.22);
+      --brand:#65081F;--brand-lt:#9B1030;--agua:#22D0F0;--elec:#F5B731;--grn:#1FD18A;
+      --f:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:var(--bg);color:var(--tx);font-family:var(--f);min-height:100vh}
+
+    /* ── Auth gate ── */
+    #auth-gate{
+      position:fixed;inset:0;z-index:999;background:var(--bg);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+    }
+    .auth-card{
+      width:100%;max-width:380px;
+      background:var(--surf);border:1px solid rgba(101,8,31,.4);
+      border-radius:20px;padding:32px 28px;
+      box-shadow:0 24px 80px rgba(0,0,0,.6);
+    }
+    .auth-logo{
+      width:56px;height:56px;border-radius:16px;
+      background:linear-gradient(135deg,#9B1030,#65081F);
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 20px;
+      box-shadow:0 6px 20px rgba(101,8,31,.4);
+    }
+    .auth-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:4px;letter-spacing:-.3px}
+    .auth-sub{font-size:12px;color:var(--mut);text-align:center;margin-bottom:28px}
+    .auth-label{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+    .auth-input{
+      width:100%;padding:14px 16px;
+      background:rgba(255,255,255,.04);border:1.5px solid rgba(101,8,31,.3);
+      border-radius:12px;color:var(--tx);font-family:var(--f);font-size:16px;
+      text-align:center;letter-spacing:.12em;outline:none;transition:border-color .2s;
+    }
+    .auth-input:focus{border-color:rgba(220,60,80,.6);box-shadow:0 0 0 3px rgba(180,30,40,.1)}
+    .auth-btn{
+      width:100%;margin-top:16px;padding:15px;
+      background:linear-gradient(135deg,#9B1030,#65081F);border:none;
+      border-radius:12px;color:#FFD0D8;font-family:var(--f);font-size:15px;font-weight:800;
+      cursor:pointer;transition:transform .12s;box-shadow:0 4px 18px rgba(101,8,31,.4);
+    }
+    .auth-btn:active{transform:scale(.97)}
+    .auth-err{color:#FF8080;font-size:12px;text-align:center;margin-top:10px;min-height:18px}
+
+    /* ── Layout ── */
+    #app{display:none;min-height:100vh}
+    .topbar{
+      position:sticky;top:0;z-index:100;
+      background:rgba(8,5,16,.95);
+      border-bottom:1px solid rgba(101,8,31,.3);
+      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      padding:0 20px;height:60px;
+      display:flex;align-items:center;gap:14px;
+    }
+    .tb-logo{
+      width:36px;height:36px;border-radius:10px;
+      background:linear-gradient(135deg,#9B1030,#65081F);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      box-shadow:0 2px 10px rgba(101,8,31,.4);
+    }
+    .tb-title{font-size:16px;font-weight:800;letter-spacing:-.2px}
+    .tb-sub{font-size:11px;color:var(--mut);margin-left:2px;display:none}
+    @media(min-width:480px){.tb-sub{display:block}}
+    .tb-spacer{flex:1}
+    .tb-btn{
+      padding:8px 14px;border-radius:9px;font-family:var(--f);font-size:12px;font-weight:700;
+      cursor:pointer;-webkit-appearance:none;transition:opacity .15s;white-space:nowrap;
+      display:flex;align-items:center;gap:5px;
+    }
+    .tb-btn-add{background:rgba(34,208,240,.12);border:1px solid rgba(34,208,240,.3);color:#22D0F0}
+    .tb-btn-logout{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--mut)}
+    .tb-btn:active{opacity:.7}
+
+    /* ── Content ── */
+    .content{max-width:760px;margin:0 auto;padding:24px 16px 80px}
+
+    /* ── Stats strip ── */
+    .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+    .stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px;text-align:center}
+    .stat-n{font-size:28px;font-weight:900;letter-spacing:-.5px;line-height:1}
+    .stat-l{font-size:10px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+    /* ── Section ── */
+    .section-title{
+      font-size:11px;font-weight:800;color:var(--mut);text-transform:uppercase;
+      letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;gap:6px;
+    }
+
+    /* ── Ad cards ── */
+    .ad-card{
+      background:var(--card);border:1px solid var(--bdr);border-radius:16px;
+      overflow:hidden;margin-bottom:12px;
+      transition:border-color .2s;
+    }
+    .ad-card:hover{border-color:rgba(255,255,255,.14)}
+    .ad-banner{width:100%;height:52px;object-fit:cover;display:block;background:#0C060A}
+    .ad-banner-placeholder{
+      width:100%;height:52px;background:linear-gradient(135deg,rgba(101,8,31,.15),rgba(0,0,0,.3));
+      display:flex;align-items:center;justify-content:center;
+    }
+    .ad-body{padding:12px 14px}
+    .ad-row{display:flex;align-items:center;gap:10px}
+    .ad-num{
+      width:22px;height:22px;border-radius:7px;
+      background:rgba(255,255,255,.07);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:800;color:var(--mut);flex-shrink:0;
+    }
+    .ad-title{font-size:13px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ad-url{font-size:11px;color:rgba(34,208,240,.7);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .badge{
+      display:inline-flex;align-items:center;gap:3px;
+      font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid;
+    }
+    .badge-on{background:rgba(31,209,138,.1);border-color:rgba(31,209,138,.3);color:#1FD18A}
+    .badge-off{background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.25);color:#FF8080}
+    .badge-pause{background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.25);color:#F5B731}
+    .ad-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05)}
+    .act-btn{
+      padding:7px 13px;border-radius:9px;border:1px solid;
+      font-family:var(--f);font-size:11px;font-weight:700;
+      cursor:pointer;-webkit-appearance:none;
+      display:inline-flex;align-items:center;gap:4px;
+      transition:opacity .15s;touch-action:manipulation;
+    }
+    .act-btn:active{opacity:.7}
+    .act-edit{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
+    .act-toggle-on{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:#F5B731}
+    .act-toggle-off{background:rgba(31,209,138,.08);border-color:rgba(31,209,138,.2);color:#1FD18A}
+    .act-del{background:rgba(255,80,80,.06);border-color:rgba(255,80,80,.18);color:#FF8080}
+
+    /* ── Social slides (redes) ── */
+    .social-card{
+      background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+      padding:12px 14px;margin-bottom:8px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .social-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* ── New/Edit form ── */
+    #form-panel{
+      background:var(--surf);border:1px solid rgba(34,208,240,.2);
+      border-radius:18px;padding:20px;margin-bottom:20px;
+      display:none;
+    }
+    .form-title{font-size:15px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .field-label{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+    .field-input{
+      width:100%;padding:11px 14px;
+      background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);
+      border-radius:11px;color:var(--tx);font-family:var(--f);font-size:14px;
+      outline:none;transition:border-color .2s;
+    }
+    .field-input:focus{border-color:rgba(34,208,240,.45)}
+    .img-label{
+      width:100%;display:block;padding:12px;
+      background:rgba(34,208,240,.07);border:1.5px dashed rgba(34,208,240,.25);
+      border-radius:11px;font-size:12px;font-weight:700;color:#22D0F0;
+      text-align:center;cursor:pointer;transition:background .18s;
+    }
+    .img-label:hover{background:rgba(34,208,240,.1)}
+    #form-preview-wrap{display:none;margin-bottom:12px}
+    #form-preview{width:100%;height:52px;object-fit:cover;border-radius:10px;border:1px solid rgba(34,208,240,.2);display:block;background:#0C060A}
+    .form-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:16px}
+    .form-cancel{padding:13px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer}
+    .form-save{
+      padding:13px;border-radius:11px;
+      background:linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.15));
+      border:1px solid rgba(34,208,240,.45);color:#22D0F0;
+      font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;
+      transition:transform .1s;
+    }
+    .form-save:active{transform:scale(.97)}
+    .form-save:disabled{opacity:.4;cursor:not-allowed}
+
+    /* ── Crop modal ── */
+    #crop-modal{
+      position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);
+      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      display:none;align-items:center;justify-content:center;padding:16px;
+    }
+    .crop-card{
+      background:#120A14;border:1px solid rgba(101,8,31,.4);border-radius:18px;
+      width:100%;max-width:540px;padding:20px;
+      box-shadow:0 20px 80px rgba(0,0,0,.7);
+    }
+    .crop-area{
+      position:relative;width:100%;padding-bottom:12.222%;  /* 88/720 */
+      background:#0C060A;border-radius:10px;overflow:hidden;
+      border:2px solid rgba(34,208,240,.3);cursor:grab;touch-action:none;
+      margin-bottom:12px;
+    }
+    #crop-canvas{position:absolute;inset:0;width:100%;height:100%}
+    .crop-guides{position:absolute;inset:0;pointer-events:none}
+    .crop-guide-v{position:absolute;top:0;bottom:0;width:1px;background:rgba(34,208,240,.15)}
+    .crop-guide-h{position:absolute;left:0;right:0;height:1px;background:rgba(34,208,240,.15)}
+    .crop-zoom-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+    .zoom-btn{
+      width:30px;height:30px;border-radius:8px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+      color:rgba(255,255,255,.6);cursor:pointer;font-size:16px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .crop-live{margin-bottom:14px}
+    .crop-live-label{font-size:10px;color:var(--mut);margin-bottom:5px}
+    .crop-preview-bar{
+      height:44px;border-radius:8px;overflow:hidden;
+      border:1px solid rgba(255,255,255,.1);position:relative;background:#0C060A;
+    }
+    #crop-preview-canvas{position:absolute;inset:0;width:100%;height:100%}
+    .crop-preview-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,rgba(0,0,0,.35) 100%);
+      pointer-events:none;
+    }
+    .crop-preview-info{
+      position:absolute;inset:0;display:flex;align-items:center;
+      padding:0 12px;gap:8px;pointer-events:none;
+    }
+    .crop-btns{display:grid;grid-template-columns:1fr 2fr;gap:8px}
+    .crop-cancel{padding:12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--mut);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer}
+    .crop-apply{padding:12px;border-radius:10px;background:linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.15));border:1px solid rgba(34,208,240,.45);color:#22D0F0;font-family:var(--f);font-size:13px;font-weight:800;cursor:pointer}
+    .crop-apply:active{opacity:.8}
+
+    /* ── Toast ── */
+    #toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+    .toast{background:rgba(20,12,28,.97);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:toastIn .25s ease}
+    @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .toast.s{border-color:rgba(31,209,138,.3);color:#1FD18A}
+    .toast.e{border-color:rgba(255,80,80,.3);color:#FF8080}
+    .toast.b{border-color:rgba(34,208,240,.3);color:#22D0F0}
+
+    /* ── Empty state ── */
+    .empty{text-align:center;padding:48px 20px;color:var(--mut)}
+    .empty-icon{font-size:40px;margin-bottom:12px}
+
+    /* ── Loading ── */
+    .loading{text-align:center;padding:40px;color:var(--mut)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:28px;height:28px;border:2.5px solid rgba(255,255,255,.1);border-top-color:rgba(34,208,240,.6);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+  </style>
+</head>
+<body>
+
+<!-- ── Auth gate ── -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+        <rect x="6" y="13" width="16" height="12" rx="3" transform="translate(-6 -4)" stroke="rgba(240,100,100,.9)" stroke-width="1.8"/>
+        <path d="M9 13V9a5 5 0 0 1 10 0v4" transform="translate(-6 -4)" stroke="rgba(240,100,100,.9)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="14" cy="19" r="1.5" transform="translate(-6 -4)" fill="rgba(240,100,100,.9)"/>
+        <path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/>
+      </svg>
+    </div>
+    <div class="auth-title">Gestión de Anuncios</div>
+    <div class="auth-sub">ApagonesMID · Acceso restringido</div>
+    <div class="auth-label">Contraseña admin</div>
+    <input type="password" class="auth-input" id="auth-input" placeholder="••••••••••••"
+      autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')checkAuth()"/>
+    <button class="auth-btn" onclick="checkAuth()">Ingresar</button>
+    <div class="auth-err" id="auth-err"></div>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <header class="topbar">
+    <div class="tb-logo">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M14 2L5 14h7l-2 8 10-12h-7Z" fill="#F5B731"/></svg>
+    </div>
+    <div>
+      <div class="tb-title">Anuncios</div>
+      <div class="tb-sub">ApagonesMID</div>
+    </div>
+    <div class="tb-spacer"></div>
+    <button class="tb-btn tb-btn-add" onclick="openForm()">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+      Nuevo
+    </button>
+    <button class="tb-btn tb-btn-logout" onclick="logout()">Salir</button>
+  </header>
+
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-strip" id="stats-strip">
+      <div class="stat-card"><div class="stat-n" id="stat-total" style="color:#F0E8EC">—</div><div class="stat-l">Total</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-active" style="color:#1FD18A">—</div><div class="stat-l">Activos</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-paused" style="color:#F5B731">—</div><div class="stat-l">Pausados</div></div>
+    </div>
+
+    <!-- Formulario nuevo/editar -->
+    <div id="form-panel">
+      <div class="form-title">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
+        <span id="form-title-text">Nuevo anuncio</span>
+      </div>
+      <div id="form-preview-wrap">
+        <img id="form-preview" alt="preview"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px">
+        <div>
+          <div class="field-label">Título del anunciante</div>
+          <input type="text" class="field-input" id="f-title" placeholder="Ej. Panadería El Buen Pan" maxlength="50"/>
+        </div>
+        <div>
+          <div class="field-label">URL al tocar el banner</div>
+          <input type="url" class="field-input" id="f-url" placeholder="https://ejemplo.com"/>
+        </div>
+        <div>
+          <div class="field-label">Imagen del banner · <span style="color:rgba(34,208,240,.8)">720 × 88 px recomendado</span></div>
+          <label class="img-label" id="f-img-label">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
+            <span id="f-img-label-text">Seleccionar imagen</span>
+            <input type="file" accept="image/*" id="f-img-file" onchange="handleImgSelect(this)" style="display:none"/>
+          </label>
+        </div>
+      </div>
+      <div style="background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.1);border-radius:10px;padding:10px 13px;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:4px">
+        💡 El anuncio aparece en la barra inferior del mapa, sobre el ticker de reportes. No invasivo — los usuarios pueden cerrarlo.
+      </div>
+      <div class="form-btns">
+        <button class="form-cancel" onclick="closeForm()">Cancelar</button>
+        <button class="form-save" id="f-save-btn" onclick="saveAd()">
+          <span id="f-save-txt">Publicar anuncio</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Slides de redes sociales (info) -->
+    <div class="section-title">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="rgba(255,200,220,.5)" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 2"/></svg>
+      Slides fijos de redes
+    </div>
+    <div class="social-card">
+      <div class="social-icon" style="background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/></svg>
+      </div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700">@apagonesmid Instagram</div><div style="font-size:10px;color:var(--mut)">Aparece 2× en la rotación · Fijo</div></div>
+      <span class="badge badge-on">Fijo</span>
+    </div>
+    <div class="social-card" style="margin-bottom:20px">
+      <div class="social-icon" style="background:#1877F2">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700">ApagonesMID Facebook</div><div style="font-size:10px;color:var(--mut)">Aparece 1× en la rotación · Fijo</div></div>
+      <span class="badge badge-on">Fijo</span>
+    </div>
+
+    <!-- Anuncios custom -->
+    <div class="section-title">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="rgba(34,208,240,.6)" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="6" rx="1"/><path d="M4 5l8-3v10L4 9"/></svg>
+      Anuncios de pago
+    </div>
+    <div id="ads-list"><div class="loading"><div class="spinner"></div>Cargando anuncios…</div></div>
+
+  </div>
+</div>
+
+<!-- ── Crop modal ── -->
+<div id="crop-modal">
+  <div class="crop-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="width:32px;height:32px;border-radius:9px;background:rgba(34,208,240,.12);border:1px solid rgba(34,208,240,.2);display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="#22D0F0" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 10l3-3 2 2 2-2 4 4"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:800">Ajustar banner</div>
+        <div style="font-size:10px;color:var(--mut)">Arrastra para encuadrar · 720 × 88 px</div>
+      </div>
+      <button onclick="closeCrop()" style="width:28px;height:28px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:var(--mut);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <!-- Área de encuadre -->
+    <div class="crop-area" id="crop-area">
+      <canvas id="crop-canvas"></canvas>
+      <div class="crop-guides">
+        <div class="crop-guide-v" style="left:33.3%"></div>
+        <div class="crop-guide-v" style="left:66.6%"></div>
+        <div class="crop-guide-h" style="top:33.3%"></div>
+        <div class="crop-guide-h" style="top:66.6%"></div>
+      </div>
+    </div>
+    <!-- Zoom -->
+    <div class="crop-zoom-row">
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="var(--mut)" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><path d="M11 11l-2.5-2.5"/></svg>
+      <input type="range" id="crop-zoom" min="100" max="350" value="100" step="5" style="flex:1;accent-color:#22D0F0;height:4px;cursor:pointer" oninput="cropZoom(this.value)"/>
+      <button class="zoom-btn" onclick="cropZoomStep(-10)">−</button>
+      <button class="zoom-btn" onclick="cropZoomStep(10)">+</button>
+      <button class="zoom-btn" style="font-size:10px;font-weight:700;width:auto;padding:0 9px" onclick="cropReset()">Reset</button>
+    </div>
+    <!-- Vista previa live -->
+    <div class="crop-live">
+      <div class="crop-live-label">Vista previa — así aparecerá en la barra:</div>
+      <div class="crop-preview-bar">
+        <canvas id="crop-preview-canvas"></canvas>
+        <div class="crop-preview-overlay"></div>
+        <div class="crop-preview-info">
+          <div style="flex:1;min-width:0">
+            <div id="cprev-title" style="font-size:12px;font-weight:800;color:white;text-shadow:0 1px 3px rgba(0,0,0,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Nombre del anunciante</div>
+            <div id="cprev-url" style="font-size:9px;color:rgba(255,255,255,.55)">ejemplo.com</div>
+          </div>
+          <div style="flex-shrink:0;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.3px">PUBLI</div>
+        </div>
+      </div>
+    </div>
+    <div class="crop-btns">
+      <button class="crop-cancel" onclick="closeCrop()">Cancelar</button>
+      <button class="crop-apply" onclick="applyCrop()">
+        <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px"><path d="M12 3l-7 7-3-3"/></svg>
+        Usar esta imagen
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+const SB_URL = 'https://fybotuqwmzxsajedisus.supabase.co';
+const SB_KEY = 'sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
+const ADMIN_PW = 'ArtosdeMorena_2026';
+const db = supabase.createClient(SB_URL, SB_KEY);
+
+// ── Auth ──────────────────────────────────────────────────
+function checkAuth(){
+  const val = document.getElementById('auth-input').value;
+  if(val === ADMIN_PW){
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAds();
+  } else {
+    const err = document.getElementById('auth-err');
+    err.textContent = 'Contraseña incorrecta';
+    document.getElementById('auth-input').value = '';
+    document.getElementById('auth-input').classList.add('shake');
+    setTimeout(()=>document.getElementById('auth-input').classList.remove('shake'), 400);
+  }
+}
+document.getElementById('auth-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkAuth();});
+
+function logout(){
+  document.getElementById('auth-gate').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-input').value='';
+}
+
+// ── Data ──────────────────────────────────────────────────
+let ads = [];
+let editingId = null;
+let pendingImgData = '';  // imagen comprimida lista para guardar
+
+async function loadAds(){
+  document.getElementById('ads-list').innerHTML='<div class="loading"><div class="spinner"></div>Cargando…</div>';
+  const {data, error} = await db.from('ad_slots').select('*').order('sort_order').order('created_at');
+  if(error){ toast('Error cargando: '+error.message,'e'); return; }
+  ads = data||[];
+  renderStats();
+  renderAds();
+}
+
+function renderStats(){
+  const total = ads.length;
+  const active = ads.filter(a=>a.active&&!a.paused).length;
+  const paused = ads.filter(a=>a.paused||!a.active).length;
+  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-paused').textContent = paused;
+}
+
+function renderAds(){
+  const list = document.getElementById('ads-list');
+  if(!ads.length){
+    list.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div>Sin anuncios. Agrega el primero con el botón "Nuevo".</div></div>';
+    return;
+  }
+  list.innerHTML = ads.map((ad,i)=>{
+    const statusBadge = !ad.active
+      ? '<span class="badge badge-off">Inactivo</span>'
+      : ad.paused
+        ? '<span class="badge badge-pause">Pausado</span>'
+        : '<span class="badge badge-on">Activo</span>';
+    const toggleLabel = (!ad.active||ad.paused) ? 'Activar' : 'Pausar';
+    const toggleClass = (!ad.active||ad.paused) ? 'act-toggle-off' : 'act-toggle-on';
+    const sortNum = 4 + i; // 1-3 son redes sociales fijas
+    return `<div class="ad-card" id="adcard-${ad.id}">
+      ${ad.img_data
+        ? `<img class="ad-banner" src="${ad.img_data}" alt="${ad.title}" loading="lazy"/>`
+        : `<div class="ad-banner-placeholder"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="16" height="16" rx="3"/><path d="M2 13l4-4 3 3 3-3 5 5"/></svg></div>`
+      }
+      <div class="ad-body">
+        <div class="ad-row">
+          <div class="ad-num">${sortNum}</div>
+          <div style="flex:1;min-width:0">
+            <div class="ad-title">${ad.title||'Sin título'}</div>
+            <div class="ad-url">${ad.url||'Sin URL'}</div>
+          </div>
+          ${statusBadge}
+        </div>
+        <div class="ad-actions">
+          <button class="act-btn act-edit" onclick="startEdit('${ad.id}')">
+            <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2l2 2-6 6H2V8z"/></svg>
+            Editar
+          </button>
+          <button class="act-btn ${toggleClass}" onclick="toggleAd('${ad.id}')">
+            ${toggleLabel}
+          </button>
+          <button class="act-btn act-del" onclick="deleteAd('${ad.id}')">
+            <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7"/></svg>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Form ──────────────────────────────────────────────────
+function openForm(){
+  editingId = null;
+  pendingImgData = '';
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-url').value = '';
+  document.getElementById('f-img-label-text').textContent = 'Seleccionar imagen';
+  document.getElementById('form-preview-wrap').style.display = 'none';
+  document.getElementById('form-title-text').textContent = 'Nuevo anuncio';
+  document.getElementById('f-save-txt').textContent = 'Publicar anuncio';
+  document.getElementById('form-panel').style.display = 'block';
+  document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function startEdit(id){
+  const ad = ads.find(a=>a.id===id);
+  if(!ad) return;
+  editingId = id;
+  pendingImgData = '';
+  document.getElementById('f-title').value = ad.title||'';
+  document.getElementById('f-url').value = ad.url||'';
+  document.getElementById('f-img-label-text').textContent = ad.img_data ? 'Imagen actual — toca para cambiar' : 'Seleccionar imagen';
+  if(ad.img_data){
+    const p = document.getElementById('form-preview');
+    p.src = ad.img_data;
+    document.getElementById('form-preview-wrap').style.display = 'block';
+  } else {
+    document.getElementById('form-preview-wrap').style.display = 'none';
+  }
+  document.getElementById('form-title-text').textContent = 'Editar anuncio';
+  document.getElementById('f-save-txt').textContent = 'Guardar cambios';
+  document.getElementById('form-panel').style.display = 'block';
+  document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeForm(){
+  document.getElementById('form-panel').style.display = 'none';
+  editingId = null;
+  pendingImgData = '';
+}
+
+async function saveAd(){
+  const title = document.getElementById('f-title').value.trim();
+  const url   = document.getElementById('f-url').value.trim();
+  if(!title){ toast('Escribe un título','w'); return; }
+
+  // Si editando y no hay nueva imagen, usar la existente del ad
+  let imgData = pendingImgData;
+  if(!imgData && editingId){
+    const existing = ads.find(a=>a.id===editingId);
+    imgData = existing?.img_data||'';
+  }
+  if(!imgData){ toast('Selecciona y recorta una imagen primero','w'); return; }
+
+  const btn = document.getElementById('f-save-btn');
+  btn.disabled = true;
+  document.getElementById('f-save-txt').textContent = 'Guardando…';
+
+  try{
+    if(editingId){
+      const {error} = await db.from('ad_slots').update({title,url,img_data:imgData}).eq('id',editingId);
+      if(error) throw error;
+      toast('✅ Anuncio actualizado','s');
+    } else {
+      const id = 'ad_' + Date.now().toString(36);
+      const {error} = await db.from('ad_slots').insert([{id,title,url,img_data:imgData,active:true,paused:false,sort_order:0,created_at:Date.now()}]);
+      if(error) throw error;
+      toast('✅ Anuncio publicado','s');
+    }
+    closeForm();
+    await loadAds();
+  } catch(err){
+    toast('Error: '+err.message,'e');
+  }
+  btn.disabled = false;
+  document.getElementById('f-save-txt').textContent = editingId ? 'Guardar cambios' : 'Publicar anuncio';
+}
+
+async function toggleAd(id){
+  const ad = ads.find(a=>a.id===id);
+  if(!ad) return;
+  const newActive = !ad.active || ad.paused ? true : false;
+  const newPaused = !ad.active || ad.paused ? false : true;
+  const {error} = await db.from('ad_slots').update({active:newActive, paused:newPaused}).eq('id',id);
+  if(error){ toast('Error: '+error.message,'e'); return; }
+  toast(newActive&&!newPaused ? 'Anuncio activado' : 'Anuncio pausado','b');
+  await loadAds();
+}
+
+async function deleteAd(id){
+  if(!confirm('¿Eliminar este anuncio? No se puede deshacer.')) return;
+  const {error} = await db.from('ad_slots').delete().eq('id',id);
+  if(error){ toast('Error: '+error.message,'e'); return; }
+  toast('Anuncio eliminado','b');
+  await loadAds();
+}
+
+// ── Image select + crop ───────────────────────────────────
+let _cropImg = null, _cropOx = 0, _cropOy = 0, _cropScale = 1, _dragStart = null, _dragOff = null;
+
+function handleImgSelect(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('Solo imágenes','e'); return; }
+  if(file.size > 10*1024*1024){ toast('Imagen muy grande (máx 10 MB)','e'); return; }
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{ _cropImg=img; _cropOx=0; _cropOy=0; _cropScale=1; openCropModal(); };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function openCropModal(){
+  document.getElementById('crop-modal').style.display='flex';
+  const sl = document.getElementById('crop-zoom'); if(sl) sl.value=100;
+  // Actualizar preview label con datos actuales del form
+  const t = document.getElementById('f-title')?.value||'Nombre del anunciante';
+  const u = document.getElementById('f-url')?.value||'ejemplo.com';
+  const pt=document.getElementById('cprev-title'), pu=document.getElementById('cprev-url');
+  if(pt) pt.textContent = t||'Nombre del anunciante';
+  if(pu) pu.textContent = (u||'ejemplo.com').replace(/^https?:\/\//,'').split('/')[0];
+  requestAnimationFrame(()=>{ cropDraw(); initCropDrag(); });
+}
+
+function closeCrop(){
+  document.getElementById('crop-modal').style.display='none';
+  _dragStart=null;
+  document.removeEventListener('mousemove',_onMouseMove);
+  document.removeEventListener('mouseup',_onMouseUp);
+}
+
+function cropDraw(){
+  const c=document.getElementById('crop-canvas');
+  if(!c||!_cropImg) return;
+  const W=c.offsetWidth||400, H=c.offsetHeight||48;
+  c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,W,H);
+  const dw=_cropImg.width*(H/_cropImg.height)*_cropScale;
+  const dh=H*_cropScale;
+  const dx=(W-dw)/2+_cropOx;
+  const dy=(H-dh)/2+_cropOy;
+  ctx.drawImage(_cropImg,dx,dy,dw,dh);
+  // Live preview
+  const pc=document.getElementById('crop-preview-canvas');
+  if(pc){
+    pc.width=pc.offsetWidth||400; pc.height=pc.offsetHeight||44;
+    const pctx=pc.getContext('2d');
+    pctx.fillStyle='#0C060A'; pctx.fillRect(0,0,pc.width,pc.height);
+    const pw=_cropImg.width*(pc.height/_cropImg.height)*_cropScale;
+    const ph=pc.height*_cropScale;
+    const px=(pc.width-pw)/2+_cropOx*(pc.width/W);
+    const py=(pc.height-ph)/2+_cropOy*(pc.height/H);
+    pctx.drawImage(_cropImg,px,py,pw,ph);
+  }
+}
+
+function cropZoom(v){ _cropScale=parseInt(v)/100; cropDraw(); }
+function cropZoomStep(d){ const sl=document.getElementById('crop-zoom'); if(sl){sl.value=Math.min(350,Math.max(100,parseInt(sl.value)+d)); _cropScale=parseInt(sl.value)/100;} cropDraw(); }
+function cropReset(){ _cropOx=0;_cropOy=0;_cropScale=1;const sl=document.getElementById('crop-zoom');if(sl)sl.value=100; cropDraw(); }
+
+const _onMouseMove=e=>{
+  if(!_dragStart)return;
+  _cropOx=_dragOff.x+(e.clientX-_dragStart.x);
+  _cropOy=_dragOff.y+(e.clientY-_dragStart.y);
+  cropDraw();
+};
+const _onMouseUp=()=>{ _dragStart=null; };
+
+function initCropDrag(){
+  const area=document.getElementById('crop-area');
+  if(!area) return;
+  area.onmousedown=e=>{
+    _dragStart={x:e.clientX,y:e.clientY};
+    _dragOff={x:_cropOx,y:_cropOy};
+    area.style.cursor='grabbing'; e.preventDefault();
+  };
+  document.addEventListener('mousemove',_onMouseMove);
+  document.addEventListener('mouseup',e=>{ _dragStart=null; if(area)area.style.cursor='grab'; });
+  // Touch
+  area.ontouchstart=e=>{
+    if(e.touches.length!==1)return;
+    _dragStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    _dragOff={x:_cropOx,y:_cropOy};
+    e.preventDefault();
+  };
+  area.ontouchmove=e=>{
+    if(!_dragStart||e.touches.length!==1)return;
+    _cropOx=_dragOff.x+(e.touches[0].clientX-_dragStart.x);
+    _cropOy=_dragOff.y+(e.touches[0].clientY-_dragStart.y);
+    cropDraw(); e.preventDefault();
+  };
+  area.ontouchend=()=>{ _dragStart=null; };
+}
+
+function applyCrop(){
+  const TW=720,TH=88;
+  const c=document.createElement('canvas');
+  c.width=TW; c.height=TH;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,TW,TH);
+  const area=document.getElementById('crop-canvas');
+  const aW=area?area.offsetWidth:400, aH=area?area.offsetHeight:48;
+  const dw=_cropImg.width*(TH/_cropImg.height)*_cropScale*(TW/aW);
+  const dh=TH*_cropScale;
+  const dx=(TW-dw)/2+_cropOx*(TW/aW);
+  const dy=(TH-dh)/2+_cropOy;
+  ctx.drawImage(_cropImg,dx,dy,dw,dh);
+  const compressed=c.toDataURL('image/jpeg',0.82);
+  pendingImgData=compressed;
+  // Mostrar preview en el form
+  const p=document.getElementById('form-preview');
+  const w=document.getElementById('form-preview-wrap');
+  if(p){ p.src=compressed; if(w)w.style.display='block'; }
+  document.getElementById('f-img-label-text').textContent='Imagen lista — toca para cambiar';
+  const kb=Math.round(compressed.length*0.75/1024);
+  toast('✅ Imagen lista — '+kb+' KB','s');
+  closeCrop();
+}
+
+// ── Toast ──────────────────────────────────────────────────
+function toast(msg,type='i'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className='toast '+(type||'i');
+  t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},2800);
+  setTimeout(()=>t.remove(),3200);
+}
+</script>
+</body>
+</html>
