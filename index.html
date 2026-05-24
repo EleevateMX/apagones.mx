@@ -152,7 +152,6 @@ html.light #contact-sheet{background:#0D0610!important}
 html.light #contact-modal .ct-cat-card{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.12)}
 html.light #admin-login .login-sheet{background:linear-gradient(160deg,#100810,#0C060A)!important}
 html.light .sheet{background:#fff;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-html.light .login-sheet{background:linear-gradient(160deg,#100810,#0C060A)!important}
 html.light .admin-sheet{background:linear-gradient(180deg,#100810 0%,#0C060A 100%)}
 html.light .ob-screen{background:var(--bg)}
 html.light #onboarding{background:var(--bg)}
@@ -2361,7 +2360,6 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
         <div><div class="mm-btn-name" data-i18n="menu_rankings">Ranking de zonas</div><div class="mm-btn-sub" data-i18n="menu_rankings_sub">Las más activas este mes</div></div>
         <svg viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="var(--mut)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </button>
-      <button class="mm-btn" onclick="openContacto();closeMenu()">
         <div class="mm-btn-icon" style="background:linear-gradient(135deg,rgba(34,208,240,.15),rgba(34,208,240,.05));border-color:rgba(34,208,240,.25)">
           <svg viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
@@ -3406,162 +3404,33 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 </div>
 
 
-<!-- MODAL CONTÁCTANOS — v2 -->
-<div id="contact-modal" style="position:fixed;inset:0;z-index:1900;display:none;align-items:flex-end;justify-content:center">
-  <!-- Backdrop separado para animar -->
-  <div id="ct-backdrop" onclick="closeContacto()" style="position:absolute;inset:0;background:rgba(4,2,6,.84);opacity:0;transition:opacity .35s"></div>
-  <!-- Sheet -->
-  <div id="contact-sheet" style="position:relative;width:100%;max-width:500px;background:#0D0610;border:1px solid rgba(255,255,255,.09);border-bottom:none;border-radius:26px 26px 0 0;padding:0 0 max(env(safe-area-inset-bottom,0px),28px);transform:translateY(100%);transition:transform .44s cubic-bezier(.22,1,.36,1);box-shadow:0 -12px 60px rgba(0,0,0,.6);overflow:hidden;max-height:92vh;overflow-y:auto">
-    <!-- Handle bar -->
-    <div style="width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.1);margin:12px auto 0"></div>
-    <!-- Header -->
-    <div style="padding:18px 22px 0;display:flex;align-items:center;gap:12px">
-      <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(34,208,240,.2),rgba(34,208,240,.06));border:1px solid rgba(34,208,240,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <div style="flex:1">
-        <div style="font-size:18px;font-weight:800;color:#F4EFFE;letter-spacing:-.4px">Contáctanos</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.3);margin-top:2px">Anónimo · Sin registro</div>
-      </div>
-      <button onclick="closeContacto()" style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
-        <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-linecap="round"><path d="M1 1l10 10M11 1L1 11"/></svg>
-      </button>
-    </div>
-
-    <!-- PASO 1: Selección de categoría -->
-    <div id="ct-step-1" style="padding:20px 22px 0">
-      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px">¿Cómo podemos ayudarte?</div>
-      <div style="display:flex;flex-direction:column;gap:8px" id="ct-cat-list">
-
-        <button class="ct-cat-card" data-cat="sugerencia" onclick="selectCat(this)">
-          <div class="ct-cat-icon" style="background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.25)">
-            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#F5B731" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="8" r="5"/><path d="M10 13v2M7 17h6"/><path d="M8 8c0-1.1.9-2 2-2s2 .9 2 2a2 2 0 0 1-1 1.73V12"/></svg>
-          </div>
-          <div class="ct-cat-text">
-            <div class="ct-cat-name">Sugerencia o idea</div>
-            <div class="ct-cat-sub">Propón mejoras para la aplicación</div>
-          </div>
-          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-        </button>
-
-        <button class="ct-cat-card" data-cat="ayuda" onclick="selectCat(this)">
-          <div class="ct-cat-icon" style="background:rgba(34,208,240,.1);border-color:rgba(34,208,240,.2)">
-            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#22D0F0" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M7.5 7.5a2.5 2.5 0 0 1 5 0c0 2-2.5 2.5-2.5 4"/><circle cx="10" cy="15.5" r=".5" fill="#22D0F0"/></svg>
-          </div>
-          <div class="ct-cat-text">
-            <div class="ct-cat-name">Ayuda o soporte</div>
-            <div class="ct-cat-sub">¿Algo no funciona como esperas?</div>
-          </div>
-          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-        </button>
-
-        <button class="ct-cat-card ct-cat-highlight" data-cat="anuncio" onclick="selectCat(this)">
-          <div class="ct-cat-icon" style="background:rgba(101,8,31,.25);border-color:rgba(200,60,90,.35)">
-            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#FF9EC0" stroke-width="2" stroke-linecap="round"><path d="M3 7h2v4H3ZM5 7l9-3.5v11L5 11"/><path d="M7 11v3.5"/><circle cx="16" cy="10" r="1" fill="#FF9EC0"/></svg>
-          </div>
-          <div class="ct-cat-text">
-            <div class="ct-cat-name" style="color:#FFB8CC">Quiero anunciarme aquí</div>
-            <div class="ct-cat-sub">Coloca tu anuncio en la barra de la app</div>
-          </div>
-          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,150,180,.35)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-        </button>
-
-        <button class="ct-cat-card" data-cat="falla" onclick="selectCat(this)">
-          <div class="ct-cat-icon" style="background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.2)">
-            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#FF8080" stroke-width="2" stroke-linecap="round"><path d="M10 2L2 17h16Z"/><path d="M10 8v4"/><circle cx="10" cy="14.5" r=".5" fill="#FF8080"/></svg>
-          </div>
-          <div class="ct-cat-text">
-            <div class="ct-cat-name">Reportar falla</div>
-            <div class="ct-cat-sub">Error, bug o problema técnico</div>
-          </div>
-          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-        </button>
-
-        <button class="ct-cat-card" data-cat="otro" onclick="selectCat(this)">
-          <div class="ct-cat-icon" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)">
-            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="1"/><circle cx="4" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg>
-          </div>
-          <div class="ct-cat-text">
-            <div class="ct-cat-name">Otro</div>
-            <div class="ct-cat-sub">Cualquier otro tipo de mensaje</div>
-          </div>
-          <svg class="ct-cat-arrow" viewBox="0 0 8 14" width="7" height="12" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- PASO 2: Formulario (oculto hasta seleccionar categoría) -->
-    <div id="ct-step-2" style="display:none;padding:20px 22px 0">
-      <!-- Breadcrumb -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
-        <button onclick="backToCats()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--f);font-size:12px;font-weight:700;color:rgba(255,255,255,.45)">
-          <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 1L2 6l6 5"/></svg>
-          Volver
-        </button>
-        <div id="ct-breadcrumb" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.5)"></div>
-      </div>
-
-      <!-- Mensaje -->
-      <div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px" id="ct-msg-label">Mensaje</div>
-        <textarea id="ct-msg" rows="4" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:13px 15px;color:#F4EFFE;font-family:var(--f);font-size:14px;resize:none;outline:none;line-height:1.6;-webkit-appearance:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='rgba(34,208,240,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'" placeholder="Escribe aquí…"></textarea>
-      </div>
-
-      <!-- Campos extra (solo para anuncio) -->
-      <div id="ct-anuncio-fields" style="display:none;margin-bottom:12px">
-        <div style="background:rgba(101,8,31,.15);border:1px solid rgba(200,60,90,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:rgba(255,180,200,.7);line-height:1.6">
-          Dinos qué quieres anunciar, tu página o red social y presupuesto aproximado. Te contactaremos por ese medio.
-        </div>
-        <input type="text" id="ct-contact-ref" placeholder="Instagram, Facebook o sitio web (para contactarte)" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 14px;color:#F4EFFE;font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none;box-sizing:border-box;margin-bottom:8px;transition:border-color .2s" onfocus="this.style.borderColor='rgba(101,8,31,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"/>
-      </div>
-
-      <!-- Colonia -->
-      <div style="margin-bottom:16px">
-        <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Colonia o zona (opcional)</div>
-        <input type="text" id="ct-zona" placeholder="Ej. García Ginerés, Mérida" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 14px;color:#F4EFFE;font-family:var(--f);font-size:14px;outline:none;-webkit-appearance:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='rgba(34,208,240,.3)'" onblur="this.style.borderColor='rgba(255,255,255,.09)'"/>
-      </div>
-
-      <!-- Privacidad -->
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 14px;font-size:11px;color:rgba(255,255,255,.3);margin-bottom:16px;line-height:1.6;display:flex;gap:10px">
-        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.8" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><rect x="5" y="9" width="10" height="8" rx="2"/><path d="M7 9V6a3 3 0 0 1 6 0v3"/></svg>
-        <span>Mensaje anónimo. Solo usamos zona horaria, idioma y resolución de pantalla para generar tu ID de dispositivo.</span>
-      </div>
-
-      <button id="ct-send-btn" onclick="enviarTicket()" style="width:100%;padding:15px;background:linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12));border:1.5px solid rgba(34,208,240,.35);border-radius:15px;color:#22D0F0;font-family:var(--f);font-size:15px;font-weight:800;cursor:pointer;-webkit-appearance:none;transition:all .2s;letter-spacing:.02em;touch-action:manipulation" onmouseover="this.style.background='linear-gradient(135deg,rgba(34,208,240,.3),rgba(34,208,240,.18))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(34,208,240,.22),rgba(34,208,240,.12))'">Enviar mensaje →</button>
-    </div>
-
-    <!-- Espacio inferior -->
-    <div style="height:4px"></div>
-  </div>
-</div>
-
-<!-- Confirmación ticket -->
-<div id="contact-confirm" style="position:fixed;inset:0;z-index:1901;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,2,6,.88)">
-  <div style="background:#0D0610;border:1px solid rgba(31,209,138,.25);border-radius:22px;padding:30px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.7)">
-    <div style="width:60px;height:60px;border-radius:18px;background:rgba(31,209,138,.12);border:1px solid rgba(31,209,138,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#1FD18A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <div style="font-size:20px;font-weight:800;color:#F4EFFE;margin-bottom:6px;letter-spacing:-.3px">¡Recibido!</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:8px">Ticket generado:</div>
-    <div id="ct-confirm-id" style="font-size:12px;font-weight:800;color:#1FD18A;background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.18);border-radius:10px;padding:8px 16px;display:inline-block;margin-bottom:16px;letter-spacing:.5px;font-family:monospace"></div>
-    <div style="font-size:12px;color:rgba(255,255,255,.3);line-height:1.7;margin-bottom:22px">Revisamos los mensajes periódicamente. Gracias por contribuir a mejorar ApagonesMID.</div>
-    <button onclick="document.getElementById('contact-confirm').style.display='none'" style="width:100%;padding:13px;background:rgba(31,209,138,.12);border:1.5px solid rgba(31,209,138,.25);border-radius:13px;color:#1FD18A;font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;-webkit-appearance:none">Listo ✓</button>
-  </div>
-</div>
-
 <!-- ADMIN LOGIN -->
 <div id="admin-login">
   <div class="login-sheet">
     <div class="login-handle"></div>
-    <div class="login-icon-wrap">
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(240,100,100,.9)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="3"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <div class="login-lockup">
+      <div class="login-seal">
+        <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
+          <rect x="6" y="13" width="16" height="12" rx="3" stroke="rgba(240,100,100,.85)" stroke-width="1.8"/>
+          <path d="M9 13V9a5 5 0 0 1 10 0v4" stroke="rgba(240,100,100,.85)" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="14" cy="19" r="1.5" fill="rgba(240,100,100,.85)"/>
+        </svg>
+      </div>
+      <div class="login-wordmark">
+        <div class="login-title">ApagonesMID</div>
+        <div class="login-sub">Acceso restringido · Admin</div>
+      </div>
     </div>
-    <div class="login-title">Admin</div>
-    <div class="login-sub">Acceso restringido · ApagonesMID</div>
-    <input type="password" class="login-input" id="pw-input" placeholder="••••••••••" onkeydown="if(event.key==='Enter')checkPw()"/>
-    <div class="login-btns">
+    <div class="login-field-wrap">
+      <div class="login-field-label">Contraseña</div>
+      <input type="password" class="login-input" id="pw-input" placeholder="••••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkPw()"/>
+    </div>
+    <div class="login-actions">
       <button class="btn-back" onclick="document.getElementById('admin-login').classList.remove('open')">Cancelar</button>
-      <button class="btn-brand" onclick="checkPw()">Ingresar →</button>
+      <button class="btn-brand" onclick="checkPw()">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+        Ingresar
+      </button>
     </div>
   </div>
 </div>
@@ -3597,7 +3466,6 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
       <div class="admin-tab" id="atab-trends" onclick="switchAdminTab('trends')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="2,12 6,7 9,9 14,4"/><polyline points="11,4 14,4 14,7"/></svg> Tendencias</span></div>
       <div class="admin-tab" id="atab-sched" onclick="switchAdminTab('sched')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg> Programar</span></div>
       <div class="admin-tab" id="atab-anuncios" onclick="switchAdminTab('anuncios')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 6h2v4H2ZM4 6l8-3v10L4 10"/><path d="M6 10v3"/></svg> Anuncios</span></div>
-      <div class="admin-tab" id="atab-tickets" onclick="switchAdminTab('tickets')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 10a2 2 0 0 1-2 2H5l-3 3V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6Z"/></svg> Tickets</span></div>
       <div class="admin-tab" id="atab-historico" onclick="switchAdminTab('historico')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 2h8a1 1 0 0 1 1 1v11l-4-2-4 2V3a1 1 0 0 1 1-1Z"/></svg> Histórico</span></div>
       <div class="admin-tab" id="atab-audit" onclick="switchAdminTab('audit')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 2H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6Z"/><path d="M10 2v4h4M5 9h6M5 12h4"/></svg> Auditoría</span></div>
       <div class="admin-tab" id="atab-settings" onclick="switchAdminTab('settings')"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5 13 13M3 13l1.5-1.5M11.5 4.5 13 3"/></svg> Ajustes</span></div>
@@ -4970,7 +4838,7 @@ function filterHistorico(){
 
 function switchAdminTab(tab){
   adminTab=tab;
-  ['apagones','agua','alumbrado','critical','heatmap','trends','sched','anuncios','tickets','historico','audit','settings'].forEach(t=>{
+  ['apagones','agua','alumbrado','critical','heatmap','trends','sched','anuncios','historico','audit','settings'].forEach(t=>{
     const el=document.getElementById('atab-'+t);
     if(el) el.classList.toggle('active',t===tab);
   });
@@ -5282,9 +5150,6 @@ function renderAdminPanel(){
     applySlideStates();
   }
 
-  else if(adminTab==='tickets'){
-    renderTicketsTab(body);
-  }
     else if(adminTab==='audit'){
     body.innerHTML = `
       <div style="background:rgba(101,8,31,.1);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.5">
@@ -5925,6 +5790,17 @@ html.light .ct-cat-sub{color:rgba(0,0,0,.45)}
   white-space:nowrap;transition:background .18s;
 }
 .adm-slide-btn:hover{background:rgba(255,255,255,.06)}
+
+.adm-action-btn{padding:8px 14px;border-radius:9px;border:1px solid;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;transition:opacity .15s,transform .1s;white-space:nowrap;touch-action:manipulation}
+.adm-action-btn:active{opacity:.75;transform:scale(.97)}
+.adm-tag{padding:6px 11px;border-radius:20px;border:1px solid;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;-webkit-appearance:none;display:inline-flex;align-items:center;gap:4px;transition:opacity .15s;white-space:nowrap;touch-action:manipulation}
+.adm-tag:active{opacity:.7}
+.adm-tag-on{background:rgba(31,209,138,.1);border-color:rgba(31,209,138,.3);color:#1FD18A}
+.adm-tag-off{background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.25);color:#FF8080}
+.adm-tag-warn{background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.25);color:#F5B731}
+.adm-tag-dim{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+
+html.light .login-sheet{background:#0E0812!important}
 </style></head><body>
     <h1>ApagonesMID — ${typeLbl}</h1>
     <div class="meta">Reporte generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
@@ -9777,273 +9653,6 @@ function refreshPromoPreview(){
       <div style="width:8px;height:8px;border-radius:50%;background:var(--grn);flex-shrink:0;box-shadow:0 0 6px var(--grn)"></div>
       <div style="font-size:11px;color:rgba(255,255,255,.5)">Rotando: Instagram → Facebook → Instagram (2:1)</div>`;
   }
-}
-
-// ── DEVICE ID ANÓNIMO ──────────────────────────────────────────
-function getDeviceId(){
-  let did = lsGet('apx_device_id','');
-  if(!did){
-    // Fingerprint ligero: timezone + lang + screen + colorDepth + platform snippet
-    const fp = [
-      Intl.DateTimeFormat().resolvedOptions().timeZone||'',
-      navigator.language||'',
-      screen.width+'x'+screen.height,
-      screen.colorDepth||'',
-      (navigator.platform||'').slice(0,5),
-      (navigator.hardwareConcurrency||0)
-    ].join('|');
-    // Hash simple (djb2)
-    let hash = 5381;
-    for(let i=0;i<fp.length;i++) hash=((hash<<5)+hash)+fp.charCodeAt(i);
-    did = 'DEV-' + Math.abs(hash).toString(36).toUpperCase().padStart(6,'0');
-    lsSet('apx_device_id', did);
-  }
-  return did;
-}
-
-// ── CONTÁCTANOS ──────────────────────────────────────────────────
-let _contactCat = 'falla';
-
-function openContacto(){
-  const m = document.getElementById('contact-modal');
-  const bd = document.getElementById('ct-backdrop');
-  const s = document.getElementById('contact-sheet');
-  if(!m||!s) return;
-  m.style.display='flex';
-  // Reset to step 1
-  document.getElementById('ct-step-1').style.display='block';
-  document.getElementById('ct-step-2').style.display='none';
-  if(document.getElementById('ct-msg')) document.getElementById('ct-msg').value='';
-  if(document.getElementById('ct-zona')) document.getElementById('ct-zona').value='';
-  if(document.getElementById('ct-contact-ref')) document.getElementById('ct-contact-ref').value='';
-  _contactCat='';
-  requestAnimationFrame(()=>{
-    if(bd) bd.style.opacity='1';
-    s.style.transform='translateY(0)';
-  });
-}
-
-function closeContacto(){
-  const bd = document.getElementById('ct-backdrop');
-  const s = document.getElementById('contact-sheet');
-  const m = document.getElementById('contact-modal');
-  if(bd) bd.style.opacity='0';
-  if(s) s.style.transform='translateY(100%)';
-  setTimeout(()=>{ if(m) m.style.display='none'; },440);
-}
-
-function selectCat(btn){
-  _contactCat = btn.dataset.cat;
-  const catNames={sugerencia:'Sugerencia o idea',ayuda:'Ayuda y soporte',anuncio:'Quiero anunciarme',falla:'Reportar falla',otro:'Otro'};
-  const msgPlaceholders={
-    sugerencia:'¿Qué mejorarías de la aplicación? Tu sugerencia es valiosa…',
-    ayuda:'Describe el problema o lo que necesitas. Intenta ser específico…',
-    anuncio:'Cuéntanos qué quieres anunciar y a qué audiencia va dirigido…',
-    falla:'¿Qué pasó? ¿En qué pantalla ocurrió? ¿Qué esperabas que pasara?',
-    otro:'Escribe tu mensaje aquí…'
-  };
-  document.getElementById('ct-breadcrumb').textContent=catNames[_contactCat]||_contactCat;
-  document.getElementById('ct-msg').placeholder=msgPlaceholders[_contactCat]||'Escribe aquí…';
-  const anuncioFields=document.getElementById('ct-anuncio-fields');
-  if(anuncioFields) anuncioFields.style.display=_contactCat==='anuncio'?'block':'none';
-  // Transición de paso 1 → 2
-  const s1=document.getElementById('ct-step-1');
-  const s2=document.getElementById('ct-step-2');
-  s1.style.opacity='0';s1.style.transform='translateX(-20px)';s1.style.transition='opacity .2s,transform .2s';
-  setTimeout(()=>{
-    s1.style.display='none';s1.style.opacity='';s1.style.transform='';s1.style.transition='';
-    s2.style.display='block';s2.style.opacity='0';s2.style.transform='translateX(20px)';s2.style.transition='opacity .2s,transform .2s';
-    requestAnimationFrame(()=>{s2.style.opacity='1';s2.style.transform='translateX(0)';});
-    setTimeout(()=>{
-      s2.style.transition='';
-      const ta=document.getElementById('ct-msg'); if(ta) ta.focus();
-    },200);
-  },200);
-}
-
-function backToCats(){
-  const s1=document.getElementById('ct-step-1');
-  const s2=document.getElementById('ct-step-2');
-  s2.style.opacity='0';s2.style.transform='translateX(20px)';s2.style.transition='opacity .18s,transform .18s';
-  setTimeout(()=>{
-    s2.style.display='none';s2.style.opacity='';s2.style.transform='';s2.style.transition='';
-    s1.style.display='block';s1.style.opacity='0';s1.style.transform='translateX(-20px)';s1.style.transition='opacity .18s,transform .18s';
-    requestAnimationFrame(()=>{s1.style.opacity='1';s1.style.transform='translateX(0)';});
-    setTimeout(()=>{ s1.style.transition=''; },180);
-  },180);
-}
-
-async function enviarTicket(){
-  // Validaciones
-  const msg = (document.getElementById('ct-msg')?.value||'').trim();
-  if(msg.length < 10){ toast('Escribe al menos 10 caracteres','w'); return; }
-  if(!_contactCat){ toast('Selecciona el tipo de mensaje','w'); return; }
-
-  const VALID_CATS = ['falla','sugerencia','ayuda','anuncio','otro'];
-  const category = VALID_CATS.includes(_contactCat) ? _contactCat : 'otro';
-
-  const zona = (document.getElementById('ct-zona')?.value||'').trim();
-  const contactRef = (document.getElementById('ct-contact-ref')?.value||'').trim();
-  const deviceId = getDeviceId();
-  const ticketId = 'TKT-' + Date.now().toString(36).slice(-6).toUpperCase();
-
-  // UI: deshabilitar botón mientras se envía
-  const btn = document.getElementById('ct-send-btn');
-  if(btn){ btn.disabled=true; btn.textContent='Enviando…'; btn.style.opacity='.6'; }
-
-  const ticket = {
-    id: ticketId,
-    device_id: deviceId,
-    category,
-    message: msg,
-    zona: zona || '',
-    contact_ref: contactRef || '',
-    status: 'open'
-  };
-
-  let savedCloud = false;
-  try{
-    const { data, error } = await db.from('contact_tickets').insert([ticket]).select();
-    if(error){
-      console.error('Supabase ticket error:', error.code, error.message, error.details);
-    } else {
-      savedCloud = true;
-    }
-  }catch(e){
-    console.error('Supabase ticket exception:', e);
-  }
-
-  // Guardar en localStorage siempre como respaldo
-  try{
-    const local = { id:ticketId, deviceId, cat:category, msg, zona, ts:Date.now(), status:'open' };
-    const arr = JSON.parse(lsGet('apx_tickets','[]'));
-    arr.unshift(local);
-    lsSet('apx_tickets', JSON.stringify(arr.slice(0,50)));
-  }catch(e){}
-
-  if(btn){ btn.disabled=false; btn.textContent='Enviar mensaje →'; btn.style.opacity=''; }
-
-  closeContacto();
-  setTimeout(()=>{
-    const confirmEl = document.getElementById('ct-confirm-id');
-    if(confirmEl) confirmEl.textContent = ticketId + ' · ' + deviceId;
-    const confirmModal = document.getElementById('contact-confirm');
-    if(confirmModal) confirmModal.style.display='flex';
-  }, 460);
-
-  toast(savedCloud ? '✉️ Mensaje recibido — gracias' : '✉️ Guardado localmente (sin conexión)', savedCloud ? 's' : 'i');
-}
-
-// ── ADMIN TAB TICKETS ─────────────────────────────────────────────
-async function renderTicketsTab(body){
-  body.innerHTML='<div class="admin-empty"><span>⏳</span>Cargando mensajes…</div>';
-  // Merge: Supabase cloud + localStorage fallback
-  let tickets = [];
-  try{
-    const{data, error} = await db.from('contact_tickets')
-      .select('*').order('created_at',{ascending:false}).limit(200);
-    if(!error && data && data.length){
-      tickets = data.map(t=>({
-        id:t.id, deviceId:t.device_id, cat:t.category,
-        msg:t.message, zona:t.zona||'', contactRef:t.contact_ref||'',
-        ts:new Date(t.created_at).getTime(), status:t.status||'open'
-      }));
-    } else {
-      // Fallback to localStorage
-      tickets = JSON.parse(lsGet('apx_tickets','[]'));
-    }
-  }catch(e){
-    tickets = JSON.parse(lsGet('apx_tickets','[]'));
-  }
-  const catLabels = {falla:'Falla técnica',sugerencia:'Sugerencia',anuncio:'Quiero anunciarme',ayuda:'Ayuda/Soporte',otro:'Otro'};
-  const catColors = {falla:'rgba(255,80,80,.15)',sugerencia:'rgba(245,183,49,.15)',anuncio:'rgba(101,8,31,.2)',ayuda:'rgba(34,208,240,.15)',otro:'rgba(255,255,255,.08)'};
-  const catIcons = {
-    falla:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2L1 13h14Z"/><path d="M8 6v4"/><circle cx="8" cy="12" r=".5" fill="currentColor"/></svg>',
-    sugerencia:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="7" r="3"/><path d="M8 10v2"/><path d="M8 1v1M8 13v2M2 4l1 1M13 4l-1 1M1 7h1M14 7h1"/></svg>',
-    anuncio:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 6h2v4H2ZM4 6l8-3v10L4 10"/><path d="M6 10v2.5"/></svg>',
-    ayuda:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M5.5 5.5a2.5 2.5 0 0 1 5 0c0 2-2.5 2.5-2.5 4"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg>',
-    otro:'<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4" cy="8" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="12" cy="8" r="1"/></svg>'
-  };
-  if(!tickets.length){
-    body.innerHTML=`<div class="admin-empty"><div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Sin mensajes aún.<br><span style="font-size:11px;color:rgba(255,255,255,.25)">Aparecerán aquí cuando los vecinos envíen mensajes desde el menú Contáctanos</span></div>`;
-    return;
-  }
-  const statusBtns=(t)=>{
-    const s=t.status||'open';
-    const readSVG=`<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>`;
-    const checkSVG=`<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7l3 3 7-6"/></svg>`;
-    const trashSVG=`<svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h10M5 4V2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V4M3.5 4l.7 7h5.6l.7-7"/></svg>`;
-    const actions=[
-      s==='open'?`<button class="a-btn" onclick="updateTicketStatus('${t.id}','read')" aria-label="Marcar como leído">${readSVG} Leer</button>`:'',
-      s!=='closed'?`<button class="a-btn resolve" onclick="updateTicketStatus('${t.id}','closed')" aria-label="Cerrar ticket">${checkSVG} Cerrar</button>`:'',
-      `<button class="a-btn danger" onclick="deleteTicket('${t.id}')" aria-label="Eliminar ticket">${trashSVG}</button>`
-    ].filter(Boolean).join('');
-    return actions;
-  };
-  const statsHtml=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
-    <div class="admin-kpi"><div class="admin-kpi-n rd">${tickets.filter(t=>t.status==='open'||!t.status).length}</div><div class="admin-kpi-l">Abiertos</div></div>
-    <div class="admin-kpi"><div class="admin-kpi-n ag">${tickets.filter(t=>t.status==='read').length}</div><div class="admin-kpi-l">Leídos</div></div>
-    <div class="admin-kpi"><div class="admin-kpi-n ok">${tickets.filter(t=>t.status==='closed').length}</div><div class="admin-kpi-l">Cerrados</div></div>
-  </div>`;
-  const statusBtnsSVG=(t)=>{
-    const s=t.status||'open';
-    const readBtn = s!=='read'&&s!=='closed'?`<button class="a-btn" onclick="updateTicketStatus('${t.id}','read')">
-      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
-      Leer
-    </button>`:'';
-    const closeBtn = s!=='closed'?`<button class="a-btn resolve" onclick="updateTicketStatus('${t.id}','closed')">
-      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7l3 3 7-6"/></svg>
-      Cerrar
-    </button>`:'';
-    const delBtn = `<button class="a-btn danger" onclick="deleteTicket('${t.id}')">
-      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h10M5 4V2h4v2M5 7v4M9 7v4M3 4l1 8h6l1-8"/></svg>
-    </button>`;
-    return [readBtn,closeBtn,delBtn].filter(Boolean).join('');
-  };
-  body.innerHTML = statsHtml + tickets.map(t=>{
-    const ts = new Date(t.ts||t.created_at).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-    const s = t.status||'open';
-    const catIcon = catIcons[t.cat]||catIcons.otro;
-    const catLabel = catLabels[t.cat]||t.cat;
-    const catColor = catColors[t.cat]||catColors.otro;
-    const contactRef = t.contactRef||t.contact_ref||'';
-    return `<div class="ticket-card ${s}">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="width:24px;height:24px;border-radius:7px;background:${catColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,.7)">${catIcon}</div>
-        <div style="flex:1">
-          <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.5)">${catLabel}</span>
-          ${t.zona?`<span style="font-size:10px;color:rgba(255,255,255,.25);margin-left:6px">· ${t.zona}</span>`:''}
-        </div>
-        <span class="ticket-status ${s}">${s==='open'?'Nuevo':s==='read'?'Leído':'Cerrado'}</span>
-      </div>
-      <div class="ticket-body">${t.msg}</div>
-      ${contactRef?`<div style="font-size:11px;color:rgba(34,208,240,.7);margin-top:5px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 9a5 5 0 0 1 10 0"/><circle cx="7" cy="6" r="2"/></svg> ${contactRef}</div>`:''}
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-        <div style="font-size:10px;color:rgba(255,255,255,.2);font-family:monospace">${t.id} · ${(t.deviceId||'').slice(0,10)}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.25)">${ts}</div>
-      </div>
-      <div class="a-report-acts" style="margin-top:8px">${statusBtnsSVG(t)}</div>
-    </div>`;
-  }).join('');
-}
-
-async function updateTicketStatus(id,status){
-  // Update in Supabase
-  try{ await db.from('contact_tickets').update({status}).eq('id',id); }catch(e){}
-  // Update in localStorage
-  const tickets = JSON.parse(lsGet('apx_tickets','[]'));
-  const t = tickets.find(x=>x.id===id);
-  if(t){ t.status=status; lsSet('apx_tickets',JSON.stringify(tickets)); }
-  switchAdminTab('tickets');
-}
-
-async function deleteTicket(id){
-  if(!confirm('¿Eliminar este mensaje?')) return;
-  try{ await db.from('contact_tickets').delete().eq('id',id); }catch(e){}
-  const tickets = JSON.parse(lsGet('apx_tickets','[]')).filter(x=>x.id!==id);
-  lsSet('apx_tickets',JSON.stringify(tickets));
-  switchAdminTab('tickets');
-  toast('Mensaje eliminado','b');
 }
 
 // ── BANNER EXAMPLE CANVAS ──────────────────────────────────────
