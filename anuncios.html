@@ -177,29 +177,34 @@
     .z-dim{font-size:9px;color:rgba(34,208,240,.4);margin-left:auto;font-family:monospace}
 
     /* Phone preview */
-    .phone-wrap{display:flex;gap:12px;align-items:flex-start;padding:4px 0}
-    .phone-frame{
-      width:180px;flex-shrink:0;
-      background:linear-gradient(145deg,#1A1A2E,#0F0F1A);
-      border-radius:30px;border:2px solid rgba(255,255,255,.12);
-      padding:9px 7px;
-      box-shadow:0 6px 28px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);
+    .phone-wrap{display:flex;gap:14px;align-items:flex-start;padding:4px 0}
+    /* En pantalla angosta: apilar verticalmente */
+    @media(max-width:520px){
+      .phone-wrap{flex-direction:column;align-items:center;gap:10px}
+      .phone-frame{width:min(220px,80vw)!important}
+      .phone-info{text-align:center}
     }
-    .ph-notch{width:52px;height:5px;background:rgba(255,255,255,.14);border-radius:3px;margin:0 auto 7px}
-    .ph-screen{background:#0D0A14;border-radius:18px;overflow:hidden}
-    .ph-map{height:190px;background:linear-gradient(180deg,#0D0A14,#111020);position:relative;overflow:hidden}
+    .phone-frame{
+      width:190px;flex-shrink:0;
+      background:linear-gradient(145deg,#1A1A2E,#0F0F1A);
+      border-radius:32px;border:2px solid rgba(255,255,255,.13);
+      padding:10px 8px;
+      box-shadow:0 8px 32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .ph-notch{width:54px;height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin:0 auto 8px}
+    .ph-screen{background:#0D0A14;border-radius:20px;overflow:hidden}
+    .ph-map{height:200px;background:linear-gradient(180deg,#0D0A14,#111020);position:relative;overflow:hidden}
     .ph-streets{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);background-size:22px 22px}
     .ph-label{position:absolute;bottom:44%;left:50%;transform:translate(-50%,50%);font-size:8px;color:rgba(255,255,255,.18);font-weight:700;letter-spacing:2px;text-transform:uppercase}
     .ph-fab{position:absolute;bottom:12px;right:10px;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#9B1030,#65081F);display:flex;align-items:center;justify-content:center}
-    /* La barra del teléfono usa el mismo canvas (vía imagen) */
-    .ph-bar{height:36px;position:relative;overflow:hidden;background:#0C060A}
-    #ph-preview-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center}
-    .ph-bar-ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.1) 55%,rgba(0,0,0,.38))}
-    .ph-bar-info{position:absolute;inset:0;display:flex;align-items:center;padding:0 8px;gap:5px}
-    .ph-ticker{height:20px;background:#0C0A14;display:flex;align-items:center;padding:0 8px;gap:5px}
-    .ph-home{height:22px;display:flex;align-items:center;justify-content:center}
-    .ph-home-bar{width:44px;height:3px;background:rgba(255,255,255,.2);border-radius:2px}
-    .phone-info{flex:1;font-size:10px;color:var(--mut);line-height:1.6}
+    /* Barra del anuncio — usa canvas para reflejar el crop exacto */
+    .ph-bar{height:42px;position:relative;overflow:hidden;background:#0C060A}
+    .ph-bar-ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.1) 55%,rgba(0,0,0,.36))}
+    .ph-bar-info{position:absolute;inset:0;display:flex;align-items:center;padding:0 9px;gap:6px}
+    .ph-ticker{height:22px;background:#0C0A14;display:flex;align-items:center;padding:0 9px;gap:5px}
+    .ph-home{height:24px;display:flex;align-items:center;justify-content:center}
+    .ph-home-bar{width:48px;height:3px;background:rgba(255,255,255,.2);border-radius:2px}
+    .phone-info{flex:1;font-size:10px;color:var(--mut);line-height:1.6;min-width:0}
 
     /* Nota info */
     .info-note{background:rgba(34,208,240,.04);border:1px solid rgba(34,208,240,.08);border-radius:9px;padding:8px 11px;font-size:11px;color:rgba(255,255,255,.28);margin-bottom:12px;line-height:1.5}
@@ -412,8 +417,8 @@
                       <div class="ph-fab"><svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg></div>
                     </div>
                     <div class="ph-bar">
-                      <!-- Usa imagen generada del canvas -->
-                      <img id="ph-preview-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center"/>
+                      <!-- Canvas que refleja exactamente el mismo encuadre que el desktop -->
+                      <canvas id="ph-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
                       <div class="ph-bar-ov"></div>
                       <div class="ph-bar-info">
                         <div style="flex:1;min-width:0">
@@ -701,7 +706,10 @@ function switchTab(tab){
     document.getElementById('tab-'+t).classList.toggle('on',t===tab);
     document.getElementById('pane-'+t).style.display=t===tab?'':'none';
   });
-  if(tab==='mob') updatePhonePreview();
+  if(tab==='mob'){
+    // rAF para que el canvas tenga sus dimensiones finales antes de dibujar
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ updatePhonePreview(); }); });
+  }
 }
 
 // ── CROP INLINE ───────────────────────────────────────
@@ -754,10 +762,26 @@ function drawCrop(){
   ctx.fillStyle='#0C060A'; ctx.fillRect(0,0,W,H);
   if(!_img) return;
   const dw=_img.width*(H/_img.height)*_sc;
-  const dh=H*_sc;
-  ctx.drawImage(_img,(W-dw)/2+_ox,(H-dh)/2+_oy,dw,dh);
-  // Actualizar el teléfono si está visible
-  if(_prevTab==='mob') updatePhonePreview();
+  ctx.drawImage(_img,(W-dw)/2+_ox,(H-H*_sc)/2+_oy,dw,H*_sc);
+  // Dibujar SIEMPRE en el canvas del teléfono (mismos parámetros, escala proporcional)
+  drawPhoneCanvas(W, H);
+}
+
+function drawPhoneCanvas(srcW, srcH){
+  const pc=document.getElementById('ph-canvas');
+  if(!pc||!_img) return;
+  // Calcular dimensiones reales del canvas del teléfono
+  const PW=pc.offsetWidth||160, PH=pc.offsetHeight||36;
+  if(pc.width!==PW||pc.height!==PH){pc.width=PW;pc.height=PH;}
+  const pctx=pc.getContext('2d');
+  pctx.fillStyle='#0C060A'; pctx.fillRect(0,0,PW,PH);
+  // Escalar _ox y _oy proporcionalmente a la diferencia de tamaño
+  const scaleX = PW / (srcW||400);
+  const scaleY = PH / (srcH||49);
+  const pdw = _img.width*(PH/_img.height)*_sc;
+  const pox = _ox * scaleX;
+  const poy = _oy * scaleY;
+  pctx.drawImage(_img,(PW-pdw)/2+pox,(PH-PH*_sc)/2+poy,pdw,PH*_sc);
 }
 
 function clearCropCanvas(){
@@ -798,20 +822,10 @@ function capturePending(){
 }
 
 function updatePhonePreview(){
-  const phImg=document.getElementById('ph-preview-img');
-  if(phImg&&pendingImg) phImg.src=pendingImg;
-  else if(phImg&&_img){
-    // Generar mini versión si no hay pending aún
-    const c2=document.createElement('canvas');
-    c2.width=360;c2.height=44;
-    const ctx2=c2.getContext('2d');
-    ctx2.fillStyle='#0C060A';ctx2.fillRect(0,0,360,44);
-    const area=document.getElementById('crop-canvas');
-    const aW=area?area.offsetWidth:400,aH=area?area.offsetHeight:49;
-    const dw=_img.width*(44/_img.height)*_sc*(360/aW);
-    ctx2.drawImage(_img,(360-dw)/2+_ox*(360/aW),(44-44*_sc)/2+_oy,dw,44*_sc);
-    phImg.src=c2.toDataURL('image/jpeg',0.7);
-  }
+  // Dibujar desde el estado actual del crop
+  const area=document.getElementById('crop-canvas');
+  const aW=area?area.offsetWidth:400, aH=area?area.offsetHeight:49;
+  drawPhoneCanvas(aW, aH);
 }
 
 // Zoom
