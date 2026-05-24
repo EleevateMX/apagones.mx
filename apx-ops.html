@@ -271,7 +271,14 @@
     ::-webkit-scrollbar{width:5px;height:5px}
     ::-webkit-scrollbar-track{background:transparent}
     ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
-  </style>
+  
+    .fl-inp-admin{width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;color:var(--tx);font-family:var(--f);font-size:13px;outline:none;transition:border-color .2s;box-sizing:border-box}
+    .fl-inp-admin:focus{border-color:rgba(245,183,49,.4)}
+    .uh-news-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:8px}
+    .uh-news-card.urgente{border-color:rgba(255,75,75,.25)}
+    .uh-news-card-img{width:100%;height:80px;object-fit:cover;display:block;background:#0C060A}
+    .uh-news-card-body{padding:9px 12px}
+</style>
 </head>
 <body>
 
@@ -350,6 +357,11 @@
       <div class="nav-item" data-panel="sched" onclick="goPanel('sched',this)">
         <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
         Programados
+      </div>
+      <div class="nav-item" data-panel="ultima-hora" onclick="goPanel('ultima-hora',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2a5 5 0 0 0-5 5v3l-1.5 2h13L13 10V7a5 5 0 0 0-5-5z"/><path d="M6.5 14a1.5 1.5 0 0 0 3 0"/></svg>
+        Última Hora
+        <span class="nav-badge" id="nav-uh-badge" style="display:none">!</span>
       </div>
       <div class="nav-item" data-panel="ads" onclick="goPanel('ads',this)">
         <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="3" height="8" rx="1"/><path d="M4 5l10-3v10L4 9"/></svg>
@@ -472,6 +484,58 @@
       </div>
 
       <!-- ── ANUNCIOS ── -->
+      <div class="panel" id="panel-ultima-hora">
+        <div class="sec-hd">
+          <div class="sec-title">📰 Última Hora</div>
+          <button class="sec-btn" style="background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.25);color:#F5B731" onclick="openUHForm()">
+            <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+            Nueva noticia
+          </button>
+        </div>
+
+        <!-- FORM nueva noticia -->
+        <div id="uh-form" style="display:none;background:var(--card2);border:1px solid rgba(245,183,49,.2);border-radius:14px;padding:16px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:800;margin-bottom:14px;color:#F5B731;display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2a5 5 0 0 0-5 5v3l-1.5 2h13L13 10V7a5 5 0 0 0-5-5z"/><path d="M6.5 14a1.5 1.5 0 0 0 3 0"/></svg>
+            <span id="uh-form-ttl">Nueva noticia</span>
+          </div>
+          <!-- Urgente toggle -->
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,75,75,.06);border:1px solid rgba(255,75,75,.15);border-radius:10px;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('uh-urgente').checked=!document.getElementById('uh-urgente').checked">
+            <input type="checkbox" id="uh-urgente" style="accent-color:#FF4B4B;width:16px;height:16px"/>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#FF8080">🔴 Marcar como URGENTE</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.3)">Aparecerá con borde rojo y notificación destacada</div>
+            </div>
+          </div>
+          <div class="fld"><label>Título de la noticia</label><input type="text" class="fl-inp-admin" id="uh-titulo" placeholder="Ej. CFE reporta falla en subestación norte"/></div>
+          <div class="fld"><label>Descripción / Cuerpo de la nota</label><textarea class="fl-inp-admin" id="uh-desc" rows="3" placeholder="Detalle de la noticia…" style="resize:vertical"></textarea></div>
+          <div class="fld"><label>Fuente (medio que lo publicó)</label><input type="text" class="fl-inp-admin" id="uh-fuente" placeholder="Ej. Diario de Yucatán"/></div>
+          <div class="fld"><label>URL de la nota original <span style="font-size:10px;opacity:.5">(opcional)</span></label><input type="url" class="fl-inp-admin" id="uh-url" placeholder="https://…"/></div>
+          <div class="fld">
+            <label>Imagen de la noticia <span style="font-size:10px;opacity:.5">(opcional)</span></label>
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,.03);border:1.5px dashed rgba(245,183,49,.2);border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;color:#F5B731" id="uh-img-label">
+              <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 9l3-3 2 2 2-2 4 4"/></svg>
+              <span id="uh-img-txt">Seleccionar imagen</span>
+              <input type="file" accept="image/*" id="uh-img-file" onchange="previewUHImg(this)" style="display:none"/>
+            </label>
+            <!-- Preview de la imagen -->
+            <div id="uh-img-preview-wrap" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid rgba(245,183,49,.15)">
+              <img id="uh-img-preview" style="width:100%;height:140px;object-fit:cover;display:block;background:#0C060A" alt=""/>
+            </div>
+          </div>
+          <div class="fld"><label>Expira en <span style="font-size:10px;opacity:.5">(opcional — deja vacío para no expirar)</span></label><input type="datetime-local" class="fl-inp-admin" id="uh-expires"/></div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button onclick="closeUHForm()" style="flex:1;padding:11px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+            <button onclick="saveUHNoticia()" style="flex:2;padding:11px;border-radius:10px;background:linear-gradient(135deg,rgba(245,183,49,.3),rgba(245,183,49,.15));border:1px solid rgba(245,183,49,.4);color:#F5B731;font-family:var(--f);font-size:13px;font-weight:800;cursor:pointer">
+              <span id="uh-save-t">Publicar noticia</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de noticias -->
+        <div id="uh-admin-list"><div style="text-align:center;padding:28px;color:rgba(255,255,255,.3)">Cargando…</div></div>
+      </div>
+
       <div class="panel" id="panel-ads">
         <div style="background:var(--card);border:1px solid rgba(34,208,240,.2);border-radius:16px;padding:20px;text-align:center">
           <div style="width:52px;height:52px;border-radius:14px;background:rgba(34,208,240,.1);border:1px solid rgba(34,208,240,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
@@ -546,6 +610,10 @@
         <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12l4-4 3 3 4-5 3 3"/></svg>
         Stats
       </button>
+      <button class="mn-item" data-panel="ultima-hora" onclick="goPanel('ultima-hora',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2a5 5 0 0 0-5 5v3l-1.5 2h13L13 10V7a5 5 0 0 0-5-5z"/><path d="M6.5 14a1.5 1.5 0 0 0 3 0"/></svg>
+        Noticias
+      </button>
       <button class="mn-item" data-panel="sched" onclick="goPanel('sched',this)">
         <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
         Avisos
@@ -612,6 +680,7 @@ function goPanel(name, el){
   if(name==='historico') loadHistorico();
   if(name==='sched') loadSched();
   if(name==='audit') renderAuditList();
+  if(name==='ultima-hora') loadUHPanel();
 }
 
 // ══════ DATA ══════════════════════════════════════════
@@ -1071,6 +1140,178 @@ function toast(msg,type='i'){
   setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},2800);
   setTimeout(()=>t.remove(),3200);
 }
+
+// ═══════════ ÚLTIMA HORA — ADMIN ═══════════
+let _uhNoticias = [], _uhEditId = null, _uhImgData = '';
+
+async function loadUHPanel(){
+  document.getElementById('uh-admin-list').innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.3)">Cargando…</div>';
+  const {data} = await db.from('ultima_hora').select('*').order('created_at',{ascending:false}).limit(50);
+  _uhNoticias = data||[];
+  renderUHAdminList();
+  // Badge en nav
+  const active = _uhNoticias.filter(n=>n.activa).length;
+  const badge = document.getElementById('nav-uh-badge');
+  if(badge){ badge.textContent=active>0?String(active):'!'; badge.style.display=active>0?'':'none'; }
+}
+
+function renderUHAdminList(){
+  const el = document.getElementById('uh-admin-list');
+  if(!_uhNoticias.length){
+    el.innerHTML = '<div style="text-align:center;padding:28px;color:rgba(255,255,255,.3);font-size:13px">Sin noticias publicadas.<br/>Toca "Nueva noticia" para añadir.</div>';
+    return;
+  }
+  el.innerHTML = _uhNoticias.map(n=>{
+    const when = new Date(n.created_at).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const status = n.activa
+      ? '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(31,209,138,.1);border:1px solid rgba(31,209,138,.25);color:#1FD18A">Activa</span>'
+      : '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3)">Inactiva</span>';
+    const urgent = n.urgente ? '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(255,75,75,.12);border:1px solid rgba(255,75,75,.25);color:#FF6B6B">🔴 Urgente</span>' : '';
+    const hasImg = n.img_data && n.img_data.length > 100;
+    return `<div class="uh-news-card${n.urgente?' urgente':''}">
+      ${hasImg ? `<img class="uh-news-card-img" src="${n.img_data}" alt="" loading="lazy"/>` : ''}
+      <div class="uh-news-card-body">
+        <div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:800;color:#F0E8EC;margin-bottom:2px">${escAdm(n.titulo)}</div>
+            <div style="font-size:10px;color:rgba(245,183,49,.65);font-weight:600">${escAdm(n.fuente||'—')}</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">${urgent}${status}</div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escAdm(n.descripcion)}</div>
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <span style="font-size:10px;color:rgba(255,255,255,.25)">${when}</span>
+          ${n.expires_at ? `<span style="font-size:10px;color:rgba(255,75,75,.5)">· Expira ${new Date(n.expires_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'})}</span>` : ''}
+          <span style="margin-left:auto;display:flex;gap:4px">
+            <button onclick="editUHNoticia('${n.id}')" style="padding:4px 9px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.4);font-size:10px;font-weight:700;cursor:pointer">Editar</button>
+            <button onclick="toggleUHNoticia('${n.id}')" style="padding:4px 9px;border-radius:7px;background:${n.activa?'rgba(245,183,49,.08)':'rgba(31,209,138,.08)'};border:1px solid ${n.activa?'rgba(245,183,49,.2)':'rgba(31,209,138,.2)'};color:${n.activa?'#F5B731':'#1FD18A'};font-size:10px;font-weight:700;cursor:pointer">${n.activa?'Desactivar':'Activar'}</button>
+            <button onclick="deleteUHNoticia('${n.id}')" style="padding:4px 7px;border-radius:7px;background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.15);color:#FF8080;font-size:10px;font-weight:700;cursor:pointer">🗑</button>
+          </span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openUHForm(){
+  _uhEditId = null; _uhImgData = '';
+  document.getElementById('uh-titulo').value = '';
+  document.getElementById('uh-desc').value = '';
+  document.getElementById('uh-fuente').value = '';
+  document.getElementById('uh-url').value = '';
+  document.getElementById('uh-expires').value = '';
+  document.getElementById('uh-urgente').checked = false;
+  document.getElementById('uh-img-txt').textContent = 'Seleccionar imagen';
+  document.getElementById('uh-img-preview-wrap').style.display = 'none';
+  document.getElementById('uh-form-ttl').textContent = 'Nueva noticia';
+  document.getElementById('uh-save-t').textContent = 'Publicar noticia';
+  document.getElementById('uh-form').style.display = 'block';
+  document.getElementById('uh-form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeUHForm(){
+  document.getElementById('uh-form').style.display = 'none';
+  _uhEditId = null; _uhImgData = '';
+}
+
+function editUHNoticia(id){
+  const n = _uhNoticias.find(x=>x.id===id);
+  if(!n) return;
+  _uhEditId = id; _uhImgData = '';
+  document.getElementById('uh-titulo').value = n.titulo||'';
+  document.getElementById('uh-desc').value = n.descripcion||'';
+  document.getElementById('uh-fuente').value = n.fuente||'';
+  document.getElementById('uh-url').value = n.fuente_url||'';
+  document.getElementById('uh-urgente').checked = !!n.urgente;
+  document.getElementById('uh-expires').value = n.expires_at ? new Date(n.expires_at).toISOString().slice(0,16) : '';
+  if(n.img_data && n.img_data.length>100){
+    _uhImgData = n.img_data;
+    const prev = document.getElementById('uh-img-preview');
+    if(prev) prev.src = n.img_data;
+    document.getElementById('uh-img-preview-wrap').style.display = 'block';
+    document.getElementById('uh-img-txt').textContent = 'Imagen actual — toca para cambiar';
+  } else {
+    document.getElementById('uh-img-preview-wrap').style.display = 'none';
+    document.getElementById('uh-img-txt').textContent = 'Seleccionar imagen';
+  }
+  document.getElementById('uh-form-ttl').textContent = 'Editar noticia';
+  document.getElementById('uh-save-t').textContent = 'Guardar cambios';
+  document.getElementById('uh-form').style.display = 'block';
+  document.getElementById('uh-form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function previewUHImg(input){
+  const file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ toast('Imagen muy grande (máx 5 MB)','e'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      // Comprimir a máx 1080×500 JPEG 0.80
+      const maxW=1080,maxH=500;
+      let w=img.width,h2=img.height;
+      if(w>maxW){h2=Math.round(h2*maxW/w);w=maxW;}
+      if(h2>maxH){w=Math.round(w*maxH/h2);h2=maxH;}
+      const c=document.createElement('canvas');c.width=w;c.height=h2;
+      c.getContext('2d').drawImage(img,0,0,w,h2);
+      _uhImgData=c.toDataURL('image/jpeg',0.80);
+      const prev=document.getElementById('uh-img-preview');
+      if(prev){prev.src=_uhImgData;document.getElementById('uh-img-preview-wrap').style.display='block';}
+      document.getElementById('uh-img-txt').textContent='Imagen lista ✓ — toca para cambiar';
+      toast('✅ Imagen lista','s');
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveUHNoticia(){
+  const titulo = document.getElementById('uh-titulo').value.trim();
+  const desc   = document.getElementById('uh-desc').value.trim();
+  const fuente = document.getElementById('uh-fuente').value.trim();
+  const url    = document.getElementById('uh-url').value.trim();
+  const urgente= document.getElementById('uh-urgente').checked;
+  const expires= document.getElementById('uh-expires').value;
+  if(!titulo){ toast('Escribe un título','w'); return; }
+  if(!desc)  { toast('Escribe una descripción','w'); return; }
+  const imgData = _uhImgData || (_uhEditId ? _uhNoticias.find(n=>n.id===_uhEditId)?.img_data||'' : '');
+  const payload = {titulo,descripcion:desc,fuente,fuente_url:url,urgente,img_data:imgData,
+    activa:true, expires_at:expires?new Date(expires).getTime():null};
+  const btn = document.getElementById('uh-save-t');
+  if(btn) btn.textContent='Guardando…';
+  try{
+    if(_uhEditId){
+      const{error}=await db.from('ultima_hora').update(payload).eq('id',_uhEditId);
+      if(error) throw error;
+      toast('✅ Noticia actualizada','s');
+    } else {
+      const id='uh_'+Date.now().toString(36);
+      const{error}=await db.from('ultima_hora').insert([{id,...payload,created_at:Date.now()}]);
+      if(error) throw error;
+      toast('✅ Noticia publicada','s');
+    }
+    closeUHForm();
+    await loadUHPanel();
+  }catch(err){toast('Error: '+err.message,'e');}
+  if(btn) btn.textContent = _uhEditId ? 'Guardar cambios' : 'Publicar noticia';
+}
+
+async function toggleUHNoticia(id){
+  const n = _uhNoticias.find(x=>x.id===id);
+  if(!n) return;
+  await db.from('ultima_hora').update({activa:!n.activa}).eq('id',id);
+  toast(n.activa?'Noticia desactivada':'Noticia activada','b');
+  await loadUHPanel();
+}
+
+async function deleteUHNoticia(id){
+  if(!confirm('¿Eliminar esta noticia?')) return;
+  await db.from('ultima_hora').delete().eq('id',id);
+  toast('Noticia eliminada','b');
+  await loadUHPanel();
+}
+
+function escAdm(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>

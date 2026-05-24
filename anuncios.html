@@ -317,7 +317,7 @@
             <input class="fl-inp" id="f-url" type="url" placeholder="https://ejemplo.com" oninput="syncOverlay()"/>
           </div>
           <div class="fl">
-            <div class="fl-lbl">Imagen <span style="color:rgba(34,208,240,.65);font-size:9px">720 × 88 px recomendado</span></div>
+            <div class="fl-lbl">Imagen del banner <span style="color:rgba(34,208,240,.65);font-size:9px">720 × 88 px</span></div>
             <label class="img-drop" id="img-drop">
               <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:5px"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 9l3-3 2 2 2-2 4 4"/></svg>
               <span id="img-drop-txt">Seleccionar imagen</span>
@@ -333,10 +333,10 @@
             </div>
             <div class="prev-tabs">
               <button class="prev-tab on" id="tab-desk" onclick="switchTab('desk')">
-                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="1" y="2" width="10" height="7" rx="1"/><path d="M4 9v1M8 9v1M3 10h6"/></svg>Desktop
+                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="1" y="2" width="10" height="7" rx="1"/><path d="M4 9v1M8 9v1M3 10h6"/></svg>Desktop <span style="font-size:9px;opacity:.55">1168×44</span>
               </button>
               <button class="prev-tab" id="tab-mob" onclick="switchTab('mob')">
-                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="3" y="1" width="6" height="10" rx="1.5"/><circle cx="6" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>Móvil
+                <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><rect x="3" y="1" width="6" height="10" rx="1.5"/><circle cx="6" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>Móvil <span style="font-size:9px;opacity:.55">358×44</span>
               </button>
               <span id="crop-hint" style="margin-left:auto;font-size:10px;color:rgba(34,208,240,.5);display:none">
                 <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:middle;margin-right:3px"><path d="M2 7l3 3 5-6"/></svg>
@@ -436,9 +436,9 @@
                   </div>
                 </div>
                 <div class="phone-info">
-                  <strong style="color:var(--dim)">Vista en iPhone</strong><br/>
-                  El banner aparece sobre el ticker, en la parte inferior de pantalla.<br/><br/>
-                  <span style="color:rgba(34,208,240,.55)">💡 Ajusta el encuadre en la pestaña Desktop — el teléfono refleja el mismo resultado.</span>
+                  <strong style="color:var(--dim)">Vista en iPhone</strong> · <span style="color:rgba(34,208,240,.6);font-size:9px">358 × 44 px</span><br/>
+                  Crop independiente al desktop — lo que ajustas aquí se guarda por separado.<br/><br/>
+                  <span style="color:rgba(34,208,240,.55)">💡 Arrastra la barra del teléfono para ajustar el encuadre móvil.</span>
                 </div>
               </div>
             </div>
@@ -465,7 +465,12 @@
             <textarea class="fl-ta" id="f-notes" rows="2" placeholder="Ej. Panadería del Sol · Contrato hasta junio · Tel 999-000-0000"></textarea>
           </div>
 
-          <div class="info-note">💡 El banner aparece sobre el ticker del mapa. Si no hay nombre, se muestra solo la imagen. No interrumpe el uso del mapa.</div>
+          <div class="info-note">
+            <strong style="color:rgba(34,208,240,.7)">Medidas reales del banner:</strong><br/>
+            📱 Móvil: ~358 × 44 px (el encuadre que ajustes aquí)<br/>
+            🖥 Desktop: ~1168 × 44 px (la imagen se extiende)<br/>
+            💡 Ajusta un crop para cada vista — se guardan por separado.
+          </div>
 
           <div class="form-btns">
             <button class="f-cancel" onclick="closeForm()">Cancelar</button>

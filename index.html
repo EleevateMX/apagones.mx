@@ -2168,6 +2168,14 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   <button class="hamburger-btn help-btn-mobile" onclick="openHelpModal()" title="¿Cómo reportar?" aria-label="Ayuda" style="margin-right:6px">
     <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M7.5 7.5 a2.5 2.5 0 1 1 3.5 2.3 c-.8.3-1 .7-1 1.7"/><circle cx="10" cy="14.5" r="0.6" fill="currentColor" stroke="none"/></svg>
   </button>
+  <!-- ÚLTIMA HORA — campana -->
+  <button id="uh-bell" onclick="toggleUH()" aria-label="Última Hora">
+    <svg viewBox="0 0 20 22" width="16" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M10 2a7 7 0 0 0-7 7v4l-2 3h18l-2-3V9a7 7 0 0 0-7-7z"/>
+      <path d="M8 18a2 2 0 0 0 4 0"/>
+    </svg>
+    <div id="uh-badge"></div>
+  </button>
   <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileMenu()">
     <svg viewBox="0 0 22 18" width="22" height="18" fill="currentColor"><rect y="0" width="22" height="2.5" rx="1.25"/><rect y="7.75" width="22" height="2.5" rx="1.25"/><rect y="15.5" width="22" height="2.5" rx="1.25"/></svg>
   </button>
@@ -2452,6 +2460,46 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
     </div>
   </div>
 </div>
+<!-- ═══════════ ÚLTIMA HORA PANEL ═══════════ -->
+<div id="uh-overlay" onclick="closeUH()"></div>
+<div id="uh-panel" role="dialog" aria-label="Última Hora">
+  <div class="uh-header">
+    <div class="uh-header-ico">
+      <svg viewBox="0 0 20 22" width="14" height="15" fill="none" stroke="#F5B731" stroke-width="2" stroke-linecap="round"><path d="M10 2a7 7 0 0 0-7 7v4l-2 3h18l-2-3V9a7 7 0 0 0-7-7z"/><path d="M8 18a2 2 0 0 0 4 0"/></svg>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:15px;font-weight:900;letter-spacing:-.2px">Última Hora</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.3)" id="uh-sub">Noticias recientes</div>
+    </div>
+    <button onclick="closeUH()" style="width:32px;height:32px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:9px;color:rgba(255,255,255,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">✕</button>
+  </div>
+  <div class="uh-list" id="uh-list">
+    <div class="uh-spinner"><div class="uh-spin"></div><span>Cargando…</span></div>
+  </div>
+  <!-- Detail view (slide-in) -->
+  <div class="uh-detail" id="uh-detail">
+    <div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
+      <button onclick="closeUHDetail()" style="width:32px;height:32px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:9px;color:rgba(255,255,255,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">←</button>
+      <div style="font-size:13px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="uh-detail-hd">Detalle</div>
+    </div>
+    <img id="uh-detail-img" class="uh-detail-img" alt="" src=""/>
+    <div class="uh-detail-body">
+      <div id="uh-detail-tag" style="margin-bottom:8px"></div>
+      <h2 id="uh-detail-title" style="font-size:18px;font-weight:900;letter-spacing:-.3px;line-height:1.25;margin-bottom:10px;color:#F0E8EC"></h2>
+      <p id="uh-detail-desc" style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:14px"></p>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px">
+        <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px">📰</div>
+        <div style="flex:1;min-width:0">
+          <div id="uh-detail-fuente" style="font-size:12px;font-weight:700;color:rgba(245,183,49,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+          <div style="font-size:10px;color:rgba(255,255,255,.25)">Fuente del reporte</div>
+        </div>
+        <a id="uh-detail-link" href="#" target="_blank" rel="noopener" style="display:none;padding:6px 12px;border-radius:8px;background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.2);color:#F5B731;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap">Leer más →</a>
+      </div>
+      <div id="uh-detail-time" style="font-size:11px;color:rgba(255,255,255,.2);margin-top:12px;text-align:center"></div>
+    </div>
+  </div>
+</div>
+
 <div id="ticker"><div class="ticker-inner" id="ticker-inner"></div></div>
 
 <!-- LEFT SIDEBAR: LAYER PANEL -->
@@ -4463,7 +4511,98 @@ async function exportHistFiltered(format){
       tr:nth-child(even){background:#fafafa}
       .footer{margin-top:30px;padding-top:14px;border-top:1px solid #ddd;font-size:9px;color:#999;text-align:center}
       @media print{ body{padding:15px} }
-    </style></head><body>
+    
+/* ═══════════ ÚLTIMA HORA ═══════════ */
+#uh-bell{
+  position:relative;width:38px;height:38px;border-radius:10px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:background .18s,border-color .2s;flex-shrink:0;
+}
+#uh-bell:hover{background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.3)}
+#uh-bell.has-news{background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.28);animation:bellPulse 3s infinite}
+@keyframes bellPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}50%{box-shadow:0 0 0 4px rgba(245,183,49,.12)}}
+#uh-badge{
+  position:absolute;top:-4px;right:-4px;
+  width:16px;height:16px;border-radius:50%;
+  background:#FF4B4B;border:2px solid #07040C;
+  display:none;align-items:center;justify-content:center;
+  font-size:8px;font-weight:900;color:white;font-family:var(--f);
+}
+/* Panel lateral */
+#uh-panel{
+  position:fixed;bottom:0;right:0;
+  width:100%;max-width:420px;
+  height:100vh;max-height:100vh;
+  background:rgba(10,6,18,.97);
+  border-left:1px solid rgba(245,183,49,.2);
+  z-index:900;
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.22,.8,.3,1);
+  display:flex;flex-direction:column;
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+#uh-panel.open{transform:translateX(0)}
+@media(max-width:440px){#uh-panel{max-width:100%;border-left:none;border-top:1px solid rgba(245,183,49,.2);height:90vh;bottom:0;top:auto}}
+#uh-overlay{
+  position:fixed;inset:0;z-index:899;background:rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+#uh-overlay.open{opacity:1;pointer-events:all}
+.uh-header{
+  padding:16px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.uh-header-ico{
+  width:32px;height:32px;border-radius:9px;
+  background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.25);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.uh-list{flex:1;overflow-y:auto;padding:12px 14px}
+.uh-list::-webkit-scrollbar{width:3px}
+.uh-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+/* Card de noticia */
+.uh-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;overflow:hidden;margin-bottom:10px;
+  cursor:pointer;transition:border-color .18s,background .18s;
+}
+.uh-card:hover{border-color:rgba(245,183,49,.25);background:rgba(255,255,255,.05)}
+.uh-card.urgente{border-color:rgba(255,75,75,.3);background:rgba(255,75,75,.04)}
+.uh-card.urgente:hover{border-color:rgba(255,75,75,.5)}
+.uh-card-img{
+  width:100%;height:120px;object-fit:cover;display:block;background:#0C060A;
+}
+.uh-card-body{padding:10px 12px}
+.uh-card-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;
+  text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;
+}
+.uh-tag-urgente{background:rgba(255,75,75,.12);border:1px solid rgba(255,75,75,.25);color:#FF6B6B}
+.uh-tag-normal{background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.22);color:#F5B731}
+.uh-card-title{font-size:14px;font-weight:800;line-height:1.3;margin-bottom:5px;color:#F0E8EC}
+.uh-card-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.uh-card-meta{display:flex;align-items:center;gap:7px;font-size:10px;color:rgba(255,255,255,.28)}
+.uh-card-fuente{font-weight:700;color:rgba(245,183,49,.65)}
+/* Detalle de noticia */
+.uh-detail{
+  position:absolute;inset:0;
+  background:rgba(10,6,18,.99);
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.22,.8,.3,1);
+  display:flex;flex-direction:column;z-index:1;
+}
+.uh-detail.open{transform:translateX(0)}
+.uh-detail-img{width:100%;height:200px;object-fit:cover;display:block;flex-shrink:0;background:#0C060A}
+.uh-detail-body{padding:16px 18px;overflow-y:auto;flex:1}
+/* Spinner */
+.uh-spinner{display:flex;align-items:center;justify-content:center;padding:40px;color:rgba(255,255,255,.25);flex-direction:column;gap:10px}
+@keyframes uhSpin{to{transform:rotate(360deg)}}
+.uh-spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(245,183,49,.5);border-radius:50%;animation:uhSpin .7s linear infinite}
+</style></head><body>
     <h1>ApagonesMID — Histórico de reportes resueltos</h1>
     <div class="meta">Generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
     <table>
@@ -8973,6 +9112,171 @@ async function refreshAllAdSlides(){
   `;
   document.head.appendChild(style);
 })();
+
+// ═══════════════════════════════════════════════════════════
+//  ÚLTIMA HORA
+// ═══════════════════════════════════════════════════════════
+let _uhNoticias = [];
+let _uhPanelOpen = false;
+let _uhLastSeen  = parseInt(localStorage.getItem('uh_last_seen') || '0');
+
+// Cargar noticias al iniciar (después de que db esté lista)
+async function initUltimaHora(){
+  await loadUHNoticias();
+  // Realtime — nueva noticia → actualizar badge y lista
+  db.channel('uh-rt').on('postgres_changes',{
+    event:'INSERT', schema:'public', table:'ultima_hora'
+  }, payload => {
+    loadUHNoticias();
+    // Notificación visual si el panel no está abierto
+    if(!_uhPanelOpen) showUHToast(payload.new);
+  }).subscribe();
+}
+
+async function loadUHNoticias(){
+  try{
+    const {data} = await db.from('ultima_hora')
+      .select('*')
+      .eq('activa', true)
+      .order('created_at', {ascending: false})
+      .limit(20);
+    _uhNoticias = (data||[]).filter(n => !n.expires_at || n.expires_at > Date.now());
+    updateUHBadge();
+    if(_uhPanelOpen) renderUHList();
+  } catch(e){ console.warn('Última Hora:', e.message); }
+}
+
+function updateUHBadge(){
+  const nuevas = _uhNoticias.filter(n => n.created_at > _uhLastSeen);
+  const badge  = document.getElementById('uh-badge');
+  const bell   = document.getElementById('uh-bell');
+  if(!badge||!bell) return;
+  if(nuevas.length > 0){
+    badge.textContent = nuevas.length > 9 ? '9+' : String(nuevas.length);
+    badge.style.display = 'flex';
+    bell.classList.add('has-news');
+  } else {
+    badge.style.display = 'none';
+    bell.classList.remove('has-news');
+  }
+}
+
+function toggleUH(){
+  if(_uhPanelOpen) closeUH();
+  else openUH();
+}
+
+function openUH(){
+  _uhPanelOpen = true;
+  document.getElementById('uh-panel').classList.add('open');
+  document.getElementById('uh-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderUHList();
+  // Marcar como vistas
+  _uhLastSeen = Date.now();
+  localStorage.setItem('uh_last_seen', String(_uhLastSeen));
+  updateUHBadge();
+}
+
+function closeUH(){
+  _uhPanelOpen = false;
+  document.getElementById('uh-panel').classList.remove('open');
+  document.getElementById('uh-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  closeUHDetail();
+}
+
+function renderUHList(){
+  const list = document.getElementById('uh-list');
+  const sub  = document.getElementById('uh-sub');
+  if(!list) return;
+  if(!_uhNoticias.length){
+    list.innerHTML = '<div class="uh-spinner" style="padding:32px"><span style="font-size:13px">Sin noticias recientes</span></div>';
+    if(sub) sub.textContent = 'Sin noticias recientes';
+    return;
+  }
+  if(sub) sub.textContent = _uhNoticias.length + ' noticia' + (_uhNoticias.length!==1?'s':'') + ' recientes';
+  list.innerHTML = _uhNoticias.map(n => {
+    const when = fmtUHTime(n.created_at);
+    const tagCls = n.urgente ? 'uh-tag-urgente' : 'uh-tag-normal';
+    const tagTxt = n.urgente ? '🔴 URGENTE' : '📰 Última Hora';
+    const hasImg = n.img_data && n.img_data.length > 100;
+    return `<div class="uh-card${n.urgente?' urgente':''}" onclick="openUHDetail('${n.id}')">
+      ${hasImg ? `<img class="uh-card-img" src="${n.img_data}" alt="" loading="lazy"/>` : ''}
+      <div class="uh-card-body">
+        <div class="uh-card-tag ${tagCls}">${tagTxt}</div>
+        <div class="uh-card-title">${escHtml(n.titulo)}</div>
+        <div class="uh-card-desc">${escHtml(n.descripcion)}</div>
+        <div class="uh-card-meta">
+          <span class="uh-card-fuente">${escHtml(n.fuente||'ApagonesMID')}</span>
+          <span>·</span>
+          <span>${when}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openUHDetail(id){
+  const n = _uhNoticias.find(x => x.id === id);
+  if(!n) return;
+  const detail = document.getElementById('uh-detail');
+  if(!detail) return;
+  document.getElementById('uh-detail-hd').textContent    = n.titulo;
+  document.getElementById('uh-detail-title').textContent = n.titulo;
+  document.getElementById('uh-detail-desc').textContent  = n.descripcion;
+  document.getElementById('uh-detail-fuente').textContent= n.fuente || 'ApagonesMID';
+  document.getElementById('uh-detail-time').textContent  = new Date(n.created_at).toLocaleString('es-MX',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  const tag = document.getElementById('uh-detail-tag');
+  if(tag) tag.innerHTML = n.urgente
+    ? '<span class="uh-card-tag uh-tag-urgente">🔴 URGENTE</span>'
+    : '<span class="uh-card-tag uh-tag-normal">📰 Última Hora</span>';
+  const img = document.getElementById('uh-detail-img');
+  if(img){ img.src = n.img_data && n.img_data.length > 100 ? n.img_data : ''; img.style.display = img.src ? '' : 'none'; }
+  const link = document.getElementById('uh-detail-link');
+  if(link){ link.href = n.fuente_url||'#'; link.style.display = n.fuente_url ? '' : 'none'; }
+  detail.classList.add('open');
+}
+
+function closeUHDetail(){
+  const detail = document.getElementById('uh-detail');
+  if(detail) detail.classList.remove('open');
+}
+
+function showUHToast(noticia){
+  const toast = document.createElement('div');
+  toast.style.cssText = [
+    'position:fixed','bottom:56px','left:50%','transform:translateX(-50%)',
+    'z-index:8999','max-width:90vw','width:340px',
+    'background:rgba(12,8,20,.97)','border:1px solid rgba(245,183,49,.35)',
+    'border-radius:14px','padding:10px 14px',
+    'display:flex','align-items:center','gap:10px',
+    'box-shadow:0 8px 32px rgba(0,0,0,.5)',
+    'animation:tIn .25s ease','cursor:pointer'
+  ].join(';');
+  const isUrgente = noticia.urgente;
+  toast.innerHTML = `
+    <div style="width:34px;height:34px;border-radius:9px;background:${isUrgente?'rgba(255,75,75,.15)':'rgba(245,183,49,.12)'};border:1px solid ${isUrgente?'rgba(255,75,75,.3)':'rgba(245,183,49,.25)'};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${isUrgente?'🔴':'📰'}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:11px;font-weight:800;color:${isUrgente?'#FF6B6B':'#F5B731'};text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px">${isUrgente?'Urgente':'Última Hora'}</div>
+      <div style="font-size:12px;font-weight:700;color:#F0E8EC;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(noticia.titulo||'Nueva noticia')}</div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:rgba(245,183,49,.7);flex-shrink:0">Ver →</div>`;
+  toast.onclick = () => { openUH(); document.body.removeChild(toast); };
+  document.body.appendChild(toast);
+  setTimeout(()=>{ if(toast.parentNode){ toast.style.transition='opacity .3s';toast.style.opacity='0'; setTimeout(()=>toast.parentNode&&document.body.removeChild(toast),300); }},6000);
+}
+
+function fmtUHTime(ts){
+  const m = Math.floor((Date.now()-ts)/60000);
+  if(m<1) return 'Justo ahora';
+  if(m<60) return 'Hace '+m+' min';
+  const h=Math.floor(m/60),d=Math.floor(m/1440);
+  if(d>0) return 'Hace '+d+'d';
+  return 'Hace '+h+'h';
+}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 
 <!-- ═══════════════ HELP MODAL: ¿Cómo reportar? ═══════════════ -->
