@@ -1,5 +1,5 @@
-// Apagones Mid — Service Worker v62
-const CACHE = 'apagones-mid-v62';
+// Apagones Mid — Service Worker v63
+const CACHE = 'apagones-mid-v63';
 const TILE_CACHE = 'apagones-tiles-v1';
 
 const STATIC = [
@@ -132,3 +132,6 @@ self.addEventListener('notificationclick', e => {
     })
   );
 });
+
+// ── Recibir notificación directa vía reg.showNotification ──
+// (el handler de notificationclick ya maneja el uhId correctamente)

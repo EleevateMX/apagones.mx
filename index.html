@@ -2170,9 +2170,17 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   </button>
   <!-- ÚLTIMA HORA — campana -->
   <button id="uh-bell" onclick="toggleUH()" aria-label="Última Hora">
-    <svg viewBox="0 0 20 22" width="16" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <path d="M10 2a7 7 0 0 0-7 7v4l-2 3h18l-2-3V9a7 7 0 0 0-7-7z"/>
-      <path d="M8 18a2 2 0 0 0 4 0"/>
+    <!-- Campana con rayo integrado — paleta ApagonesMID -->
+    <svg viewBox="0 0 22 22" width="18" height="18" fill="none">
+      <!-- Cuerpo de la campana -->
+      <path d="M11 3C7.7 3 5 5.7 5 9v4.5L3 16h16l-2-2.5V9c0-3.3-2.7-6-6-6z"
+        fill="rgba(245,183,49,.18)" stroke="#F5B731" stroke-width="1.5" stroke-linejoin="round"/>
+      <!-- Arco superior (asa) -->
+      <path d="M9 3a2 2 0 0 1 4 0" stroke="#F5B731" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <!-- Badajo -->
+      <path d="M9 16a2 2 0 0 0 4 0" stroke="#F5B731" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <!-- Rayito de acción -->
+      <path d="M11 6.5l-1.5 3h3l-1.5 3" stroke="#F5B731" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <div id="uh-badge"></div>
   </button>
@@ -3411,7 +3419,7 @@ async function loadReports() {
     if (res.error) throw res.error;
     cachedReports = (res.data||[]).filter(r=>{
       if(!r.type) return false;
-      // Recover original sub-type from report_number tag `[type]`
+      // Recuperar sub-tipo guardado en report_number tag `[type]`
       if(r.report_number && /^\[[a-z_]+\]/.test(r.report_number)){
         const m = r.report_number.match(/^\[([a-z_]+)\]/);
         if(m && m[1]){
@@ -3419,9 +3427,11 @@ async function loadReports() {
           r.report_number = r.report_number.replace(/^\[[a-z_]+\]\s*/, '');
         }
       }
-      if(AGUA_TYPES.includes(r.type)) return true;
-      if(ELEC_TYPES.includes(r.type)) return (Date.now()-r.timestamp)<TTL_EL;
-      return false;
+      // NO filtrar por tiempo — los reportes se mantienen hasta que:
+      //   a) El admin los resuelve manualmente
+      //   b) 3 votos de vecinos (RESOLVE_THRESHOLD)
+      // Solo filtrar tipos inválidos
+      return ELEC_TYPES.includes(r.type) || AGUA_TYPES.includes(r.type);
     });
   } catch(e){console.warn('loadReports:',e.message);}
   return cachedReports;
@@ -4514,33 +4524,48 @@ async function exportHistFiltered(format){
     
 /* ═══════════ ÚLTIMA HORA ═══════════ */
 #uh-bell{
-  position:relative;width:38px;height:38px;border-radius:10px;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  transition:background .18s,border-color .2s;flex-shrink:0;
+  position:relative;
+  width:38px;height:38px;border-radius:11px;
+  background:#1A0F24;                              /* oscuro, nunca blanco */
+  border:1px solid rgba(245,183,49,.2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:background .18s,border-color .2s,box-shadow .2s;
+  -webkit-tap-highlight-color:transparent;
 }
-#uh-bell:hover{background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.3)}
-#uh-bell.has-news{background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.28);animation:bellPulse 3s infinite}
-@keyframes bellPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}50%{box-shadow:0 0 0 4px rgba(245,183,49,.12)}}
+#uh-bell:hover,#uh-bell:active{
+  background:#231530;
+  border-color:rgba(245,183,49,.4);
+}
+#uh-bell.has-news{
+  background:rgba(245,183,49,.12);
+  border-color:rgba(245,183,49,.45);
+  animation:bellPulse 2.5s ease-in-out infinite;
+}
+@keyframes bellPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
+  50%{box-shadow:0 0 0 5px rgba(245,183,49,.15)}
+}
 #uh-badge{
-  position:absolute;top:-4px;right:-4px;
-  width:16px;height:16px;border-radius:50%;
-  background:#FF4B4B;border:2px solid #07040C;
+  position:absolute;top:-5px;right:-5px;
+  min-width:17px;height:17px;border-radius:9px;padding:0 4px;
+  background:#FF3B3B;border:2px solid #07040C;
   display:none;align-items:center;justify-content:center;
-  font-size:8px;font-weight:900;color:white;font-family:var(--f);
+  font-size:9px;font-weight:900;color:white;font-family:var(--f);
+  letter-spacing:-.3px;
 }
 /* Panel lateral */
 #uh-panel{
   position:fixed;bottom:0;right:0;
   width:100%;max-width:420px;
   height:100vh;max-height:100vh;
-  background:rgba(10,6,18,.97);
-  border-left:1px solid rgba(245,183,49,.2);
+  background:#08040F;                              /* negro puro, sin herencia */
+  border-left:1px solid rgba(245,183,49,.18);
   z-index:900;
   transform:translateX(100%);
   transition:transform .3s cubic-bezier(.22,.8,.3,1);
   display:flex;flex-direction:column;
-  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  overflow:hidden;
 }
 #uh-panel.open{transform:translateX(0)}
 @media(max-width:440px){#uh-panel{max-width:100%;border-left:none;border-top:1px solid rgba(245,183,49,.2);height:90vh;bottom:0;top:auto}}
@@ -5234,7 +5259,14 @@ function fmtTime(ts){
   // Solo horas y minutos
   return mins>0 ? `Hace ${hours}h ${mins}m` : `Hace ${hours}h`;
 }
-function fmtRemain(ts){const m=Math.floor((TTL_EL-(Date.now()-ts))/60000);if(m<=0)return'Expirando…';return m>=60?`${Math.floor(m/60)}h ${m%60}m restantes`:`${m}m restantes`;}
+function fmtRemain(ts){
+  // Ahora muestra el tiempo que lleva activo el reporte
+  const m=Math.floor((Date.now()-ts)/60000);
+  if(m<60) return m+'m activo';
+  const h2=Math.floor(m/60),d=Math.floor(m/1440);
+  if(d>0) return d+'d '+Math.floor((m%1440)/60)+'h activo';
+  return h2+'h activo';
+}
 function toast(msg,type='i'){const c=document.getElementById('toasts');const t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;c.appendChild(t);setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},2800);setTimeout(()=>t.remove(),3200);}
 
 function initRealtime(){
@@ -9123,78 +9155,103 @@ let _uhLastSeen  = parseInt(localStorage.getItem('uh_last_seen') || '0');
 
 // Cargar noticias al iniciar (después de que db esté lista)
 async function initUltimaHora(){
-  // 1. Pedir permiso de notificaciones (solo si no se ha pedido antes)
-  if('Notification' in window && Notification.permission === 'default'){
-    // Esperar interacción del usuario para no ser intrusivo
-    const askAfter = 8000; // 8 segundos después de cargar
-    setTimeout(()=>{
-      if(Notification.permission === 'default'){
-        Notification.requestPermission().then(perm=>{
-          if(perm === 'granted') toast('🔔 Notificaciones activadas','s');
-        });
-      }
-    }, askAfter);
-  }
-
-  // 2. Escuchar mensajes del SW (cuando llega notificación y se toca)
+  // ── Escuchar mensajes del SW (tap en notificación nativa)
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message', e=>{
       if(e.data?.type === 'OPEN_UH'){
-        // La notificación fue tocada — abrir el panel y mostrar el artículo
         openUH();
-        if(e.data.id){
-          setTimeout(()=>openUHDetail(e.data.id), 400);
-        }
+        if(e.data.id) setTimeout(()=>openUHDetail(e.data.id), 350);
       }
     });
   }
 
-  // 3. Si la app fue abierta desde una notificación (?uh=id)
+  // ── Si la app abrió desde ?uh=id (click en notif cuando estaba cerrada)
   const uhParam = new URLSearchParams(location.search).get('uh');
   if(uhParam){
-    // Esperar a que se carguen las noticias y luego abrir
     setTimeout(async()=>{
       await loadUHNoticias();
       openUH();
-      setTimeout(()=>openUHDetail(uhParam), 400);
-    }, 1500);
-    // Limpiar la URL sin recargar
+      setTimeout(()=>openUHDetail(uhParam), 350);
+    }, 1400);
     history.replaceState(null,'', location.pathname);
   }
 
   await loadUHNoticias();
 
-  // 4. Realtime — nueva noticia publicada
-  db.channel('uh-rt').on('postgres_changes',{
-    event:'INSERT', schema:'public', table:'ultima_hora'
-  }, async payload => {
-    await loadUHNoticias();
-    const n = payload.new;
-    if(!n || !n.activa) return;
+  // ── Realtime: nueva noticia publicada
+  db.channel('uh-rt')
+    .on('postgres_changes',{ event:'INSERT', schema:'public', table:'ultima_hora' },
+    async payload => {
+      await loadUHNoticias();
+      const n = payload.new;
+      if(!n || !n.activa) return;
 
-    // Toast en pantalla (siempre)
-    if(!_uhPanelOpen) showUHToast(n);
+      // 1) Toast en pantalla (siempre, independiente de permisos)
+      if(!_uhPanelOpen) showUHToast(n);
 
-    // Notificación del sistema (si tenemos permiso)
-    sendUHPushNotification(n);
-  }).subscribe();
+      // 2) Notificación del sistema
+      dispatchUHNotification(n);
+    })
+    .subscribe();
 }
 
-function sendUHPushNotification(n){
-  if(!('serviceWorker' in navigator) || !('Notification' in window)) return;
+// Pedir permiso — se llama al tocar el bell por primera vez
+async function requestNotifPermission(){
+  if(!('Notification' in window)) return 'denied';
+  if(Notification.permission === 'granted') return 'granted';
+  if(Notification.permission === 'denied') return 'denied';
+  try{
+    const result = await Notification.requestPermission();
+    if(result === 'granted'){
+      showUHBellToast('🔔 Notificaciones activadas — te avisaremos de las últimas noticias');
+    }
+    return result;
+  } catch(e){ return 'denied'; }
+}
+
+// Despachar notificación del sistema (directo o via SW)
+async function dispatchUHNotification(n){
+  if(!('Notification' in window)) return;
   if(Notification.permission !== 'granted') return;
-  // Enviar al SW para que muestre la notificación nativa
-  navigator.serviceWorker.ready.then(reg => {
-    reg.active?.postMessage({
-      type: 'UH_NOTIFY',
-      id: n.id,
-      titulo: n.titulo || 'Nueva noticia',
-      desc: n.descripcion ? n.descripcion.slice(0,100)+(n.descripcion.length>100?'…':'') : '',
-      urgente: !!n.urgente,
-      img: (n.img_data && n.img_data.length > 100) ? undefined : undefined
-      // img_data es base64 muy pesado para pasar al SW — omitir
+
+  const title = (n.urgente ? '🔴 URGENTE — ' : '📰 Última Hora: ') + (n.titulo||'Nueva noticia');
+  const body  = n.descripcion ? n.descripcion.slice(0,120)+(n.descripcion.length>120?'…':'') : 'Toca para ver la nota completa.';
+  const tag   = 'uh-' + (n.id||Date.now());
+
+  // a) Vía Service Worker (funciona en background + iOS PWA)
+  if('serviceWorker' in navigator){
+    try{
+      const reg = await navigator.serviceWorker.ready;
+      if(reg.showNotification){
+        await reg.showNotification(title, {
+          body, tag, icon:'./icon-192.png', badge:'./icon-192.png',
+          vibrate: n.urgente ? [300,100,300,100,300] : [200,100,200],
+          requireInteraction: !!n.urgente,
+          data:{ uhId: n.id }
+        });
+        return;
+      }
+    } catch(e){ /* fallback a Notification directa */ }
+  }
+
+  // b) Fallback: Notification API directa
+  try{
+    const notif = new Notification(title, {
+      body, tag, icon:'./icon-192.png',
+      vibrate: n.urgente ? [300,100,300,100,300] : [200,100,200],
+      requireInteraction: !!n.urgente,
     });
-  });
+    notif.onclick = ()=>{ window.focus(); openUH(); setTimeout(()=>openUHDetail(n.id),350); notif.close(); };
+  } catch(e){ /* silencioso — el toast ya fue */ }
+}
+
+// Toast pequeño para confirmación de permisos (no el de noticias)
+function showUHBellToast(msg){
+  const t = document.createElement('div');
+  t.style.cssText='position:fixed;bottom:64px;left:50%;transform:translateX(-50%);z-index:8990;background:#1A0F24;border:1px solid rgba(245,183,49,.35);border-radius:12px;padding:9px 16px;font-size:12px;font-weight:600;color:#F5B731;white-space:nowrap;max-width:90vw;animation:tIn .2s ease;pointer-events:none';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';},3000);
+  setTimeout(()=>t.parentNode&&document.body.removeChild(t),3400);
 }
 
 async function loadUHNoticias(){
@@ -9226,8 +9283,12 @@ function updateUHBadge(){
 }
 
 function toggleUH(){
-  if(_uhPanelOpen) closeUH();
-  else openUH();
+  if(_uhPanelOpen){ closeUH(); return; }
+  // Primera vez que abre: pedir permiso de notificaciones
+  if('Notification' in window && Notification.permission === 'default'){
+    requestNotifPermission();
+  }
+  openUH();
 }
 
 function openUH(){
