@@ -278,6 +278,24 @@
     .uh-news-card.urgente{border-color:rgba(255,75,75,.25)}
     .uh-news-card-img{width:100%;height:80px;object-fit:cover;display:block;background:#0C060A}
     .uh-news-card-body{padding:9px 12px}
+
+    /* Histórico mejorado */
+    .hist-table{width:100%;border-collapse:separate;border-spacing:0}
+    .hist-table th{font-size:9px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap}
+    .hist-table td{font-size:11px;padding:9px 10px;border-bottom:1px solid var(--bdr2);vertical-align:middle}
+    .hist-table tr:last-child td{border-bottom:none}
+    .hist-table tr:hover td{background:rgba(255,255,255,.025)}
+    .contact-hidden{cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;background:rgba(101,8,31,.15);border:1px solid rgba(155,16,48,.25);color:rgba(255,200,180,.6);font-size:10px;font-weight:700}
+    .contact-hidden:hover{background:rgba(101,8,31,.25)}
+    .contact-val{font-size:11px;color:var(--tx);font-weight:600}
+    .contact-phone{color:rgba(31,209,138,.8);font-weight:700}
+    .hist-unlock-bar{background:rgba(101,8,31,.1);border:1px solid rgba(155,16,48,.2);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .hist-export-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .export-btn-cfe{padding:8px 14px;border-radius:9px;background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.25);color:#F5B731;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+    .export-btn-csv{padding:8px 14px;border-radius:9px;background:rgba(31,209,138,.08);border:1px solid rgba(31,209,138,.2);color:#1FD18A;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+    .filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+    .filt-btn{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--mut);-webkit-appearance:none;transition:all .18s}
+    .filt-btn.on{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);color:var(--tx)}
 </style>
 </head>
 <body>
@@ -963,41 +981,296 @@ async function loadTrends(){
 // ══════ HISTÓRICO ══════════════════════════════════
 async function loadHistorico(){
   const wrap=document.getElementById('hist-content');
-  wrap.innerHTML='<div class="loading"><div class="spinner"></div>Cargando…</div>';
+  wrap.innerHTML='<div class="loading"><div class="spinner"></div>Cargando histórico…</div>';
   try{
-    const{data}=await db.from('reports_historico').select('*').order('resolved_at',{ascending:false}).limit(200);
+    const {data,error}=await db.from('reports_historico')
+      .select('*').order('resolved_at',{ascending:false}).limit(500);
+    if(error) throw error;
     histCache=data||[];
-    if(!histCache.length){wrap.innerHTML='<div class="empty">Sin histórico disponible</div>';return;}
-    const el=histCache.filter(r=>ELEC_TYPES.includes(r.type)).length;
-    const ag=histCache.filter(r=>AGUA_TYPES.includes(r.type)).length;
-    const avg=histCache.filter(r=>r.resolucion_min).reduce((s,r,_,a)=>s+r.resolucion_min/a.length,0);
-    wrap.innerHTML=`
-      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
-        <div class="kpi"><div class="kpi-n" style="color:#FFD0D8">${histCache.length}</div><div class="kpi-l">Total resueltos</div></div>
-        <div class="kpi"><div class="kpi-n" style="color:var(--elec)">${el}</div><div class="kpi-l">Eléctricos</div></div>
-        <div class="kpi"><div class="kpi-n" style="color:var(--agua)">${ag}</div><div class="kpi-l">Agua</div></div>
-        <div class="kpi"><div class="kpi-n" style="color:var(--grn)">${avg?avg.toFixed(1)+'h':'—'}</div><div class="kpi-l">Prom. resoluc.</div></div>
-      </div>
-      <div id="hist-rows"></div>`;
-    const rowsEl=document.getElementById('hist-rows');
-    const typeIcon={apagon:'⚡',alumbrado:'💡',agua:'💧',corte_agua:'🚰',presion_baja:'💧',calidad_agua:'⚠️'};
-    histCache.slice(0,80).forEach(r=>{
-      const div=document.createElement('div');
-      div.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--card);border:1px solid var(--bdr);border-radius:10px;margin-bottom:6px';
-      const when=new Date(r.resolved_at||r.timestamp).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      const dur=r.resolucion_min?Math.round(r.resolucion_min)+'m':'—';
-      div.innerHTML=`<div style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0">${typeIcon[r.type]||'📋'}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:700" id="hloc-${r.id}">Cargando…</div>
-          <div style="font-size:10px;color:var(--mut)">${when}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0"><div style="font-size:11px;font-weight:700;color:var(--grn)">${dur}</div><div style="font-size:9px;color:var(--mut)">duración</div></div>`;
-      rowsEl.appendChild(div);
-      if(r.lat&&r.lng) fetch(`https://nominatim.openstreetmap.org/reverse?lat=${r.lat}&lon=${r.lng}&format=json&accept-language=es`,{headers:{'User-Agent':'ApagonesMID-Admin/1.0'}}).then(res=>res.json()).then(d=>{const col=d.address?.suburb||d.address?.neighbourhood||d.address?.road||'';const el=document.getElementById('hloc-'+r.id);if(el&&col)el.textContent=col;}).catch(()=>{});
-      else { const el=document.getElementById('hloc-'+r.id);if(el)el.textContent=r.seccion?'Sec. '+r.seccion:'Sin ubicación'; }
-    });
-  }catch(e){wrap.innerHTML='<div class="empty">Error cargando histórico</div>';}
+    renderHistoricoView(histCache,'todos');
+  }catch(e){wrap.innerHTML='<div class="empty">Error cargando histórico: '+e.message+'</div>';}
 }
+
+function renderHistoricoView(rows, filter){
+  const wrap=document.getElementById('hist-content');
+  const filtered = filter==='todos' ? rows :
+    filter==='elec' ? rows.filter(r=>ELEC_TYPES.includes(r.type)) :
+    filter==='agua' ? rows.filter(r=>AGUA_TYPES.includes(r.type)) : rows;
+
+  const el=filtered.filter(r=>ELEC_TYPES.includes(r.type)).length;
+  const ag=filtered.filter(r=>AGUA_TYPES.includes(r.type)).length;
+  const times=filtered.filter(r=>r.resolucion_min>0);
+  const avgH=times.length?(times.reduce((s,r)=>s+r.resolucion_min,0)/times.length/60).toFixed(1):'—';
+
+  wrap.innerHTML=`
+    <!-- KPIs -->
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+      <div class="kpi"><div class="kpi-n" style="color:#FFD0D8">${filtered.length}</div><div class="kpi-l">Resueltos</div></div>
+      <div class="kpi"><div class="kpi-n" style="color:var(--elec)">${el}</div><div class="kpi-l">Eléctricos</div></div>
+      <div class="kpi"><div class="kpi-n" style="color:var(--agua)">${ag}</div><div class="kpi-l">Agua</div></div>
+      <div class="kpi"><div class="kpi-n" style="color:var(--grn)">${avgH}h</div><div class="kpi-l">Prom. resoluc.</div></div>
+    </div>
+
+    <!-- Barra de desbloqueo de contactos -->
+    <div class="hist-unlock-bar">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(180,40,60,.7)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+      <span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">Los nombres y teléfonos están protegidos. Ingresa la contraseña para verlos.</span>
+      <input type="password" id="hist-pw" placeholder="Contraseña" style="padding:6px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(101,8,31,.3);border-radius:8px;color:var(--tx);font-size:12px;outline:none;width:130px"/>
+      <button onclick="unlockContacts()" style="padding:7px 14px;border-radius:8px;background:rgba(101,8,31,.25);border:1px solid rgba(155,16,48,.35);color:#FFD0D8;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer">Desbloquear</button>
+      <span id="hist-unlock-st" style="font-size:11px;display:none"></span>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <button class="filt-btn ${filter==='todos'?'on':''}" onclick="renderHistoricoView(histCache,'todos')">Todos (${rows.length})</button>
+      <button class="filt-btn ${filter==='elec'?'on':''}" onclick="renderHistoricoView(histCache,'elec')">⚡ Eléctrico (${rows.filter(r=>ELEC_TYPES.includes(r.type)).length})</button>
+      <button class="filt-btn ${filter==='agua'?'on':''}" onclick="renderHistoricoView(histCache,'agua')">💧 Agua (${rows.filter(r=>AGUA_TYPES.includes(r.type)).length})</button>
+    </div>
+
+    <!-- Botones de exportación -->
+    <div class="hist-export-bar">
+      <button class="export-btn-csv" onclick="exportHistCSV('${filter}')">
+        <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v7M3 6l3 3 3-3M2 10h8"/></svg>
+        Exportar CSV completo
+      </button>
+      <button class="export-btn-cfe" onclick="exportCartaCFE('${filter}')">
+        <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="1" width="8" height="10" rx="1"/><path d="M4 4h4M4 6h4M4 8h2"/></svg>
+        Generar carta CFE/JAPAY
+      </button>
+      <button class="export-btn-cfe" style="background:rgba(34,208,240,.08);border-color:rgba(34,208,240,.2);color:#22D0F0" onclick="exportCartaAyuntamiento('${filter}')">
+        <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 10h10M2 10V5l4-4 4 4v5M5 10V7h2v3"/></svg>
+        Carta Ayuntamiento
+      </button>
+    </div>
+
+    <!-- Tabla -->
+    <div style="background:var(--card);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;overflow-x:auto">
+      <table class="hist-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tipo</th>
+            <th>Colonia / Zona</th>
+            <th>Severidad</th>
+            <th>Reportado</th>
+            <th>Resuelto</th>
+            <th>Duración</th>
+            <th>Folio</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+          </tr>
+        </thead>
+        <tbody id="hist-tbody"></tbody>
+      </table>
+    </div>
+    ${filtered.length>100?`<div style="text-align:center;padding:8px;font-size:11px;color:var(--mut)">${filtered.length} registros · Mostrando primeros 100 · Usa el CSV para el listado completo</div>`:''}
+  `;
+
+  // Llenar la tabla
+  const tbody=document.getElementById('hist-tbody');
+  const typeLabel={apagon:'⚡ Apagón',alumbrado:'💡 Alumbrado',agua:'💧 Fuga',corte_agua:'🚰 Sin agua',presion_baja:'💧 Presión baja',calidad_agua:'⚠️ Calidad'};
+  const sevColor={leve:'#1FD18A',moderado:'#F5B731',critico:'#FF6B6B'};
+
+  filtered.slice(0,100).forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    const when=new Date(r.timestamp).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const resolvedAt=r.resolved_at?new Date(r.resolved_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+    const dur=r.resolucion_min?formatDur(r.resolucion_min):'—';
+    const sev=r.severity||'moderado';
+    const contact=_contactsCache[r.id];
+    const nameCell=contact
+      ?`<span class="contact-val">${escAdm(contact.nombre||'—')}</span>`
+      :`<span class="contact-hidden" onclick="requestUnlock()">🔒 Protegido</span>`;
+    const telCell=contact
+      ?`<a href="tel:${contact.telefono}" class="contact-phone" style="text-decoration:none">${escAdm(contact.telefono||'—')}</a>`
+      :`<span class="contact-hidden" onclick="requestUnlock()">🔒 Protegido</span>`;
+    tr.innerHTML=`
+      <td style="color:var(--mut);font-size:10px">${i+1}</td>
+      <td style="font-weight:700;font-size:11px">${typeLabel[r.type]||r.type}</td>
+      <td id="hrow-loc-${r.id}" style="color:var(--dim);max-width:140px">Sec. ${r.seccion||'—'}</td>
+      <td><span style="color:${sevColor[sev]||'#F5B731'};font-weight:700;font-size:10px">${sev}</span></td>
+      <td style="color:var(--dim);white-space:nowrap;font-size:10px">${when}</td>
+      <td style="color:var(--grn);white-space:nowrap;font-size:10px">${resolvedAt}</td>
+      <td style="font-weight:700;color:var(--grn);font-size:11px">${dur}</td>
+      <td style="color:rgba(168,85,247,.8);font-size:10px">${r.report_number||'—'}</td>
+      <td id="hrow-name-${r.id}">${nameCell}</td>
+      <td id="hrow-tel-${r.id}">${telCell}</td>`;
+    tbody.appendChild(tr);
+    // Geocode async
+    if(r.lat&&r.lng){
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${r.lat}&lon=${r.lng}&format=json&accept-language=es`,
+        {headers:{'User-Agent':'ApagonesMID-Admin/1.0'}})
+        .then(res=>res.json())
+        .then(d=>{
+          const col=d.address?.suburb||d.address?.neighbourhood||d.address?.road||'';
+          const el2=document.getElementById('hrow-loc-'+r.id);
+          if(el2&&col) el2.textContent=col;
+        }).catch(()=>{});
+    }
+  });
+}
+
+function formatDur(mins){
+  if(mins<60) return Math.round(mins)+'m';
+  const h=Math.floor(mins/60),m=Math.round(mins%60);
+  if(h<24) return m>0?h+'h '+m+'m':h+'h';
+  const d=Math.floor(h/24);
+  return d+'d '+(h%24)+'h';
+}
+
+// ── DESBLOQUEO DE CONTACTOS ──────────────────────────
+let _contactsUnlocked=false;
+const _contactsCache={};
+
+async function unlockContacts(){
+  const pw=document.getElementById('hist-pw')?.value;
+  if(!pw){ toast('Ingresa la contraseña','w'); return; }
+  // Intentar cargar contactos — si RLS los bloquea, fallará
+  try{
+    const {data,error}=await db.from('report_contacts').select('report_id,nombre,telefono').limit(1000);
+    if(error) throw error;
+    if(!data||!data.length){
+      const st=document.getElementById('hist-unlock-st');
+      if(st){st.textContent='Sin contactos registrados';st.style.color='var(--mut)';st.style.display='';}
+      return;
+    }
+    _contactsUnlocked=true;
+    data.forEach(rc=>{ _contactsCache[rc.report_id]={nombre:rc.nombre||'',telefono:rc.telefono||''}; });
+    // Re-renderizar con contactos visibles
+    renderHistoricoView(histCache,'todos');
+    toast('🔓 Contactos desbloqueados — '+data.length+' registros','s');
+    // Mostrar estado
+    const st=document.getElementById('hist-unlock-st');
+    if(st){st.textContent='✅ '+data.length+' contactos cargados';st.style.color='#1FD18A';st.style.display='';}
+  }catch(e){
+    const st=document.getElementById('hist-unlock-st');
+    if(st){st.textContent='❌ Sin acceso';st.style.color='#FF8080';st.style.display='';}
+    toast('Error: '+e.message,'e');
+  }
+}
+
+function requestUnlock(){
+  document.getElementById('hist-pw')?.focus();
+  toast('Ingresa la contraseña y toca Desbloquear','w');
+}
+
+// ── EXPORTAR CSV COMPLETO ────────────────────────────
+function exportHistCSV(filter){
+  filter = filter||'todos';
+  const rows = filter==='elec' ? histCache.filter(r=>ELEC_TYPES.includes(r.type)) :
+    filter==='agua' ? histCache.filter(r=>AGUA_TYPES.includes(r.type)) : histCache;
+  const typeLabel={apagon:'Apagon electrico',alumbrado:'Alumbrado publico',agua:'Fuga de agua',
+    corte_agua:'Corte de agua',presion_baja:'Presion baja',calidad_agua:'Calidad del agua'};
+  const hdrs=['Tipo','Colonia','Latitud','Longitud','Seccion','Severidad',
+    'Fecha reporte','Fecha resolucion','Duracion (min)','Folio CFE/JAPAY',
+    'Nombre reportante','Telefono'];
+  function csvCell(v){ return '"' + String(v||'').replace(/"/g,'""') + '"'; }
+  const lines = [hdrs.map(csvCell).join(',')];
+  rows.forEach(r=>{
+    const contact=_contactsCache[r.id]||{};
+    lines.push([
+      typeLabel[r.type]||r.type, '',
+      r.lat||'', r.lng||'', r.seccion||'', r.severity||'moderado',
+      new Date(r.timestamp).toLocaleString('es-MX'),
+      r.resolved_at?new Date(r.resolved_at).toLocaleString('es-MX'):'',
+      r.resolucion_min?Math.round(r.resolucion_min):'',
+      r.report_number||'',
+      _contactsUnlocked?(contact.nombre||''):'PROTEGIDO',
+      _contactsUnlocked?(contact.telefono||''):'PROTEGIDO',
+    ].map(csvCell).join(','));
+  });
+  const csv = lines.join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='apagones-merida-historico-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV descargado — '+rows.length+' registros','s');
+  auditLog('Exportar CSV historico', filter+' — '+rows.length+' registros');
+}
+
+// ── CARTA FORMAL CFE/JAPAY ───────────────────────────
+function exportCartaCFE(filter='todos'){
+  const rows=(filter==='todos'?histCache:histCache.filter(r=>ELEC_TYPES.includes(r.type))).slice(0,50);
+  const fecha=new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  const resumen=`Del análisis de ${rows.length} reportes resueltos, el promedio de resolución fue de ${(rows.filter(r=>r.resolucion_min>0).reduce((s,r,_,a)=>s+r.resolucion_min/a.length,0)/60).toFixed(1)} horas.`;
+  const listado=rows.slice(0,20).map((r,i)=>`${i+1}. ${new Date(r.timestamp).toLocaleDateString('es-MX')} — ${r.type==='apagon'?'Apagón':'Alumbrado'} — Sec. ${r.seccion||'—'} — ${r.severity||'moderado'} — ${r.resolucion_min?Math.round(r.resolucion_min)+'min':'sin resolver'}`).join('\n');
+  const carta=`MÉRIDA, YUCATÁN, A ${fecha.toUpperCase()}
+
+COMISIÓN FEDERAL DE ELECTRICIDAD
+ZONA YUCATÁN
+PRESENTE
+
+ASUNTO: Reporte ciudadano de incidencias eléctricas — Plataforma ApagonesMID
+
+Por medio de la presente, la plataforma ciudadana ApagonesMID (apagonesmid.mx) presenta
+el siguiente reporte de incidencias eléctricas registradas en Mérida, Yucatán:
+
+RESUMEN ESTADÍSTICO:
+• Total de incidencias registradas: ${rows.length}
+• ${resumen}
+
+LISTADO DE INCIDENCIAS:
+${listado}
+${rows.length>20?`
+... y ${rows.length-20} incidencias más. Ver CSV adjunto para listado completo.`:''}
+
+Los reportes fueron realizados voluntariamente por ciudadanos de Mérida a través
+de la plataforma ApagonesMID, disponible en apagonesmid.mx.
+
+Solicitamos atención prioritaria a las zonas con mayor concentración de reportes.
+
+ATENTAMENTE
+Plataforma Ciudadana ApagonesMID
+medios@apagonesmid.mx
+https://apagonesmid.mx`;
+
+  const blob=new Blob([carta],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='carta-cfe-apagones-'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+  toast('📄 Carta CFE generada','s');
+}
+
+function exportCartaAyuntamiento(filter='todos'){
+  const rows=histCache.filter(r=>AGUA_TYPES.includes(r.type)).slice(0,50);
+  const fecha=new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  const typeLabel={agua:'Fuga de agua',corte_agua:'Corte de agua',presion_baja:'Presión baja',calidad_agua:'Calidad del agua'};
+  const listado=rows.slice(0,20).map((r,i)=>`${i+1}. ${new Date(r.timestamp).toLocaleDateString('es-MX')} — ${typeLabel[r.type]||r.type} — Sec. ${r.seccion||'—'} — ${r.severity||'moderado'}`).join('\n');
+  const carta=`MÉRIDA, YUCATÁN, A ${fecha.toUpperCase()}
+
+H. AYUNTAMIENTO DE MÉRIDA
+JAPAY — JUNTA DE AGUA POTABLE Y ALCANTARILLADO DE YUCATÁN
+PRESENTE
+
+ASUNTO: Reporte ciudadano de incidencias de agua — Plataforma ApagonesMID
+
+La plataforma ciudadana ApagonesMID presenta el siguiente reporte de
+incidencias de agua registradas en Mérida, Yucatán:
+
+TOTAL DE INCIDENCIAS DE AGUA: ${rows.length}
+
+LISTADO:
+${listado}
+${rows.length>20?`
+... y ${rows.length-20} más. Ver CSV adjunto.`:''}
+
+Se solicita revisión e intervención en las zonas señaladas.
+
+ATENTAMENTE
+Plataforma Ciudadana ApagonesMID
+medios@apagonesmid.mx
+https://apagonesmid.mx`;
+
+  const blob=new Blob([carta],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='carta-japay-agua-'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+  toast('📄 Carta JAPAY generada','s');
+}
+
 
 // ══════ SCHEDULED ══════════════════════════════════
 function openSchedForm(){

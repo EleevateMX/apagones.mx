@@ -2170,17 +2170,17 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   </button>
   <!-- ÚLTIMA HORA — campana -->
   <button id="uh-bell" onclick="toggleUH()" aria-label="Última Hora">
-    <!-- Campana con rayo integrado — paleta ApagonesMID -->
-    <svg viewBox="0 0 22 22" width="18" height="18" fill="none">
-      <!-- Cuerpo de la campana -->
-      <path d="M11 3C7.7 3 5 5.7 5 9v4.5L3 16h16l-2-2.5V9c0-3.3-2.7-6-6-6z"
-        fill="rgba(245,183,49,.18)" stroke="#F5B731" stroke-width="1.5" stroke-linejoin="round"/>
-      <!-- Arco superior (asa) -->
-      <path d="M9 3a2 2 0 0 1 4 0" stroke="#F5B731" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-      <!-- Badajo -->
-      <path d="M9 16a2 2 0 0 0 4 0" stroke="#F5B731" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-      <!-- Rayito de acción -->
-      <path d="M11 6.5l-1.5 3h3l-1.5 3" stroke="#F5B731" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Papel/nota de prensa — Última Hora -->
+    <svg viewBox="0 0 20 22" width="16" height="17" fill="none">
+      <!-- Hoja con esquina doblada -->
+      <path d="M3 2h10l4 4v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
+        fill="rgba(245,183,49,.15)" stroke="#F5B731" stroke-width="1.4" stroke-linejoin="round"/>
+      <!-- Esquina doblada -->
+      <path d="M13 2v4h4" stroke="#F5B731" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Líneas de texto — simulan contenido de una nota -->
+      <line x1="5" y1="9"  x2="12" y2="9"  stroke="#F5B731" stroke-width="1.3" stroke-linecap="round"/>
+      <line x1="5" y1="12" x2="14" y2="12" stroke="#F5B731" stroke-width="1.3" stroke-linecap="round"/>
+      <line x1="5" y1="15" x2="10" y2="15" stroke="#F5B731" stroke-width="1.3" stroke-linecap="round"/>
     </svg>
     <div id="uh-badge"></div>
   </button>
