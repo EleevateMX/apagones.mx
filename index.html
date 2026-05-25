@@ -1804,6 +1804,130 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 .promo-label{font-size:11px;font-weight:800;color:rgba(255,255,255,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .promo-sub{font-size:10px;color:rgba(255,255,255,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .promo-cta{flex-shrink:0;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap}
+
+/* ══ ÚLTIMA HORA — panel lateral (CSS real) ══ */
+#uh-panel{
+  position:fixed;bottom:0;right:0;
+  width:100%;max-width:420px;
+  height:100vh;max-height:100vh;
+  background:var(--bg);          /* sigue el tema oscuro/claro */
+  border-left:1px solid rgba(245,183,49,.18);
+  z-index:1500;
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.22,.8,.3,1);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+/* iOS PWA standalone: compensar el notch */
+@supports(padding-top:env(safe-area-inset-top)){
+  #uh-panel{ padding-top:env(safe-area-inset-top,0); }
+}
+#uh-panel.open{transform:translateX(0)}
+@media(max-width:440px){#uh-panel{max-width:100%;border-left:none;border-top:1px solid rgba(245,183,49,.2);height:90vh;bottom:0;top:auto}}
+#uh-overlay{
+  position:fixed;inset:0;z-index:1400;background:rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+#uh-overlay.open{opacity:1;pointer-events:all}
+.uh-header{
+  padding:16px 18px 12px;
+  border-bottom:1px solid rgba(245,183,49,.12);
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+  background:rgba(10,6,18,1);
+}
+.uh-header-ico{
+  width:32px;height:32px;border-radius:9px;
+  background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.25);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.uh-list{flex:1;overflow-y:auto;padding:12px 14px}
+.uh-list::-webkit-scrollbar{width:3px}
+.uh-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+/* Card de noticia */
+.uh-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;overflow:hidden;margin-bottom:10px;
+  cursor:pointer;transition:border-color .18s,background .18s;
+}
+.uh-card:hover{border-color:rgba(245,183,49,.25);background:rgba(255,255,255,.05)}
+.uh-card.urgente{border-color:rgba(255,75,75,.3);background:rgba(255,75,75,.04)}
+.uh-card.urgente:hover{border-color:rgba(255,75,75,.5)}
+.uh-card-img{
+  width:100%;height:120px;object-fit:cover;display:block;background:#0C060A;
+}
+.uh-card-body{padding:10px 12px}
+.uh-card-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;
+  text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;
+}
+.uh-tag-urgente{background:rgba(255,75,75,.12);border:1px solid rgba(255,75,75,.25);color:#FF6B6B}
+.uh-tag-normal{background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.22);color:#F5B731}
+.uh-card-title{font-size:14px;font-weight:800;line-height:1.3;margin-bottom:5px;color:#F0E8EC}
+.uh-card-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.uh-card-meta{display:flex;align-items:center;gap:7px;font-size:10px;color:rgba(255,255,255,.28)}
+.uh-card-fuente{font-weight:700;color:rgba(245,183,49,.65)}
+/* Detalle de noticia */
+.uh-detail{
+  position:absolute;inset:0;
+  background:#07040C;
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.22,.8,.3,1);
+  display:flex;flex-direction:column;z-index:1;
+}
+.uh-detail.open{transform:translateX(0)}
+.uh-detail-img{width:100%;height:200px;object-fit:cover;display:block;flex-shrink:0;background:#0C060A}
+.uh-detail-body{padding:16px 18px;overflow-y:auto;flex:1}
+/* Spinner */
+.uh-spinner{display:flex;align-items:center;justify-content:center;padding:40px;color:rgba(255,255,255,.25);flex-direction:column;gap:10px}
+@keyframes uhSpin{to{transform:rotate(360deg)}}
+.uh-spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(245,183,49,.5);border-radius:50%;animation:uhSpin .7s linear infinite}
+
+/* ── ÚLTIMA HORA BUTTON ── */
+#uh-bell{
+  /* Tamaño y forma igual que hamburger-btn */
+  display:flex !important;
+  align-items:center;justify-content:center;
+  width:36px;height:36px;
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:9px;
+  padding:0;
+  cursor:pointer;
+  color:var(--dim);
+  position:relative;
+  flex-shrink:0;
+  transition:background .18s,border-color .18s,color .18s;
+  -webkit-tap-highlight-color:transparent;
+  /* Asegurar que no se recorta */
+  overflow:visible;
+  line-height:0;
+  touch-action:manipulation;
+}
+#uh-bell:hover,#uh-bell:active{
+  background:var(--card2,#1C1218);
+  border-color:rgba(245,183,49,.4);
+  color:var(--elec,#F5B731);
+}
+#uh-bell.has-news{
+  border-color:rgba(245,183,49,.55);
+  color:var(--elec,#F5B731);
+  animation:bellPulse 2.5s ease-in-out infinite;
+}
+@keyframes bellPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
+  50%{box-shadow:0 0 0 5px rgba(245,183,49,.2)}
+}
+#uh-badge{
+  position:absolute;top:-5px;right:-5px;
+  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
+  background:#FF3B3B;border:2px solid var(--bg,#07040C);
+  display:none;align-items:center;justify-content:center;
+  font-size:8px;font-weight:900;color:#fff;font-family:var(--f);
+  pointer-events:none;z-index:2;
+}
 </style>
 </head>
 <body>
@@ -4542,149 +4666,7 @@ async function exportHistFiltered(format){
       tr:nth-child(even){background:#fafafa}
       .footer{margin-top:30px;padding-top:14px;border-top:1px solid #ddd;font-size:9px;color:#999;text-align:center}
       @media print{ body{padding:15px} }
-    
-/* ═══════════ ÚLTIMA HORA ═══════════ */
-@keyframes bellPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
-  50%{box-shadow:0 0 0 5px rgba(245,183,49,.2)}
-}
-#uh-bell.has-news{
-  border-color:rgba(245,183,49,.5)!important;
-  color:var(--elec)!important;
-  animation:bellPulse 2.5s ease-in-out infinite;
-}
-#uh-badge{
-  position:absolute;top:-5px;right:-5px;
-  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
-  background:#FF3B3B;border:2px solid var(--bg);
-  display:none;align-items:center;justify-content:center;
-  font-size:8px;font-weight:900;color:#fff;font-family:var(--f);
-  letter-spacing:-.2px;pointer-events:none;z-index:1;
-}
-/* Panel lateral */
-#uh-panel{
-  position:fixed;bottom:0;right:0;
-  width:100%;max-width:420px;
-  height:100vh;max-height:100vh;
-  background:var(--bg);          /* sigue el tema oscuro/claro */
-  border-left:1px solid rgba(245,183,49,.18);
-  z-index:1500;
-  transform:translateX(100%);
-  transition:transform .3s cubic-bezier(.22,.8,.3,1);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-  -webkit-overflow-scrolling:touch;
-}
-/* iOS PWA standalone: compensar el notch */
-@supports(padding-top:env(safe-area-inset-top)){
-  #uh-panel{ padding-top:env(safe-area-inset-top,0); }
-}
-#uh-panel.open{transform:translateX(0)}
-@media(max-width:440px){#uh-panel{max-width:100%;border-left:none;border-top:1px solid rgba(245,183,49,.2);height:90vh;bottom:0;top:auto}}
-#uh-overlay{
-  position:fixed;inset:0;z-index:1400;background:rgba(0,0,0,.5);
-  opacity:0;pointer-events:none;transition:opacity .3s;
-  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
-}
-#uh-overlay.open{opacity:1;pointer-events:all}
-.uh-header{
-  padding:16px 18px 12px;
-  border-bottom:1px solid rgba(245,183,49,.12);
-  display:flex;align-items:center;gap:10px;
-  flex-shrink:0;
-  background:rgba(10,6,18,1);
-}
-.uh-header-ico{
-  width:32px;height:32px;border-radius:9px;
-  background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.25);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.uh-list{flex:1;overflow-y:auto;padding:12px 14px}
-.uh-list::-webkit-scrollbar{width:3px}
-.uh-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
-/* Card de noticia */
-.uh-card{
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  border-radius:14px;overflow:hidden;margin-bottom:10px;
-  cursor:pointer;transition:border-color .18s,background .18s;
-}
-.uh-card:hover{border-color:rgba(245,183,49,.25);background:rgba(255,255,255,.05)}
-.uh-card.urgente{border-color:rgba(255,75,75,.3);background:rgba(255,75,75,.04)}
-.uh-card.urgente:hover{border-color:rgba(255,75,75,.5)}
-.uh-card-img{
-  width:100%;height:120px;object-fit:cover;display:block;background:#0C060A;
-}
-.uh-card-body{padding:10px 12px}
-.uh-card-tag{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;
-  text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;
-}
-.uh-tag-urgente{background:rgba(255,75,75,.12);border:1px solid rgba(255,75,75,.25);color:#FF6B6B}
-.uh-tag-normal{background:rgba(245,183,49,.1);border:1px solid rgba(245,183,49,.22);color:#F5B731}
-.uh-card-title{font-size:14px;font-weight:800;line-height:1.3;margin-bottom:5px;color:#F0E8EC}
-.uh-card-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.uh-card-meta{display:flex;align-items:center;gap:7px;font-size:10px;color:rgba(255,255,255,.28)}
-.uh-card-fuente{font-weight:700;color:rgba(245,183,49,.65)}
-/* Detalle de noticia */
-.uh-detail{
-  position:absolute;inset:0;
-  background:#07040C;
-  transform:translateX(100%);transition:transform .28s cubic-bezier(.22,.8,.3,1);
-  display:flex;flex-direction:column;z-index:1;
-}
-.uh-detail.open{transform:translateX(0)}
-.uh-detail-img{width:100%;height:200px;object-fit:cover;display:block;flex-shrink:0;background:#0C060A}
-.uh-detail-body{padding:16px 18px;overflow-y:auto;flex:1}
-/* Spinner */
-.uh-spinner{display:flex;align-items:center;justify-content:center;padding:40px;color:rgba(255,255,255,.25);flex-direction:column;gap:10px}
-@keyframes uhSpin{to{transform:rotate(360deg)}}
-.uh-spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(245,183,49,.5);border-radius:50%;animation:uhSpin .7s linear infinite}
-
-/* ── ÚLTIMA HORA BUTTON ── */
-#uh-bell{
-  /* Tamaño y forma igual que hamburger-btn */
-  display:flex !important;
-  align-items:center;justify-content:center;
-  width:36px;height:36px;
-  background:var(--card);
-  border:1px solid var(--bdr);
-  border-radius:9px;
-  padding:0;
-  cursor:pointer;
-  color:var(--dim);
-  position:relative;
-  flex-shrink:0;
-  transition:background .18s,border-color .18s,color .18s;
-  -webkit-tap-highlight-color:transparent;
-  /* Asegurar que no se recorta */
-  overflow:visible;
-  line-height:0;
-  touch-action:manipulation;
-}
-#uh-bell:hover,#uh-bell:active{
-  background:var(--card2,#1C1218);
-  border-color:rgba(245,183,49,.4);
-  color:var(--elec,#F5B731);
-}
-#uh-bell.has-news{
-  border-color:rgba(245,183,49,.55);
-  color:var(--elec,#F5B731);
-  animation:bellPulse 2.5s ease-in-out infinite;
-}
-@keyframes bellPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
-  50%{box-shadow:0 0 0 5px rgba(245,183,49,.2)}
-}
-#uh-badge{
-  position:absolute;top:-5px;right:-5px;
-  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
-  background:#FF3B3B;border:2px solid var(--bg,#07040C);
-  display:none;align-items:center;justify-content:center;
-  font-size:8px;font-weight:900;color:#fff;font-family:var(--f);
-  pointer-events:none;z-index:2;
-}
-</style></head><body>
+    </style></head><body>
     <h1>ApagonesMID — Histórico de reportes resueltos</h1>
     <div class="meta">Generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
     <table>
