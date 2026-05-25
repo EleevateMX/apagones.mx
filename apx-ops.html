@@ -739,6 +739,9 @@ function goPanel(name, el){
   if(name==='sched') loadSched();
   if(name==='audit') renderAuditList();
   if(name==='ultima-hora') loadUHPanel();
+  // Al cambiar de panel, re-renderizar reportes/agua con estado actual de _superMode
+  if(name==='reports'){ renderReportsPanel(); }
+  if(name==='agua')   { renderAguaPanel(); }
 }
 
 // ══════ DATA ══════════════════════════════════════════
@@ -1055,10 +1058,17 @@ async function loadHistorico(){
   const wrap=document.getElementById('hist-content');
   wrap.innerHTML='<div class="loading"><div class="spinner"></div>Cargando histórico…</div>';
   try{
-    const {data,error}=await db.from('reports_historico')
-      .select('*').order('resolved_at',{ascending:false}).limit(500);
-    if(error) throw error;
-    histCache=data||[];
+    // Cargar reportes RESUELTOS (tabla histórico)
+    const [{data:resueltos,error:e1},{data:activos,error:e2}] = await Promise.all([
+      db.from('reports_historico').select('*').order('resolved_at',{ascending:false}).limit(500),
+      db.from('reports').select('*').eq('resolved',false).order('timestamp',{ascending:false}).limit(200)
+    ]);
+    if(e1) throw e1;
+    // Marcar los activos para distinguirlos
+    const activosM = (activos||[]).map(r=>({...r, _estado:'activo', resolved_at:null}));
+    const resueltosM = (resueltos||[]).map(r=>({...r, _estado:'resuelto'}));
+    // Combinar: activos primero, luego resueltos por fecha desc
+    histCache = [...activosM, ...resueltosM];
     renderHistoricoView(histCache,'todos');
   }catch(e){wrap.innerHTML='<div class="empty">Error cargando histórico: '+e.message+'</div>';}
 }
@@ -1082,10 +1092,14 @@ function buildUnlockBar(){
 
 function renderHistoricoView(rows, filter){
   const wrap=document.getElementById('hist-content');
-  const filtered = filter==='todos' ? rows :
-    filter==='elec' ? rows.filter(r=>ELEC_TYPES.includes(r.type)) :
-    filter==='agua' ? rows.filter(r=>AGUA_TYPES.includes(r.type)) : rows;
+  const filtered = filter==='todos'    ? rows :
+    filter==='activo'  ? rows.filter(r=>r._estado==='activo') :
+    filter==='resuelto'? rows.filter(r=>r._estado==='resuelto') :
+    filter==='elec'    ? rows.filter(r=>ELEC_TYPES.includes(r.type)) :
+    filter==='agua'    ? rows.filter(r=>AGUA_TYPES.includes(r.type)) : rows;
 
+  const activos=filtered.filter(r=>r._estado==='activo').length;
+  const resueltos=filtered.filter(r=>r._estado==='resuelto').length;
   const el=filtered.filter(r=>ELEC_TYPES.includes(r.type)).length;
   const ag=filtered.filter(r=>AGUA_TYPES.includes(r.type)).length;
       const times=filtered.filter(r=>r.resolucion_min&&r.resolucion_min>0);
@@ -1103,6 +1117,8 @@ function renderHistoricoView(rows, filter){
     <!-- Filtros -->
     <div class="filter-bar">
       <button class="filt-btn ${filter==='todos'?'on':''}" onclick="renderHistoricoView(histCache,'todos')">Todos (${rows.length})</button>
+      <button class="filt-btn ${filter==='activo'?'on':''}" onclick="renderHistoricoView(histCache,'activo')">⚡ Activos (${rows.filter(r=>r._estado==='activo').length})</button>
+      <button class="filt-btn ${filter==='resuelto'?'on':''}" onclick="renderHistoricoView(histCache,'resuelto')">✅ Resueltos (${rows.filter(r=>r._estado==='resuelto').length})</button>
       <button class="filt-btn ${filter==='elec'?'on':''}" onclick="renderHistoricoView(histCache,'elec')">⚡ Eléctrico (${rows.filter(r=>ELEC_TYPES.includes(r.type)).length})</button>
       <button class="filt-btn ${filter==='agua'?'on':''}" onclick="renderHistoricoView(histCache,'agua')">💧 Agua (${rows.filter(r=>AGUA_TYPES.includes(r.type)).length})</button>
     </div>
@@ -1170,7 +1186,7 @@ function renderHistoricoView(rows, filter){
       <td id="hrow-loc-${r.id}" style="color:var(--dim);max-width:140px">Sec. ${r.seccion||'—'}</td>
       <td><span style="color:${sevColor[sev]||'#F5B731'};font-weight:700;font-size:10px">${sev}</span></td>
       <td style="color:var(--dim);white-space:nowrap;font-size:10px">${when}</td>
-      <td style="color:var(--grn);white-space:nowrap;font-size:10px">${resolvedAt}</td>
+      <td style="white-space:nowrap;font-size:10px;${r._estado==='activo'?'color:var(--elec);font-weight:700':''}">${r._estado==='activo'?'⚡ Activo':resolvedAt}</td>
       <td style="font-weight:700;color:var(--grn);font-size:11px">${dur}</td>
       <td style="color:rgba(168,85,247,.8);font-size:10px">${r.report_number||'—'}</td>
       <td id="hrow-name-${r.id}">${nameCell}</td>
@@ -1227,11 +1243,13 @@ async function unlockContacts(){
     // Actualizar la barra visual
     setSuperBarState(true, count);
     showSuperBadge();
-    // Recargar el histórico con contactos visibles
-    await loadHistorico();
-    toast('🔓 '+count+' contactos cargados','s');
+    // Recargar TODOS los paneles con contactos visibles
+    await loadReports();               // reportes activos + agua
+    if(currentPanel==='historico') await loadHistorico();
+    else if(currentPanel==='reports'||currentPanel==='agua') {/* ya cargado arriba */}
+    toast('🔓 '+count+' contactos — datos desbloqueados','s');
   }catch(e){
-    toast('Error: '+e.message,'e');
+    toast('Error al desbloquear: '+e.message,'e');
     if(btn){ btn.disabled=false; btn.textContent='Desbloquear'; }
   }
 }

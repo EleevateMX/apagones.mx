@@ -1008,7 +1008,6 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 .emerg-name{font-size:13px;font-weight:800;color:var(--tx)}
 .emerg-number{font-size:11px;color:var(--dim);margin-top:2px}
 .hamburger-btn{display:none;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:8px;cursor:pointer;color:var(--dim);transition:all .18s;line-height:0}
-#uh-bell{display:flex !important;}
 .help-btn-mobile{display:none}
 @media (max-width:768px){.help-btn-mobile{display:flex !important}}
 .hamburger-btn:hover{color:var(--tx)}
@@ -2169,18 +2168,8 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   <button class="hamburger-btn help-btn-mobile" onclick="openHelpModal()" title="¿Cómo reportar?" aria-label="Ayuda" style="margin-right:6px">
     <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M7.5 7.5 a2.5 2.5 0 1 1 3.5 2.3 c-.8.3-1 .7-1 1.7"/><circle cx="10" cy="14.5" r="0.6" fill="currentColor" stroke="none"/></svg>
   </button>
-  <!-- ÚLTIMA HORA — mismo estilo que hamburger y help -->
-  <button class="hamburger-btn" id="uh-bell" aria-label="Última Hora" style="position:relative;margin-right:4px" onclick="toggleUH()">
-    <svg viewBox="0 0 22 22" width="18" height="18" fill="none">
-      <path d="M4 3h11l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"
-            fill="rgba(245,183,49,.1)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-      <path d="M15 3v5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="6" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="6" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="6" y1="16" x2="11" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-    </svg>
-    <div id="uh-badge"></div>
-  </button>
+  <!-- ÚLTIMA HORA — estilos propios, sin herencia de hamburger-btn -->
+  <button id="uh-bell" aria-label="Última Hora" onclick="toggleUH()" type="button"></button>
   <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileMenu()">
     <svg viewBox="0 0 22 18" width="22" height="18" fill="currentColor"><rect y="0" width="22" height="2.5" rx="1.25"/><rect y="7.75" width="22" height="2.5" rx="1.25"/><rect y="15.5" width="22" height="2.5" rx="1.25"/></svg>
   </button>
@@ -4525,8 +4514,6 @@ async function exportHistFiltered(format){
       @media print{ body{padding:15px} }
     
 /* ═══════════ ÚLTIMA HORA ═══════════ */
-/* #uh-bell usa .hamburger-btn — ver clase arriba */
-
 @keyframes bellPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
   50%{box-shadow:0 0 0 5px rgba(245,183,49,.2)}
@@ -4623,6 +4610,50 @@ async function exportHistFiltered(format){
 .uh-spinner{display:flex;align-items:center;justify-content:center;padding:40px;color:rgba(255,255,255,.25);flex-direction:column;gap:10px}
 @keyframes uhSpin{to{transform:rotate(360deg)}}
 .uh-spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(245,183,49,.5);border-radius:50%;animation:uhSpin .7s linear infinite}
+
+/* ── ÚLTIMA HORA BUTTON ── */
+#uh-bell{
+  /* Tamaño y forma igual que hamburger-btn */
+  display:flex !important;
+  align-items:center;justify-content:center;
+  width:36px;height:36px;
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:9px;
+  padding:0;
+  cursor:pointer;
+  color:var(--dim);
+  position:relative;
+  flex-shrink:0;
+  transition:background .18s,border-color .18s,color .18s;
+  -webkit-tap-highlight-color:transparent;
+  /* Asegurar que no se recorta */
+  overflow:visible;
+  line-height:0;
+  touch-action:manipulation;
+}
+#uh-bell:hover,#uh-bell:active{
+  background:var(--card2,#1C1218);
+  border-color:rgba(245,183,49,.4);
+  color:var(--elec,#F5B731);
+}
+#uh-bell.has-news{
+  border-color:rgba(245,183,49,.55);
+  color:var(--elec,#F5B731);
+  animation:bellPulse 2.5s ease-in-out infinite;
+}
+@keyframes bellPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
+  50%{box-shadow:0 0 0 5px rgba(245,183,49,.2)}
+}
+#uh-badge{
+  position:absolute;top:-5px;right:-5px;
+  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
+  background:#FF3B3B;border:2px solid var(--bg,#07040C);
+  display:none;align-items:center;justify-content:center;
+  font-size:8px;font-weight:900;color:#fff;font-family:var(--f);
+  pointer-events:none;z-index:2;
+}
 </style></head><body>
     <h1>ApagonesMID — Histórico de reportes resueltos</h1>
     <div class="meta">Generado: ${now} · Mérida, Yucatán · ${data.length} registros</div>
@@ -8392,8 +8423,15 @@ window.addEventListener('DOMContentLoaded',async()=>{
       document.getElementById('notif-prompt').style.display='flex';
     }
   },30000);
-  // Módulo Última Hora — inicializar después de que db esté lista
-  try{ initUltimaHora(); }catch(e){ console.warn('UH init:',e); }
+  // Módulo Última Hora — inicializar
+  try{
+    initUltimaHora();
+  }catch(e){
+    console.warn('UH init error:',e);
+    // Fallback: al menos mostrar el ícono en el botón
+    const b=document.getElementById('uh-bell');
+    if(b&&!b.querySelector('svg')) b.innerHTML='<svg viewBox="0 0 22 22" width="18" height="18" fill="none" style="display:block"><path d="M4 3h11l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="rgba(245,183,49,.1)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 3v5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="6" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="6" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><div id="uh-badge" style="display:none"></div>';
+  }
 });
 
 
@@ -9150,6 +9188,20 @@ async function refreshAllAdSlides(){
 // Cargar noticias al iniciar (después de que db esté lista)
 async function initUltimaHora(){
   _uhInitDone = true;
+  // Renderizar el contenido del botón (SVG + badge)
+  const bellBtn = document.getElementById('uh-bell');
+  if(bellBtn && !bellBtn.querySelector('svg')){
+    bellBtn.innerHTML = `
+      <svg viewBox="0 0 22 22" width="18" height="18" fill="none" style="display:block;pointer-events:none">
+        <path d="M4 3h11l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"
+          fill="rgba(245,183,49,.1)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M15 3v5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="6" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="6" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="6" y1="16" x2="11" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div id="uh-badge" style="display:none"></div>`;
+  }
   // ── Escuchar mensajes del SW (tap en notificación nativa)
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message', e=>{
