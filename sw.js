@@ -1,5 +1,5 @@
-// Apagones Mid — Service Worker v70
-const CACHE = 'apagones-mid-v70';
+// Apagones Mid — Service Worker v71
+const CACHE = 'apagones-mid-v71';
 const TILE_CACHE = 'apagones-tiles-v1';
 
 const STATIC = [
