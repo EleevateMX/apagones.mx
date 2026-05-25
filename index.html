@@ -2172,15 +2172,13 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   <button id="uh-bell" onclick="toggleUH()" aria-label="Última Hora">
     <!-- Papel/nota de prensa — Última Hora -->
     <svg viewBox="0 0 20 22" width="16" height="17" fill="none">
-      <!-- Hoja con esquina doblada -->
+      <!-- Hoja con esquina doblada — usa currentColor para adaptarse al tema -->
       <path d="M3 2h10l4 4v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
-        fill="rgba(245,183,49,.15)" stroke="#F5B731" stroke-width="1.4" stroke-linejoin="round"/>
-      <!-- Esquina doblada -->
-      <path d="M13 2v4h4" stroke="#F5B731" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-      <!-- Líneas de texto — simulan contenido de una nota -->
-      <line x1="5" y1="9"  x2="12" y2="9"  stroke="#F5B731" stroke-width="1.3" stroke-linecap="round"/>
-      <line x1="5" y1="12" x2="14" y2="12" stroke="#F5B731" stroke-width="1.3" stroke-linecap="round"/>
-      <line x1="5" y1="15" x2="10" y2="15" stroke="#F5B731" stroke-width="1.3" stroke-linecap="round"/>
+        fill="rgba(245,183,49,.12)" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M13 2v4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="5" y1="9"  x2="12" y2="9"  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      <line x1="5" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      <line x1="5" y1="15" x2="10" y2="15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
     </svg>
     <div id="uh-badge"></div>
   </button>
@@ -4525,47 +4523,60 @@ async function exportHistFiltered(format){
 /* ═══════════ ÚLTIMA HORA ═══════════ */
 #uh-bell{
   position:relative;
-  width:38px;height:38px;border-radius:11px;
-  background:#1A0F24;                              /* oscuro, nunca blanco */
-  border:1px solid rgba(245,183,49,.2);
+  /* Mismo estilo que hamburger-btn y help-btn — se adapta a dark/light */
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:9px;
+  padding:8px;
+  width:38px;height:38px;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;flex-shrink:0;
   transition:background .18s,border-color .2s,box-shadow .2s;
   -webkit-tap-highlight-color:transparent;
+  color:var(--dim);
 }
 #uh-bell:hover,#uh-bell:active{
-  background:#231530;
-  border-color:rgba(245,183,49,.4);
+  background:var(--card2);
+  border-color:rgba(245,183,49,.35);
+  color:var(--elec);
 }
 #uh-bell.has-news{
-  background:rgba(245,183,49,.12);
-  border-color:rgba(245,183,49,.45);
+  background:var(--card);
+  border-color:rgba(245,183,49,.5);
+  color:var(--elec);
   animation:bellPulse 2.5s ease-in-out infinite;
 }
 @keyframes bellPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
-  50%{box-shadow:0 0 0 5px rgba(245,183,49,.15)}
+  50%{box-shadow:0 0 0 5px rgba(245,183,49,.18)}
 }
 #uh-badge{
-  position:absolute;top:-5px;right:-5px;
-  min-width:17px;height:17px;border-radius:9px;padding:0 4px;
-  background:#FF3B3B;border:2px solid #07040C;
+  position:absolute;top:-4px;right:-4px;
+  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
+  background:#FF3B3B;
+  border:2px solid var(--bg);  /* usa el color de fondo del tema */
   display:none;align-items:center;justify-content:center;
-  font-size:9px;font-weight:900;color:white;font-family:var(--f);
-  letter-spacing:-.3px;
+  font-size:8px;font-weight:900;color:white;font-family:var(--f);
+  letter-spacing:-.2px;
+  pointer-events:none;
 }
 /* Panel lateral */
 #uh-panel{
   position:fixed;bottom:0;right:0;
   width:100%;max-width:420px;
   height:100vh;max-height:100vh;
-  background:#08040F;                              /* negro puro, sin herencia */
+  background:var(--bg);          /* sigue el tema oscuro/claro */
   border-left:1px solid rgba(245,183,49,.18);
   z-index:900;
   transform:translateX(100%);
   transition:transform .3s cubic-bezier(.22,.8,.3,1);
   display:flex;flex-direction:column;
   overflow:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+/* iOS PWA standalone: compensar el notch */
+@supports(padding-top:env(safe-area-inset-top)){
+  #uh-panel{ padding-top:env(safe-area-inset-top,0); }
 }
 #uh-panel.open{transform:translateX(0)}
 @media(max-width:440px){#uh-panel{max-width:100%;border-left:none;border-top:1px solid rgba(245,183,49,.2);height:90vh;bottom:0;top:auto}}
@@ -8397,6 +8408,8 @@ window.addEventListener('DOMContentLoaded',async()=>{
       document.getElementById('notif-prompt').style.display='flex';
     }
   },30000);
+  // Módulo Última Hora — inicializar después de que db esté lista
+  try{ initUltimaHora(); }catch(e){ console.warn('UH init:',e); }
 });
 
 
