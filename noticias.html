@@ -151,11 +151,28 @@
     .empty{text-align:center;padding:32px;color:var(--mut);font-size:13px;line-height:1.6}
   
     .img-btns{display:flex;gap:8px;margin-top:12px;justify-content:center}
-    .img-btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:1px solid;transition:all .18s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .img-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:1px solid;transition:all .18s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none}
     .img-btn-cam{background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.3);color:var(--y)}
     .img-btn-cam:active{background:rgba(245,183,49,.2)}
     .img-btn-gal{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.75)}
     .img-btn-gal:active{background:rgba(255,255,255,.1)}
+
+    .list-summary{display:flex;gap:10px;margin-bottom:16px}
+    .ls-item{flex:1;background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;text-align:center}
+    .ls-n{display:block;font-size:22px;font-weight:900;line-height:1}
+    .ls-l{display:block;font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase;letter-spacing:.3px}
+    .list-section-hd{font-size:11px;font-weight:800;color:#1FD18A;margin:14px 2px 8px;text-transform:uppercase;letter-spacing:.3px}
+    .news-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+    .news-act{flex:1;min-width:70px;padding:8px 10px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;white-space:nowrap}
+    .act-e{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.75)}
+    .act-tog-on{background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.3);color:#F5B731}
+    .act-tog-off{background:rgba(31,209,138,.12);border-color:rgba(31,209,138,.3);color:#1FD18A}
+    .act-del{background:rgba(255,80,80,.1);border-color:rgba(255,80,80,.25);color:#FF6B6B;flex:0 0 auto;min-width:auto}
+    .news-act:active{transform:scale(.96)}
+    .news-card.is-paused{opacity:.62}
+    .badge-on{font-size:10px;font-weight:800;color:#1FD18A;background:rgba(31,209,138,.12);padding:2px 8px;border-radius:6px}
+    .badge-off{font-size:10px;font-weight:800;color:#F5B731;background:rgba(245,183,49,.12);padding:2px 8px;border-radius:6px}
+    .badge-exp{font-size:10px;font-weight:800;color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:6px}
 </style>
 </head>
 <body>
@@ -229,21 +246,22 @@
               <span>Agrega una foto</span>
               <small>JPG · PNG · Max 8 MB</small>
               <div class="img-btns">
-                <button type="button" class="img-btn img-btn-cam" onclick="document.getElementById('n-img-cam').click()">
+                <!-- LABELS nativos: abren el input directamente sin JS (iOS-safe) -->
+                <label for="n-img-cam" class="img-btn img-btn-cam">
                   <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h3l1.5-2h5L14 6h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><circle cx="10" cy="11" r="3.2"/></svg>
                   Tomar foto
-                </button>
-                <button type="button" class="img-btn img-btn-gal" onclick="document.getElementById('n-img-file').click()">
+                </label>
+                <label for="n-img-file" class="img-btn img-btn-gal">
                   <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 13l4-4 3 3 4-4 3 3"/><circle cx="7" cy="7" r="1.3" fill="currentColor" stroke="none"/></svg>
                   Galería
-                </button>
+                </label>
               </div>
             </div>
-            <div class="img-change" id="n-img-change" onclick="document.getElementById('n-img-file').click()">Cambiar foto</div>
-            <!-- Galería / archivos (sin capture = el teléfono deja elegir de fotos) -->
-            <input type="file" accept="image/*" id="n-img-file" onchange="handleImg(this)" style="display:none"/>
-            <!-- Cámara directa (capture fuerza la cámara trasera) -->
-            <input type="file" accept="image/*" id="n-img-cam" capture="environment" onchange="handleImg(this)" style="display:none"/>
+            <label for="n-img-file" class="img-change" id="n-img-change">Cambiar foto</label>
+            <!-- Galería (sin capture = el teléfono deja elegir de fotos guardadas) -->
+            <input type="file" accept="image/*" id="n-img-file" onchange="handleImg(this)" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1"/>
+            <!-- Cámara directa (capture fuerza la cámara) -->
+            <input type="file" accept="image/*" id="n-img-cam" capture="environment" onchange="handleImg(this)" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1"/>
           </div>
         </div>
         <div class="fl">
@@ -411,13 +429,20 @@ function renderLista(){
     el.innerHTML='<div class="empty">Sin noticias publicadas aún.<br/>Toca <strong style="color:var(--y)">+</strong> para crear la primera.</div>';
     return;
   }
-  el.innerHTML=_noticias.map(n=>{
+  const activas = _noticias.filter(x=>x.activa);
+  const pausadas = _noticias.filter(x=>!x.activa);
+  const expiradas = _noticias.filter(x=>x.expires_at && x.expires_at < Date.now());
+
+  const card = n => {
     const when=new Date(n.created_at).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     const hasImg=n.img_data&&n.img_data.length>100;
-    const statusBadge=n.activa?'<span class="badge-on">Activa</span>':'<span class="badge-off">Inactiva</span>';
-    const togLbl=n.activa?'Desactivar':'Activar';
-    const togCls=n.activa?'act-tog-on':'act-tog-off';
-    return `<div class="news-card${n.urgente?' urgente':''}">
+    const isExpired = n.expires_at && n.expires_at < Date.now();
+    const statusBadge = isExpired
+      ? '<span class="badge-exp">Expirada</span>'
+      : (n.activa?'<span class="badge-on">● En vivo</span>':'<span class="badge-off">⏸ Pausada</span>');
+    const togLbl = n.activa?'⏸ Pausar':'▶ Activar';
+    const togCls = n.activa?'act-tog-on':'act-tog-off';
+    return `<div class="news-card${n.urgente?' urgente':''}${!n.activa?' is-paused':''}">
       ${hasImg?`<img class="news-img" src="${n.img_data}" loading="lazy" alt=""/>`:''}
       <div class="news-body">
         <div class="news-tag ${n.urgente?'tag-urg':'tag-norm'}">${n.urgente?'🔴 URGENTE':'📰 Última Hora'}</div>
@@ -426,15 +451,31 @@ function renderLista(){
         <div class="news-meta">
           ${statusBadge}
           <span style="font-size:10px;color:rgba(255,255,255,.25)">${when}</span>
-          <span style="margin-left:auto;display:flex;gap:5px">
-            <button class="news-act act-e" onclick="editNoticia('${n.id}')">Editar</button>
-            <button class="news-act ${togCls}" onclick="toggleNoticia('${n.id}')">${togLbl}</button>
-            <button class="news-act act-del" onclick="deleteNoticia('${n.id}')">🗑</button>
-          </span>
+        </div>
+        <div class="news-actions">
+          <button class="news-act act-e" onclick="editNoticia('${n.id}')">✏️ Editar</button>
+          <button class="news-act ${togCls}" onclick="toggleNoticia('${n.id}')">${togLbl}</button>
+          <button class="news-act act-del" onclick="deleteNoticia('${n.id}')">🗑 Eliminar</button>
         </div>
       </div>
     </div>`;
-  }).join('');
+  };
+
+  let html = `<div class="list-summary">
+    <div class="ls-item"><span class="ls-n" style="color:#1FD18A">${activas.length}</span><span class="ls-l">En vivo</span></div>
+    <div class="ls-item"><span class="ls-n" style="color:#F5B731">${pausadas.length}</span><span class="ls-l">Pausadas</span></div>
+    <div class="ls-item"><span class="ls-n" style="color:rgba(255,255,255,.4)">${_noticias.length}</span><span class="ls-l">Total</span></div>
+  </div>`;
+
+  if(activas.length){
+    html += `<div class="list-section-hd">● Publicadas y visibles para los usuarios</div>`;
+    html += activas.map(card).join('');
+  }
+  if(pausadas.length){
+    html += `<div class="list-section-hd" style="color:#F5B731">⏸ Pausadas — no se muestran en el mapa</div>`;
+    html += pausadas.map(card).join('');
+  }
+  el.innerHTML = html;
 }
 
 function editNoticia(id){
