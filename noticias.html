@@ -149,7 +149,14 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .spin{width:20px;height:20px;border:2px solid rgba(255,255,255,.08);border-top-color:rgba(245,183,49,.5);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
     .empty{text-align:center;padding:32px;color:var(--mut);font-size:13px;line-height:1.6}
-  </style>
+  
+    .img-btns{display:flex;gap:8px;margin-top:12px;justify-content:center}
+    .img-btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:1px solid;transition:all .18s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .img-btn-cam{background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.3);color:var(--y)}
+    .img-btn-cam:active{background:rgba(245,183,49,.2)}
+    .img-btn-gal{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.75)}
+    .img-btn-gal:active{background:rgba(255,255,255,.1)}
+</style>
 </head>
 <body>
 
@@ -215,15 +222,28 @@
         </div>
         <div class="fl">
           <div class="fl-lbl">Imagen <span class="fl-opt">Opcional — se sube a Supabase</span></div>
-          <div class="img-upload" onclick="document.getElementById('n-img-file').click()">
+          <div class="img-upload" id="n-img-box">
             <img id="n-img-prev" alt="Preview"/>
             <div class="img-placeholder" id="n-img-ph">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--y)" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 5 5"/><circle cx="8.5" cy="8.5" r="1.5" fill="var(--y)" stroke="none"/></svg>
-              <span>Toca para agregar foto</span>
+              <span>Agrega una foto</span>
               <small>JPG · PNG · Max 8 MB</small>
+              <div class="img-btns">
+                <button type="button" class="img-btn img-btn-cam" onclick="document.getElementById('n-img-cam').click()">
+                  <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h3l1.5-2h5L14 6h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><circle cx="10" cy="11" r="3.2"/></svg>
+                  Tomar foto
+                </button>
+                <button type="button" class="img-btn img-btn-gal" onclick="document.getElementById('n-img-file').click()">
+                  <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 13l4-4 3 3 4-4 3 3"/><circle cx="7" cy="7" r="1.3" fill="currentColor" stroke="none"/></svg>
+                  Galería
+                </button>
+              </div>
             </div>
-            <div class="img-change" id="n-img-change">Cambiar foto</div>
-            <input type="file" accept="image/*" id="n-img-file" capture="environment" onchange="handleImg(this)" style="display:none"/>
+            <div class="img-change" id="n-img-change" onclick="document.getElementById('n-img-file').click()">Cambiar foto</div>
+            <!-- Galería / archivos (sin capture = el teléfono deja elegir de fotos) -->
+            <input type="file" accept="image/*" id="n-img-file" onchange="handleImg(this)" style="display:none"/>
+            <!-- Cámara directa (capture fuerza la cámara trasera) -->
+            <input type="file" accept="image/*" id="n-img-cam" capture="environment" onchange="handleImg(this)" style="display:none"/>
           </div>
         </div>
         <div class="fl">
