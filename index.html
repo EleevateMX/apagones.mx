@@ -1008,6 +1008,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 .emerg-name{font-size:13px;font-weight:800;color:var(--tx)}
 .emerg-number{font-size:11px;color:var(--dim);margin-top:2px}
 .hamburger-btn{display:none;background:var(--card);border:1px solid var(--bdr);border-radius:9px;padding:8px;cursor:pointer;color:var(--dim);transition:all .18s;line-height:0}
+#uh-bell{display:flex !important;}
 .help-btn-mobile{display:none}
 @media (max-width:768px){.help-btn-mobile{display:flex !important}}
 .hamburger-btn:hover{color:var(--tx)}
@@ -2168,17 +2169,15 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   <button class="hamburger-btn help-btn-mobile" onclick="openHelpModal()" title="¿Cómo reportar?" aria-label="Ayuda" style="margin-right:6px">
     <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M7.5 7.5 a2.5 2.5 0 1 1 3.5 2.3 c-.8.3-1 .7-1 1.7"/><circle cx="10" cy="14.5" r="0.6" fill="currentColor" stroke="none"/></svg>
   </button>
-  <!-- ÚLTIMA HORA — campana -->
-  <button id="uh-bell" onclick="toggleUH()" aria-label="Última Hora">
-    <!-- Papel/nota de prensa — Última Hora -->
-    <svg viewBox="0 0 20 22" width="16" height="17" fill="none">
-      <!-- Hoja con esquina doblada — usa currentColor para adaptarse al tema -->
-      <path d="M3 2h10l4 4v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
-        fill="rgba(245,183,49,.12)" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M13 2v4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="5" y1="9"  x2="12" y2="9"  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      <line x1="5" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      <line x1="5" y1="15" x2="10" y2="15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- ÚLTIMA HORA — mismo estilo que hamburger y help -->
+  <button class="hamburger-btn" id="uh-bell" aria-label="Última Hora" style="position:relative;margin-right:4px" onclick="toggleUH()">
+    <svg viewBox="0 0 22 22" width="18" height="18" fill="none">
+      <path d="M4 3h11l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"
+            fill="rgba(245,183,49,.1)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M15 3v5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="6" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="6" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="6" y1="16" x2="11" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
     <div id="uh-badge"></div>
   </button>
@@ -4521,44 +4520,24 @@ async function exportHistFiltered(format){
       @media print{ body{padding:15px} }
     
 /* ═══════════ ÚLTIMA HORA ═══════════ */
-#uh-bell{
-  position:relative;
-  /* Mismo estilo que hamburger-btn y help-btn — se adapta a dark/light */
-  background:var(--card);
-  border:1px solid var(--bdr);
-  border-radius:9px;
-  padding:8px;
-  width:38px;height:38px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;
-  transition:background .18s,border-color .2s,box-shadow .2s;
-  -webkit-tap-highlight-color:transparent;
-  color:var(--dim);
-}
-#uh-bell:hover,#uh-bell:active{
-  background:var(--card2);
-  border-color:rgba(245,183,49,.35);
-  color:var(--elec);
-}
-#uh-bell.has-news{
-  background:var(--card);
-  border-color:rgba(245,183,49,.5);
-  color:var(--elec);
-  animation:bellPulse 2.5s ease-in-out infinite;
-}
+/* #uh-bell usa .hamburger-btn — ver clase arriba */
+
 @keyframes bellPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(245,183,49,0)}
-  50%{box-shadow:0 0 0 5px rgba(245,183,49,.18)}
+  50%{box-shadow:0 0 0 5px rgba(245,183,49,.2)}
+}
+#uh-bell.has-news{
+  border-color:rgba(245,183,49,.5)!important;
+  color:var(--elec)!important;
+  animation:bellPulse 2.5s ease-in-out infinite;
 }
 #uh-badge{
-  position:absolute;top:-4px;right:-4px;
+  position:absolute;top:-5px;right:-5px;
   min-width:16px;height:16px;border-radius:8px;padding:0 4px;
-  background:#FF3B3B;
-  border:2px solid var(--bg);  /* usa el color de fondo del tema */
+  background:#FF3B3B;border:2px solid var(--bg);
   display:none;align-items:center;justify-content:center;
-  font-size:8px;font-weight:900;color:white;font-family:var(--f);
-  letter-spacing:-.2px;
-  pointer-events:none;
+  font-size:8px;font-weight:900;color:#fff;font-family:var(--f);
+  letter-spacing:-.2px;pointer-events:none;z-index:1;
 }
 /* Panel lateral */
 #uh-panel{
@@ -4567,7 +4546,7 @@ async function exportHistFiltered(format){
   height:100vh;max-height:100vh;
   background:var(--bg);          /* sigue el tema oscuro/claro */
   border-left:1px solid rgba(245,183,49,.18);
-  z-index:900;
+  z-index:1500;
   transform:translateX(100%);
   transition:transform .3s cubic-bezier(.22,.8,.3,1);
   display:flex;flex-direction:column;
@@ -4581,7 +4560,7 @@ async function exportHistFiltered(format){
 #uh-panel.open{transform:translateX(0)}
 @media(max-width:440px){#uh-panel{max-width:100%;border-left:none;border-top:1px solid rgba(245,183,49,.2);height:90vh;bottom:0;top:auto}}
 #uh-overlay{
-  position:fixed;inset:0;z-index:899;background:rgba(0,0,0,.5);
+  position:fixed;inset:0;z-index:1400;background:rgba(0,0,0,.5);
   opacity:0;pointer-events:none;transition:opacity .3s;
   -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
 }
