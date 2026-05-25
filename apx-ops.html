@@ -470,7 +470,7 @@
 
       <!-- ── HISTÓRICO ── -->
       <div class="panel" id="panel-historico">
-        <!-- Barra de nivel 2 — SIEMPRE visible al abrir el histórico -->
+        <!-- Barra de seguimiento — siempre visible en el histórico -->
         <div id="super-unlock-bar" style="
           display:flex;align-items:center;gap:10px;flex-wrap:wrap;
           padding:12px 16px;
@@ -495,7 +495,7 @@
             <button onclick="unlockContacts()"
               style="padding:9px 18px;border-radius:9px;background:linear-gradient(135deg,rgba(155,16,48,.5),rgba(101,8,31,.4));border:1px solid rgba(180,40,60,.4);color:#FFD0D8;font-family:-apple-system,sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:opacity .15s"
               onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-              Desbloquear
+              Activar seguimiento
             </button>
           </div>
           <div id="super-bar-unlocked" style="display:none;align-items:center;gap:8px">
@@ -687,7 +687,7 @@
 const SB_URL = 'https://fybotuqwmzxsajedisus.supabase.co';
 const SB_KEY = 'sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
 const ADMIN_PW = 'ArtosdeMorena_2026';
-const SUPER_PW = 'ApxOps_2026_Datos';   // Segunda clave — datos sensibles
+const SUPER_PW = 'Seguimiento_MID_2026'; // Clave de seguimiento de reportes
 
 let _superMode = false;       // true cuando nivel 2 está activo
 let _contactsCache = {};      // cache de contactos desbloqueados

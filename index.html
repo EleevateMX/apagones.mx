@@ -5322,7 +5322,7 @@ const TRANSLATIONS = {
     form_photo_apagon:'📷 Foto del apagón (opcional)',
     form_photo_agua:'📷 Foto de la fuga (opcional)',
     form_photo_corte:'📷 Foto del corte (opcional)',
-    form_privacy:'Tu nombre y teléfono son privados. Solo los ve el administrador. Nunca aparecen en el mapa público.',
+    form_privacy:'Tus datos son privados y se usan solo para darte seguimiento a tu reporte. Nunca aparecen en el mapa.',
     toast_gps_ok:'✅ Ubicación GPS detectada',
     toast_loc_ok:'✅ Ubicación marcada en el mapa',
     toast_report_sent:'⚡ Reporte enviado — ¡gracias!',
@@ -5359,7 +5359,7 @@ const TRANSLATIONS = {
     // Form
     form_loc_title:'¿Dónde ocurre?', form_contact_title:'Tus datos',
     form_severity:'Severidad', form_photo_label:'Foto (opcional)',
-    form_privacy_short:'Tus datos son privados — nunca aparecen en el mapa',
+    form_privacy_short:'Tus datos son privados y solo sirven para darte seguimiento',
     // Sidebar
     sb_empty:'Sin reportes activos. ¡Todo tranquilo!',
     // Ticker
@@ -9604,14 +9604,14 @@ document.addEventListener('visibilitychange',()=>{
         <li><strong>Dar seguimiento</strong> a los reportes enviados a CFE, JAPAY o el H. Ayuntamiento de Mérida.</li>
         <li><strong>Validar la autenticidad</strong> de los reportes y prevenir duplicados o reportes falsos.</li>
         <li><strong>Generar estadísticas públicas y agregadas</strong> sobre la calidad de servicios en la ciudad (sin identificar personas individuales).</li>
-        <li><strong>Contactarte únicamente</strong> si proporcionaste tu teléfono y necesitamos confirmar detalles del reporte que enviaste.</li>
+        <li><strong>Contactarte para darte seguimiento</strong> si proporcionaste tu número — para informarte que tu reporte fue turnado a CFE, JAPAY o el Ayuntamiento, o para avisarte cuando se resuelva la incidencia.</li>
       </ol>
 
       <div class="pv-privacy-note">
         <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M7 9 V6 a3 3 0 0 1 6 0 V9"/></svg>
         <div>
           <strong>Tu nombre y teléfono están blindados.</strong>
-          Se guardan en una base de datos separada y cifrada a la que solo el administrador puede acceder con una sesión autenticada. Ni siquiera con acceso técnico al mapa público se pueden leer. En el mapa solo aparecen el tipo de reporte, la zona general y la hora — nunca tus datos de contacto.
+          Se guardan en una base de datos separada y cifrada. Nunca aparecen en el mapa público — ahí solo se muestra el tipo de reporte, la zona general y la hora. Tus datos solo se usan para darte seguimiento: informarte cuando tu reporte sea atendido por CFE, JAPAY o el Ayuntamiento, o para confirmar detalles en caso necesario.
         </div>
       </div>
 
