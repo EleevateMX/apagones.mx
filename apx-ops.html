@@ -470,7 +470,42 @@
 
       <!-- ── HISTÓRICO ── -->
       <div class="panel" id="panel-historico">
-        <div class="loading" id="hist-loading"><div class="spinner"></div>Cargando…</div>
+        <!-- Barra de nivel 2 — SIEMPRE visible al abrir el histórico -->
+        <div id="super-unlock-bar" style="
+          display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+          padding:12px 16px;
+          background:rgba(101,8,31,.08);
+          border:1px solid rgba(155,16,48,.18);
+          border-radius:13px;
+          margin-bottom:16px;
+        ">
+          <div id="super-bar-icon" style="width:32px;height:32px;border-radius:9px;background:rgba(101,8,31,.2);border:1px solid rgba(155,16,48,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="rgba(240,100,100,.8)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          </div>
+          <div style="flex:1;min-width:160px">
+            <div id="super-bar-title" style="font-size:12px;font-weight:800;color:#F0E8EC;margin-bottom:2px">Acceso a datos sensibles</div>
+            <div id="super-bar-sub" style="font-size:11px;color:rgba(255,255,255,.35)">Ingresa la clave de nivel 2 para ver nombre y teléfono</div>
+          </div>
+          <div id="super-bar-locked" style="display:flex;align-items:center;gap:7px">
+            <input type="password" id="hist-pw" placeholder="Clave de datos"
+              style="padding:9px 13px;background:rgba(255,255,255,.06);border:1.5px solid rgba(101,8,31,.35);border-radius:9px;color:#F0E8EC;font-family:-apple-system,sans-serif;font-size:14px;outline:none;width:160px;transition:border-color .2s"
+              onfocus="this.style.borderColor='rgba(240,100,100,.5)'"
+              onblur="this.style.borderColor='rgba(101,8,31,.35)'"
+              onkeydown="if(event.key==='Enter')unlockContacts()"/>
+            <button onclick="unlockContacts()"
+              style="padding:9px 18px;border-radius:9px;background:linear-gradient(135deg,rgba(155,16,48,.5),rgba(101,8,31,.4));border:1px solid rgba(180,40,60,.4);color:#FFD0D8;font-family:-apple-system,sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:opacity .15s"
+              onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+              Desbloquear
+            </button>
+          </div>
+          <div id="super-bar-unlocked" style="display:none;align-items:center;gap:8px">
+            <span style="font-size:12px;font-weight:700;color:#1FD18A" id="super-bar-count"></span>
+            <button onclick="exitSuperMode()"
+              style="padding:7px 13px;border-radius:8px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.18);color:#FF8080;font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;cursor:pointer">
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
         <div id="hist-content"></div>
       </div>
 
@@ -1065,9 +1100,6 @@ function renderHistoricoView(rows, filter){
       <div class="kpi"><div class="kpi-n" style="color:var(--grn)">${avgH}h</div><div class="kpi-l">Prom. resoluc.</div></div>
     </div>
 
-    <!-- Barra de acceso nivel 2 -->
-    ${buildUnlockBar()}
-    
     <!-- Filtros -->
     <div class="filter-bar">
       <button class="filt-btn ${filter==='todos'?'on':''}" onclick="renderHistoricoView(histCache,'todos')">Todos (${rows.length})</button>
@@ -1170,34 +1202,65 @@ function formatDur(mins){
 // _contactsCache y _superMode declarados al inicio
 
 async function unlockContacts(){
-  const pw = document.getElementById('hist-pw')?.value.trim();
-  if(!pw){ toast('Ingresa la clave de datos sensibles','w'); return; }
-  if(pw !== SUPER_PW){ 
-    toast('Clave incorrecta','e');
-    document.getElementById('hist-pw').value='';
-    const st=document.getElementById('hist-unlock-st');
-    if(st){st.textContent='❌ Clave incorrecta';st.style.color='#FF8080';}
+  const pw = (document.getElementById('hist-pw')?.value||'').trim();
+  if(!pw){ 
+    document.getElementById('hist-pw')?.focus();
+    toast('Ingresa la clave de datos sensibles','w');
     return;
   }
-  // Contraseña correcta — cargar contactos desde Supabase
-  const st=document.getElementById('hist-unlock-st');
-  if(st){st.textContent='Cargando…';st.style.color='var(--mut)';}
+  if(pw !== SUPER_PW){
+    toast('Clave incorrecta','e');
+    const inp=document.getElementById('hist-pw');
+    if(inp){ inp.value=''; inp.style.borderColor='rgba(255,80,80,.5)'; inp.focus(); setTimeout(()=>inp.style.borderColor='rgba(101,8,31,.35)',1500); }
+    return;
+  }
+  // ✅ Clave correcta — cargar contactos
+  const btn=document.querySelector('#super-bar-locked button');
+  if(btn){ btn.disabled=true; btn.textContent='Cargando…'; }
   try{
     const{data,error}=await db.from('report_contacts')
       .select('report_id,nombre,telefono').limit(5000);
     if(error) throw error;
-    _superMode=true;
-    _contactsLoaded=true;
+    _superMode=true; _contactsLoaded=true;
     (data||[]).forEach(rc=>{_contactsCache[rc.report_id]={nombre:rc.nombre||'',telefono:rc.telefono||''};});
     const count=(data||[]).length;
-    // Mostrar indicador en topbar
+    // Actualizar la barra visual
+    setSuperBarState(true, count);
     showSuperBadge();
-    // Re-renderizar la tabla con contactos visibles
+    // Recargar el histórico con contactos visibles
     await loadHistorico();
     toast('🔓 '+count+' contactos cargados','s');
   }catch(e){
-    if(st){st.textContent='❌ Error: '+e.message;st.style.color='#FF8080';}
-    toast('Error al cargar contactos: '+e.message,'e');
+    toast('Error: '+e.message,'e');
+    if(btn){ btn.disabled=false; btn.textContent='Desbloquear'; }
+  }
+}
+
+function setSuperBarState(unlocked, count){
+  const icon   = document.getElementById('super-bar-icon');
+  const title  = document.getElementById('super-bar-title');
+  const sub    = document.getElementById('super-bar-sub');
+  const locked = document.getElementById('super-bar-locked');
+  const open   = document.getElementById('super-bar-unlocked');
+  const bar    = document.getElementById('super-unlock-bar');
+  const cnt    = document.getElementById('super-bar-count');
+  if(unlocked){
+    if(bar)   bar.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:rgba(31,209,138,.06);border:1px solid rgba(31,209,138,.2);border-radius:13px;margin-bottom:16px';
+    if(icon)  icon.innerHTML='<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#1FD18A" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="8" width="12" height="7" rx="2"/><path d="M5 8V5a3 3 0 0 1 6 0v3"/></svg>';
+    if(icon)  icon.style.cssText='width:32px;height:32px;border-radius:9px;background:rgba(31,209,138,.12);border:1px solid rgba(31,209,138,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0';
+    if(title) title.textContent='✅ Super Admin activo';
+    if(sub)   sub.textContent='Nombre y teléfono visibles en reportes activos e histórico';
+    if(cnt)   cnt.textContent='🔓 '+count+' contactos cargados';
+    if(locked)locked.style.display='none';
+    if(open)  open.style.display='flex';
+  } else {
+    if(bar)   bar.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:rgba(101,8,31,.08);border:1px solid rgba(155,16,48,.18);border-radius:13px;margin-bottom:16px';
+    if(icon)  icon.innerHTML='<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="rgba(240,100,100,.8)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>';
+    if(icon)  icon.style.cssText='width:32px;height:32px;border-radius:9px;background:rgba(101,8,31,.2);border:1px solid rgba(155,16,48,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0';
+    if(title) title.textContent='Acceso a datos sensibles';
+    if(sub)   sub.textContent='Ingresa la clave de nivel 2 para ver nombre y teléfono';
+    if(locked)locked.style.display='flex';
+    if(open)  open.style.display='none';
   }
 }
 
@@ -1215,10 +1278,11 @@ function showSuperBadge(){
 }
 
 function exitSuperMode(){
-  _superMode=false;_contactsLoaded=false;
+  _superMode=false; _contactsLoaded=false;
   Object.keys(_contactsCache).forEach(k=>delete _contactsCache[k]);
   const badge=document.getElementById('super-badge');
-  if(badge)badge.remove();
+  if(badge) badge.remove();
+  setSuperBarState(false, 0);
   toast('Sesión super cerrada','b');
   if(histCache.length) renderHistoricoView(histCache,'todos');
 }
