@@ -652,6 +652,11 @@
 const SB_URL = 'https://fybotuqwmzxsajedisus.supabase.co';
 const SB_KEY = 'sb_publishable_xDfRes-w-U_ZqaxhSDv96g_828lnxS9';
 const ADMIN_PW = 'ArtosdeMorena_2026';
+const SUPER_PW = 'ApxOps_2026_Datos';   // Segunda clave — datos sensibles
+
+let _superMode = false;       // true cuando nivel 2 está activo
+let _contactsCache = {};      // cache de contactos desbloqueados
+let _contactsLoaded = false;  // ya se cargaron?
 const ELEC_TYPES = ['apagon','alumbrado'];
 const AGUA_TYPES = ['agua','corte_agua','presion_baja','calidad_agua'];
 
@@ -719,6 +724,14 @@ async function loadReports(){
   try{
     const {data} = await db.from('reports').select('*').order('timestamp',{ascending:false});
     allReports = data||[];
+    // Si super admin activo, cargar contactos de los reportes actuales
+    if(_superMode && allReports.length){
+      const ids = allReports.map(r=>r.id);
+      const {data:contacts} = await db.from('report_contacts')
+        .select('report_id,nombre,telefono')
+        .in('report_id', ids.slice(0,100));
+      (contacts||[]).forEach(rc=>{_contactsCache[rc.report_id]={nombre:rc.nombre||'',telefono:rc.telefono||''};});
+    }
     updateKPIs();
     renderReportsPanel();
     renderAguaPanel();
@@ -843,11 +856,34 @@ function rpCard(r){
   const typeBg={apagon:'rgba(245,183,49,.12)',alumbrado:'rgba(245,183,49,.1)',agua:'rgba(34,208,240,.1)',corte_agua:'rgba(34,208,240,.12)',presion_baja:'rgba(34,208,240,.08)',calidad_agua:'rgba(245,183,49,.08)'};
   const sev=r.severity||'moderado';
   const when=fmtTime(r.timestamp);
+  const contact = _contactsCache[r.id];
+  const contactRow = _superMode && contact
+    ? `<div style="display:flex;gap:10px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05);flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#F0E8EC">
+          <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="rgba(245,183,49,.7)" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="4" r="2.5"/><path d="M1 11c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+          ${contact.nombre||'—'}
+        </span>
+        <a href="tel:${contact.telefono}" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#1FD18A;text-decoration:none">
+          <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 2h3l1 3-2 1a9 9 0 0 0 2 2l1-2 3 1v3a1 1 0 0 1-1 1A10 10 0 0 1 1 3a1 1 0 0 1 1-1z"/></svg>
+          ${contact.telefono||'—'}
+        </a>
+        <a href="https://wa.me/${(contact.telefono||'').replace(/[^0-9]/g,'')}" target="_blank" style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:rgba(37,211,102,.8);text-decoration:none">
+          <svg viewBox="0 0 12 12" width="9" height="9" fill="currentColor"><path d="M6 1a5 5 0 0 1 4.33 7.5L11 11l-2.5-.67A5 5 0 1 1 6 1zm0 1a4 4 0 1 0 2.1 7.35l.2-.12 1.7.45-.45-1.7.13-.2A4 4 0 0 0 6 2zm-1.5 2.5c-.2 0-.5.2-.7.4-.3.3-.3.8-.1 1.3.4.9 1.2 1.8 2.1 2.1.5.2 1 .1 1.3-.1.2-.2.4-.5.4-.7v-.8c-.1-.1-.2-.2-.3-.2l-.7-.2-.3.5c-.1.1-.2.1-.3 0-.5-.3-1-.8-1.2-1.3-.1-.1 0-.2.1-.3l.4-.4a.5.5 0 0 0 .1-.5l-.2-.7c0-.1-.1-.2-.2-.2h-.4z"/></svg>
+          WhatsApp
+        </a>
+      </div>`
+    : _superMode
+      ? `<div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.04)">Sin contacto registrado para este reporte</div>`
+      : `<div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:4px">
+          <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="rgba(180,40,60,.5)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="6" width="8" height="5" rx="1"/><path d="M4 6V4a2 2 0 0 1 4 0v2"/></svg>
+          Contacto protegido — activa Super Admin para verlo
+        </div>`;
+
   return `<div class="rp-card" id="rpc-${r.id}">
     <div class="rp-dot" style="background:${typeBg[r.type]||'rgba(255,255,255,.06)'}">
       <span style="font-size:16px">${typeIcon[r.type]||'📋'}</span>
     </div>
-    <div>
+    <div style="flex:1;min-width:0">
       <div class="rp-type" style="color:${typeColor[r.type]||'#F0E8EC'}">${typeLabel[r.type]||r.type}</div>
       <div class="rp-loc" id="rploc-${r.id}">Sec. ${r.seccion||'—'}</div>
       <div class="rp-meta">
@@ -856,6 +892,7 @@ function rpCard(r){
         ${r.report_number?`<span style="color:rgba(168,85,247,.8)">📋 ${r.report_number}</span>`:''}
         ${r.confirmations?`<span>${r.confirmations} confirmaciones</span>`:''}
       </div>
+      ${contactRow}
     </div>
     <div class="rp-actions">
       <button class="rp-btn rp-btn-resolve" onclick="forceResolve('${r.id}','${r.type}')">✓ Resolver</button>
@@ -991,6 +1028,23 @@ async function loadHistorico(){
   }catch(e){wrap.innerHTML='<div class="empty">Error cargando histórico: '+e.message+'</div>';}
 }
 
+function buildUnlockBar(){
+  if(_superMode) return `
+    <div class="hist-unlock-bar" style="border-color:rgba(31,209,138,.2);background:rgba(31,209,138,.05)">
+      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#1FD18A" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="8" width="12" height="7" rx="2"/><path d="M5 8V5a3 3 0 0 1 6 0v3"/></svg>
+      <span style="font-size:11px;color:#1FD18A;flex:1;font-weight:700">✅ Super Admin — ${Object.keys(_contactsCache).length} contactos desbloqueados</span>
+      <button onclick="exitSuperMode()" style="padding:5px 11px;border-radius:7px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.18);color:#FF8080;font-family:var(--f);font-size:10px;font-weight:700;cursor:pointer">Cerrar sesión super</button>
+    </div>`;
+  return `
+    <div class="hist-unlock-bar">
+      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="rgba(180,40,60,.7)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+      <span style="font-size:11px;color:rgba(255,255,255,.4);flex:1">Nombre y teléfono requieren nivel 2 — clave de datos sensibles</span>
+      <input type="password" id="hist-pw" placeholder="Clave de datos" style="padding:7px 11px;background:rgba(255,255,255,.06);border:1px solid rgba(101,8,31,.3);border-radius:8px;color:var(--tx);font-family:var(--f);font-size:12px;outline:none;width:140px" onkeydown="if(event.key==='Enter')unlockContacts()"/>
+      <button onclick="unlockContacts()" style="padding:7px 14px;border-radius:8px;background:rgba(101,8,31,.25);border:1px solid rgba(155,16,48,.35);color:#FFD0D8;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer">Desbloquear</button>
+      <span id="hist-unlock-st" style="font-size:11px;color:var(--mut)"></span>
+    </div>`;
+}
+
 function renderHistoricoView(rows, filter){
   const wrap=document.getElementById('hist-content');
   const filtered = filter==='todos' ? rows :
@@ -999,9 +1053,9 @@ function renderHistoricoView(rows, filter){
 
   const el=filtered.filter(r=>ELEC_TYPES.includes(r.type)).length;
   const ag=filtered.filter(r=>AGUA_TYPES.includes(r.type)).length;
-  const times=filtered.filter(r=>r.resolucion_min>0);
-  const avgH=times.length?(times.reduce((s,r)=>s+r.resolucion_min,0)/times.length/60).toFixed(1):'—';
-
+      const times=filtered.filter(r=>r.resolucion_min&&r.resolucion_min>0);
+    const avgTotal=times.length>0?times.reduce((s,r)=>s+r.resolucion_min,0)/times.length:0;
+    const avgH=avgTotal>0?formatDur(avgTotal):'—';
   wrap.innerHTML=`
     <!-- KPIs -->
     <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
@@ -1011,15 +1065,9 @@ function renderHistoricoView(rows, filter){
       <div class="kpi"><div class="kpi-n" style="color:var(--grn)">${avgH}h</div><div class="kpi-l">Prom. resoluc.</div></div>
     </div>
 
-    <!-- Barra de desbloqueo de contactos -->
-    <div class="hist-unlock-bar">
-      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="rgba(180,40,60,.7)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="12" height="8" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-      <span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">Los nombres y teléfonos están protegidos. Ingresa la contraseña para verlos.</span>
-      <input type="password" id="hist-pw" placeholder="Contraseña" style="padding:6px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(101,8,31,.3);border-radius:8px;color:var(--tx);font-size:12px;outline:none;width:130px"/>
-      <button onclick="unlockContacts()" style="padding:7px 14px;border-radius:8px;background:rgba(101,8,31,.25);border:1px solid rgba(155,16,48,.35);color:#FFD0D8;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer">Desbloquear</button>
-      <span id="hist-unlock-st" style="font-size:11px;display:none"></span>
-    </div>
-
+    <!-- Barra de acceso nivel 2 -->
+    ${buildUnlockBar()}
+    
     <!-- Filtros -->
     <div class="filter-bar">
       <button class="filt-btn ${filter==='todos'?'on':''}" onclick="renderHistoricoView(histCache,'todos')">Todos (${rows.length})</button>
@@ -1119,35 +1167,62 @@ function formatDur(mins){
 }
 
 // ── DESBLOQUEO DE CONTACTOS ──────────────────────────
-let _contactsUnlocked=false;
-const _contactsCache={};
+// _contactsCache y _superMode declarados al inicio
 
 async function unlockContacts(){
-  const pw=document.getElementById('hist-pw')?.value;
-  if(!pw){ toast('Ingresa la contraseña','w'); return; }
-  // Intentar cargar contactos — si RLS los bloquea, fallará
+  const pw = document.getElementById('hist-pw')?.value.trim();
+  if(!pw){ toast('Ingresa la clave de datos sensibles','w'); return; }
+  if(pw !== SUPER_PW){ 
+    toast('Clave incorrecta','e');
+    document.getElementById('hist-pw').value='';
+    const st=document.getElementById('hist-unlock-st');
+    if(st){st.textContent='❌ Clave incorrecta';st.style.color='#FF8080';}
+    return;
+  }
+  // Contraseña correcta — cargar contactos desde Supabase
+  const st=document.getElementById('hist-unlock-st');
+  if(st){st.textContent='Cargando…';st.style.color='var(--mut)';}
   try{
-    const {data,error}=await db.from('report_contacts').select('report_id,nombre,telefono').limit(1000);
+    const{data,error}=await db.from('report_contacts')
+      .select('report_id,nombre,telefono').limit(5000);
     if(error) throw error;
-    if(!data||!data.length){
-      const st=document.getElementById('hist-unlock-st');
-      if(st){st.textContent='Sin contactos registrados';st.style.color='var(--mut)';st.style.display='';}
-      return;
-    }
-    _contactsUnlocked=true;
-    data.forEach(rc=>{ _contactsCache[rc.report_id]={nombre:rc.nombre||'',telefono:rc.telefono||''}; });
-    // Re-renderizar con contactos visibles
-    renderHistoricoView(histCache,'todos');
-    toast('🔓 Contactos desbloqueados — '+data.length+' registros','s');
-    // Mostrar estado
-    const st=document.getElementById('hist-unlock-st');
-    if(st){st.textContent='✅ '+data.length+' contactos cargados';st.style.color='#1FD18A';st.style.display='';}
+    _superMode=true;
+    _contactsLoaded=true;
+    (data||[]).forEach(rc=>{_contactsCache[rc.report_id]={nombre:rc.nombre||'',telefono:rc.telefono||''};});
+    const count=(data||[]).length;
+    // Mostrar indicador en topbar
+    showSuperBadge();
+    // Re-renderizar la tabla con contactos visibles
+    await loadHistorico();
+    toast('🔓 '+count+' contactos cargados','s');
   }catch(e){
-    const st=document.getElementById('hist-unlock-st');
-    if(st){st.textContent='❌ Sin acceso';st.style.color='#FF8080';st.style.display='';}
-    toast('Error: '+e.message,'e');
+    if(st){st.textContent='❌ Error: '+e.message;st.style.color='#FF8080';}
+    toast('Error al cargar contactos: '+e.message,'e');
   }
 }
+
+function showSuperBadge(){
+  // Añadir badge "SUPER" al topbar
+  let badge=document.getElementById('super-badge');
+  if(!badge){
+    badge=document.createElement('span');
+    badge.id='super-badge';
+    badge.style.cssText='background:linear-gradient(135deg,rgba(245,183,49,.3),rgba(245,183,49,.15));border:1px solid rgba(245,183,49,.4);border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;color:#F5B731;letter-spacing:.3px';
+    badge.textContent='SUPER ADMIN';
+    const tbName=document.querySelector('.tb-name');
+    if(tbName)tbName.parentNode.insertBefore(badge,tbName.nextSibling);
+  }
+}
+
+function exitSuperMode(){
+  _superMode=false;_contactsLoaded=false;
+  Object.keys(_contactsCache).forEach(k=>delete _contactsCache[k]);
+  const badge=document.getElementById('super-badge');
+  if(badge)badge.remove();
+  toast('Sesión super cerrada','b');
+  if(histCache.length) renderHistoricoView(histCache,'todos');
+}
+
 
 function requestUnlock(){
   document.getElementById('hist-pw')?.focus();
@@ -1175,8 +1250,8 @@ function exportHistCSV(filter){
       r.resolved_at?new Date(r.resolved_at).toLocaleString('es-MX'):'',
       r.resolucion_min?Math.round(r.resolucion_min):'',
       r.report_number||'',
-      _contactsUnlocked?(contact.nombre||''):'PROTEGIDO',
-      _contactsUnlocked?(contact.telefono||''):'PROTEGIDO',
+      _superMode?(contact.nombre||''):'PROTEGIDO',
+      _superMode?(contact.telefono||''):'PROTEGIDO',
     ].map(csvCell).join(','));
   });
   const csv = lines.join('\n');
