@@ -1928,6 +1928,10 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   font-size:8px;font-weight:900;color:#fff;font-family:var(--f);
   pointer-events:none;z-index:2;
 }
+
+#fab-share{position:fixed;bottom:120px;right:22px;z-index:899;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#1FD18A,#15A86C);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 18px rgba(31,209,138,.35),0 0 0 1px rgba(31,209,138,.2);transition:transform .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#fab-share:active{transform:scale(.92)}
+@media (max-width:768px){#fab-share{bottom:calc(120px + var(--sab))}}
 </style>
 </head>
 <body>
@@ -2544,6 +2548,17 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
 
 <div id="pbanner">📍 Toca el mapa para ubicar — ESC para cancelar</div>
 <button id="fab" onclick="startFlow()" title="Reportar">＋</button>
+
+<!-- FAB Compartir — invita vecinos al programa ciudadano -->
+<button id="fab-share" onclick="openShareDialog()" title="Comparte ApagonesMID" aria-label="Compartir">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="18" cy="5" r="3"/>
+    <circle cx="6" cy="12" r="3"/>
+    <circle cx="18" cy="19" r="3"/>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  </svg>
+</button>
 
 <div id="toasts"></div>
 <!-- PROMO BAR — non-invasive, only when admin enables -->
@@ -7894,6 +7909,98 @@ function clearSearch() {
 //  2. COMPARTIR POR WHATSAPP / LINK
 // ══════════════════════════════════════════════
 const APP_URL = 'https://apagonesmid.mx/';
+
+async function openShareDialog(){
+  const APP_URL = 'https://apagonesmid.mx';
+  const TITULO = 'ApagonesMID — Plataforma ciudadana de Mérida';
+  const TEXTO  =
+'\u26A1 *ApagonesMID* \u2014 Mapa ciudadano de M\u00E9rida \uD83D\uDCA7\n' +
+'\n' +
+'\u00BFTe quedaste sin luz o sin agua? Aqu\u00ED reportamos los vecinos en tiempo real, sin filtros y sin tr\u00E1mites.\n' +
+'\n' +
+'\uD83D\uDDFA\uFE0F Ves qu\u00E9 est\u00E1 pasando en tu colonia ahora mismo\n' +
+'\uD83D\uDCCA Tus reportes presionan a CFE, JAPAY y al Ayuntamiento\n' +
+'\uD83E\uDD1D Cuantos m\u00E1s seamos, m\u00E1s r\u00E1pido nos atienden\n' +
+'\uD83D\uDD12 Tus datos son privados \u2014 solo cuentan los reportes\n' +
+'\n' +
+'No esperemos a que la luz vuelva: hagamos visible lo invisible.\n' +
+'\n' +
+'\uD83D\uDC49 ' + APP_URL + '\n' +
+'\n' +
+'_Un M\u00E9rida que reporta es un M\u00E9rida que se respeta_';
+
+  if(navigator.share){
+    navigator.share({ title: TITULO, text: TEXTO, url: APP_URL })
+      .then(()=>{ try{toast('\u2705 \u00A1Gracias por compartir!','s')}catch(e){} })
+      .catch(err=>{
+        if(err && err.name === 'AbortError') return;
+        showShareFallback(TEXTO, APP_URL);
+      });
+    return;
+  }
+  showShareFallback(TEXTO, APP_URL);
+}
+
+function showShareFallback(text, url){
+  let modal = document.getElementById('main-share-modal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'main-share-modal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center';
+    modal.onclick = function(e){ if(e.target === modal) modal.style.display='none'; };
+    document.body.appendChild(modal);
+  }
+  const enc = encodeURIComponent(text);
+  const encUrl = encodeURIComponent(url);
+  modal.innerHTML =
+    '<div style="width:100%;max-width:440px;background:var(--surf,#0D080B);border-radius:22px 22px 0 0;border:1px solid var(--bdr);padding:18px 16px 28px">' +
+      '<div style="width:42px;height:4px;background:rgba(255,255,255,.18);border-radius:3px;margin:0 auto 14px"></div>' +
+      '<div style="text-align:center;margin-bottom:18px">' +
+        '<div style="font-size:17px;font-weight:900;color:var(--tx,#fff);margin-bottom:4px">Comparte ApagonesMID</div>' +
+        '<div style="font-size:12px;color:var(--dim,rgba(255,255,255,.5));max-width:280px;margin:0 auto;line-height:1.4">Invita a tus vecinos. Cuantos m\u00E1s reporten, m\u00E1s fuerza tenemos para exigir atenci\u00F3n.</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:9px">' +
+        '<a href="https://wa.me/?text=' + enc + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:#1A3D2B;border:1px solid #25D366;border-radius:12px;padding:13px;text-decoration:none;color:var(--tx,#fff)">' +
+          '<div style="width:36px;height:36px;border-radius:9px;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">\uD83D\uDCAC</div>' +
+          '<div><div style="font-size:14px;font-weight:800">WhatsApp</div><div style="font-size:11px;color:#25D366">A familiares, grupos y vecinos</div></div>' +
+        '</a>' +
+        '<a href="https://twitter.com/intent/tweet?text=' + enc + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:rgba(29,161,242,.1);border:1px solid rgba(29,161,242,.35);border-radius:12px;padding:13px;text-decoration:none;color:var(--tx,#fff)">' +
+          '<div style="width:36px;height:36px;border-radius:9px;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:#fff">X</div>' +
+          '<div><div style="font-size:14px;font-weight:800">X / Twitter</div><div style="font-size:11px;color:rgba(255,255,255,.5)">Que se entere toda la ciudad</div></div>' +
+        '</a>' +
+        '<a href="https://t.me/share/url?url=' + encUrl + '&text=' + enc + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:rgba(34,158,217,.1);border:1px solid rgba(34,158,217,.35);border-radius:12px;padding:13px;text-decoration:none;color:var(--tx,#fff)">' +
+          '<div style="width:36px;height:36px;border-radius:9px;background:#229ED9;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">\u2708\uFE0F</div>' +
+          '<div><div style="font-size:14px;font-weight:800">Telegram</div><div style="font-size:11px;color:rgba(34,158,217,.9)">Grupos y canales de la ciudad</div></div>' +
+        '</a>' +
+        '<button type="button" onclick="copyShareText()" style="display:flex;align-items:center;gap:12px;background:var(--card,#150E12);border:1px solid var(--bdr);border-radius:12px;padding:13px;cursor:pointer;width:100%;text-align:left;font-family:var(--f)">' +
+          '<div style="width:36px;height:36px;border-radius:9px;background:rgba(245,183,49,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">\uD83D\uDCCB</div>' +
+          '<div><div style="font-size:14px;font-weight:800;color:var(--tx,#fff)">Copiar mensaje</div><div style="font-size:11px;color:var(--dim,rgba(255,255,255,.5))">P\u00E9galo donde quieras</div></div>' +
+        '</button>' +
+        '<button type="button" onclick="document.getElementById(\'main-share-modal\').style.display=\'none\'" style="margin-top:6px;padding:12px;border-radius:11px;background:transparent;border:1px solid var(--bdr);color:var(--dim,rgba(255,255,255,.6));font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer">Cerrar</button>' +
+      '</div>' +
+    '</div>';
+  modal.style.display = 'flex';
+  window._shareText = text;
+}
+
+function copyShareText(){
+  const text = window._shareText || '';
+  if(!text) return;
+  try{
+    navigator.clipboard.writeText(text).then(function(){
+      try{ toast('\uD83D\uDCCB Mensaje copiado','s'); }catch(e){}
+    }).catch(function(){ shareFallbackCopy(text); });
+  }catch(e){ shareFallbackCopy(text); }
+  document.getElementById('main-share-modal').style.display='none';
+}
+
+function shareFallbackCopy(text){
+  const el = document.createElement('textarea');
+  el.value = text; document.body.appendChild(el);
+  el.select(); try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(el);
+  try{ toast('\uD83D\uDCCB Copiado','s'); }catch(e){}
+}
 
 async function shareReport(type, seccion, cnt) {
   const modal = document.getElementById('share-modal');
