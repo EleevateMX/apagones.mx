@@ -199,6 +199,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 :root{
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
+  --lowbar-h: 64px;  /* altura del contenido de la low-bar (sin safe-area) */
   --sal: env(safe-area-inset-left, 0px);
   --sar: env(safe-area-inset-right, 0px);
   --topbar-h: 62px;
@@ -1939,36 +1940,23 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   position:fixed;
   bottom:0;left:0;right:0;
   z-index:898;
-  /* Fondo sólido garantizado (no depende de blur ni del mapa) */
+  /* Altura fija = contenido + safe-area (área de gestos del iPhone) */
+  height:calc(var(--lowbar-h) + var(--sab));
+  box-sizing:border-box;
   background:#0C0608;
   -webkit-backdrop-filter:blur(20px);
   backdrop-filter:blur(20px);
   border-top:1px solid var(--bdr);
-  padding:6px 4px calc(6px + var(--sab));
+  /* El padding inferior empuja el contenido arriba del área de gestos */
+  padding:7px 4px var(--sab);
   padding-left:max(4px,var(--sal));
   padding-right:max(4px,var(--sar));
   gap:2px;
-  align-items:stretch;
+  align-items:flex-start;
   justify-content:space-around;
-  /* Box-shadow hacia arriba para separar del mapa */
   box-shadow:0 -4px 16px rgba(0,0,0,.4);
 }
 html.light #lowbar{background:#F4F0F2;border-top-color:var(--bdr);box-shadow:0 -4px 16px rgba(0,0,0,.06)}
-/* Ocultar la barra del navegador inferior cuando es PWA — usar el safe-area completo */
-@supports(padding-bottom:env(safe-area-inset-bottom)){
-  #lowbar{padding-bottom:max(calc(6px + env(safe-area-inset-bottom)), 14px)}
-}
-/* Capa de fondo que cubre TODO el safe-area inferior (evita negro) */
-html.pwa-standalone body::after{
-  content:'';
-  position:fixed;
-  bottom:0;left:0;right:0;
-  height:env(safe-area-inset-bottom,0px);
-  background:#0C0608;
-  z-index:897;
-  pointer-events:none;
-}
-html.pwa-standalone.light body::after{background:#F4F0F2}
 .lb-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;padding:7px 4px;background:transparent;border:none;
@@ -2002,24 +1990,24 @@ html.pwa-standalone.light body::after{background:#F4F0F2}
   html.pwa-standalone #fab{display:none!important}
   /* Altura de referencia: low-bar (~62px) + safe-area */
   /* Apilar Apagoncito y Compartir en columna, arriba de la low-bar y del ticker */
-  /* Stack vertical arriba de [low-bar(62) + ticker(36)] = ~98px base */
+  /* Stack vertical arriba de [low-bar + ticker(36px)] */
   html.pwa-standalone #fab-share{
-    bottom:calc(108px + var(--sab))!important;
+    bottom:calc(var(--lowbar-h) + 46px + var(--sab))!important;
     right:16px!important;
     z-index:897!important;
   }
   html.pwa-standalone #apagoncito-fab{
-    bottom:calc(166px + var(--sab))!important;
+    bottom:calc(var(--lowbar-h) + 104px + var(--sab))!important;
     right:16px!important;left:auto!important;
     z-index:897!important;
   }
   html.pwa-standalone #zoom-btns{
-    bottom:calc(228px + var(--sab))!important;
+    bottom:calc(var(--lowbar-h) + 166px + var(--sab))!important;
     right:16px!important;
   }
   /* El ticker sube por encima de la low-bar */
-  html.pwa-standalone #ticker{bottom:calc(62px + var(--sab))!important;padding-bottom:0!important;height:36px!important}
-  html.pwa-standalone #vecino-badge{bottom:calc(108px + var(--sab))!important}
+  html.pwa-standalone #ticker{bottom:calc(var(--lowbar-h) + var(--sab))!important;padding-bottom:0!important;height:36px!important}
+  html.pwa-standalone #vecino-badge{bottom:calc(var(--lowbar-h) + 46px + var(--sab))!important}
   html.pwa-standalone #notif-prompt{bottom:calc(70px + var(--sab))!important}
   html.pwa-standalone #install-banner{bottom:calc(70px + var(--sab))!important}
   html.pwa-standalone .leaflet-bottom{bottom:calc(62px + var(--sab))!important}
