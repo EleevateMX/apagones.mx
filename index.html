@@ -1958,6 +1958,17 @@ html.light #lowbar{background:#F4F0F2;border-top-color:var(--bdr);box-shadow:0 -
 @supports(padding-bottom:env(safe-area-inset-bottom)){
   #lowbar{padding-bottom:max(calc(6px + env(safe-area-inset-bottom)), 14px)}
 }
+/* Capa de fondo que cubre TODO el safe-area inferior (evita negro) */
+html.pwa-standalone body::after{
+  content:'';
+  position:fixed;
+  bottom:0;left:0;right:0;
+  height:env(safe-area-inset-bottom,0px);
+  background:#0C0608;
+  z-index:897;
+  pointer-events:none;
+}
+html.pwa-standalone.light body::after{background:#F4F0F2}
 .lb-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;padding:7px 4px;background:transparent;border:none;
@@ -1987,15 +1998,31 @@ html.light #lowbar{background:#F4F0F2;border-top-color:var(--bdr);box-shadow:0 -
 /* Solo se muestra en PWA standalone + móvil */
 @media (max-width:768px){
   html.pwa-standalone #lowbar{display:flex}
-  /* Reacomodar elementos para que no queden detrás de la low-bar */
-  html.pwa-standalone #fab{bottom:calc(76px + var(--sab))!important}
-  html.pwa-standalone #fab-share{bottom:calc(146px + var(--sab))!important}
-  html.pwa-standalone #zoom-btns{bottom:calc(120px + var(--sab))!important}
-  html.pwa-standalone #vecino-badge{bottom:calc(70px + var(--sab))!important}
-  html.pwa-standalone #notif-prompt{bottom:calc(80px + var(--sab))!important}
-  html.pwa-standalone #install-banner{bottom:calc(80px + var(--sab))!important}
-  /* Botón "Centrar mapa" de leaflet */
-  html.pwa-standalone .leaflet-bottom{bottom:calc(60px + var(--sab))!important}
+  /* El FAB + ya está en la low-bar — ocultarlo en PWA */
+  html.pwa-standalone #fab{display:none!important}
+  /* Altura de referencia: low-bar (~62px) + safe-area */
+  /* Apilar Apagoncito y Compartir en columna, arriba de la low-bar y del ticker */
+  /* Stack vertical arriba de [low-bar(62) + ticker(36)] = ~98px base */
+  html.pwa-standalone #fab-share{
+    bottom:calc(108px + var(--sab))!important;
+    right:16px!important;
+    z-index:897!important;
+  }
+  html.pwa-standalone #apagoncito-fab{
+    bottom:calc(166px + var(--sab))!important;
+    right:16px!important;left:auto!important;
+    z-index:897!important;
+  }
+  html.pwa-standalone #zoom-btns{
+    bottom:calc(228px + var(--sab))!important;
+    right:16px!important;
+  }
+  /* El ticker sube por encima de la low-bar */
+  html.pwa-standalone #ticker{bottom:calc(62px + var(--sab))!important;padding-bottom:0!important;height:36px!important}
+  html.pwa-standalone #vecino-badge{bottom:calc(108px + var(--sab))!important}
+  html.pwa-standalone #notif-prompt{bottom:calc(70px + var(--sab))!important}
+  html.pwa-standalone #install-banner{bottom:calc(70px + var(--sab))!important}
+  html.pwa-standalone .leaflet-bottom{bottom:calc(62px + var(--sab))!important}
 }
 
 </style>
