@@ -23,7 +23,7 @@
   <meta name="twitter:description" content="¿Sin luz o sin agua? Tu reporte es nuestra voz. Reporta apagones y fugas de agua en Mérida, Yucatán."/>
   <meta name="twitter:image" content="https://apagonesmid.mx/og-image.png"/>
 
-  <meta name="theme-color" content="#65081F"/>
+  <meta name="theme-color" content="#0C0608"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="ApagonesMID"/>
@@ -170,6 +170,9 @@ html.light *{--brand-gl:rgba(101,8,31,.3)}
 /* Prevent text size auto-adjustment on iOS rotation */
 html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;height:100%;height:100dvh;overflow:hidden}
 html{background:var(--bg)}
+/* En PWA, el fondo del html en la zona inferior debe ser el de la low-bar */
+html.pwa-standalone{background:#0C0608}
+html.pwa-standalone.light{background:#F4F0F2}
 /* Keep snappy button interactions */
 button,.tcard,.mm-btn,.admin-tab,.chip,.sev-btn,.apag-chip,.a-btn,.pbtn,.btn{touch-action:manipulation}
 
@@ -212,7 +215,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 #layer-panel,#sidebar{top: calc(var(--topbar-h) + var(--sat))}
 
 #fab{bottom: calc(50px + var(--sab))}
-#zoom-btns{bottom: calc(100px + var(--sab))}
+#zoom-btns{bottom: calc(278px + var(--sab))}
 #vecino-badge{top: calc(var(--topbar-h) + var(--sat) + 62px);left:12px;bottom:auto;right:auto}
 #notif-prompt{bottom: calc(54px + var(--sab))}
 #install-banner{bottom: calc(54px + var(--sab))}
@@ -1048,9 +1051,9 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   /* Stack FAB + Apagoncito vertically — Apagoncito above + */
   /* Move FABs UP on mobile to avoid bottom sheet handle */
   #fab{bottom: calc(82px + env(safe-area-inset-bottom,0px))!important;width:56px!important;height:56px!important;font-size:24px}
-  #apagoncito-fab{bottom: calc(152px + env(safe-area-inset-bottom,0px))!important;right:16px!important;left:auto!important;width:48px!important;height:48px!important}
+  #apagoncito-fab{bottom: calc(214px + env(safe-area-inset-bottom,0px))!important;right:16px!important;left:auto!important;width:48px!important;height:48px!important}
   #apagoncito-modal{bottom: calc(280px + env(safe-area-inset-bottom,0px))!important}
-  #zoom-btns{bottom: calc(216px + env(safe-area-inset-bottom,0px))!important}
+  #zoom-btns{bottom: calc(278px + env(safe-area-inset-bottom,0px))!important}
   .hamburger-btn{display:flex}
   .desktop-only{display:none!important}
   .topbar-slogan{display:none}
@@ -1930,9 +1933,9 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   pointer-events:none;z-index:2;
 }
 
-#fab-share{position:fixed;bottom:120px;right:22px;z-index:899;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#1FD18A,#15A86C);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 18px rgba(31,209,138,.35),0 0 0 1px rgba(31,209,138,.2);transition:transform .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#fab-share{position:fixed;bottom:150px;right:22px;z-index:899;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#1FD18A,#15A86C);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 18px rgba(31,209,138,.35),0 0 0 1px rgba(31,209,138,.2);transition:transform .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 #fab-share:active{transform:scale(.92)}
-@media (max-width:768px){#fab-share{bottom:calc(120px + var(--sab))}}
+@media (max-width:768px){#fab-share{bottom:calc(150px + var(--sab))}}
 
 /* ══ LOW BAR ── solo PWA instalada + móvil ══ */
 #lowbar{
@@ -1957,6 +1960,17 @@ body.promo-on #ticker{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
   box-shadow:0 -4px 16px rgba(0,0,0,.4);
 }
 html.light #lowbar{background:#F4F0F2;border-top-color:var(--bdr);box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+/* Capa que rellena el safe-area inferior con el color de la low-bar (no negro) */
+html.pwa-standalone body::after{
+  content:'';
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:calc(var(--sab) + 2px);
+  background:#0C0608;
+  z-index:898;
+  pointer-events:none;
+}
+html.pwa-standalone.light body::after{background:#F4F0F2}
 .lb-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;padding:7px 4px;background:transparent;border:none;
@@ -3419,7 +3433,7 @@ html.light #lowbar{background:#F4F0F2;border-top-color:var(--bdr);box-shadow:0 -
 
 <!-- APAGONCITO CHATBOT -->
 <!-- Floating trigger button -->
-<div id="apagoncito-fab" onclick="toggleApagoncito()" style="position:fixed;bottom:calc(124px + env(safe-area-inset-bottom,0px));right:22px;z-index:901;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1A0E14,#2A0A14);border:2px solid var(--brand-lt);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(101,8,31,.5);transition:transform .2s;-webkit-appearance:none" title="Apagoncito — Asistente">
+<div id="apagoncito-fab" onclick="toggleApagoncito()" style="position:fixed;bottom:calc(214px + env(safe-area-inset-bottom,0px));right:22px;z-index:901;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1A0E14,#2A0A14);border:2px solid var(--brand-lt);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(101,8,31,.5);transition:transform .2s;-webkit-appearance:none" title="Apagoncito — Asistente">
   <svg viewBox="38 -10 144 248" width="32" height="44" fill="none" overflow="visible">
     <!-- Bulbo (sin rayo corona, sin estrellas, sin base detallada para evitar ruido en tamaño pequeño) -->
     <path d="M64 158 Q60 112 77 84 Q91 58 110 54 Q129 58 143 84 Q160 112 156 158 L72 180 Q69 173 64 158Z"
