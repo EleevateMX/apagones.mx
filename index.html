@@ -8606,8 +8606,25 @@ function initPWA(){
 }
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('install-btn').style.display='block';const mib=document.getElementById('mm-install-btn');if(mib)mib.style.display='flex';setTimeout(()=>{document.getElementById('install-banner').style.display='flex';},5000);});
   window.addEventListener('appinstalled',()=>{document.getElementById('install-btn').style.display='none';document.getElementById('install-banner').style.display='none';toast('App instalada ✓','s');});
-  const a=new URLSearchParams(location.search).get('action');
-  if(a==='apagon'||a==='agua')setTimeout(()=>startFlowWithType(a),1200);
+  const _params=new URLSearchParams(location.search);
+  const a=_params.get('action');
+  if(a==='apagon'||a==='agua')setTimeout(()=>{startFlowWithType(a);if(_params.get('gps')==='1')setTimeout(()=>{try{useGPS();}catch(e){}},500);},1200);
+}
+
+// Deep link desde el widget / atajo (esquema apagonesmid://report?type=apagon&gps=1)
+function handleDeepLink(url){
+  try{
+    const u=new URL(url);
+    const type=(u.searchParams.get('type')||'apagon');
+    const gps=u.searchParams.get('gps')==='1';
+    if(type==='apagon'||type==='agua'){
+      startFlowWithType(type);
+      if(gps)setTimeout(()=>{try{useGPS();}catch(e){}},500);
+    }
+  }catch(e){console.warn('deep link inválido',e);}
+}
+if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App){
+  window.Capacitor.Plugins.App.addListener('appUrlOpen',d=>{ if(d&&d.url)handleDeepLink(d.url); });
 }
 function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('install-banner').style.display='none';});}
 
