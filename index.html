@@ -158,6 +158,15 @@ html.light #contact-sheet{background:#0D0610!important}
 html.light #contact-modal .ct-cat-card{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.12)}
 html.light #admin-login .login-sheet{background:linear-gradient(160deg,#100810,#0C060A)!important}
 html.light .sheet{background:#fff;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* ── Reporte en modo claro: superficies con tinte guinda (no blanco plano) ── */
+html.light #modal-bg .sheet{background:linear-gradient(180deg,#FFFFFF 0%,#FBF0F3 100%)}
+html.light #modal-bg .tcard,
+html.light #modal-bg .loc-btn,
+html.light #modal-bg .fld input,
+html.light #modal-bg .photo-drop,
+html.light #modal-bg .sev-btn{background:rgba(101,8,31,.045);border-color:rgba(101,8,31,.16)}
+html.light #modal-bg .loc-btn.active,
+html.light #modal-bg .sev-btn.active{background:var(--brand-sub);border-color:var(--brand);color:var(--brand)}
 html.light .admin-sheet{background:linear-gradient(180deg,#100810 0%,#0C060A 100%)}
 html.light .ob-screen{background:var(--bg)}
 html.light #onboarding{background:var(--bg)}
@@ -715,8 +724,8 @@ html.pwa-standalone #topbar{background:#0C0608}
 .tcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
 .tcard.el::before{background:radial-gradient(circle at 50% 0%,rgba(245,183,49,.18),transparent 70%)}
 .tcard.ag::before{background:radial-gradient(circle at 50% 0%,rgba(34,208,240,.18),transparent 70%)}
-.tcard.sel.el,.tcard#tc-el-casa.sel,.tcard#tc-el-alum.sel{border-color:var(--elec)!important;box-shadow:0 0 0 1px var(--elec),0 0 18px rgba(245,183,49,.25)}
-.tcard.sel.ag,.tcard#tc-ag.sel,.tcard#tc-ca.sel,.tcard#tc-pres.sel,.tcard#tc-calidad.sel{border-color:var(--agua)!important;box-shadow:0 0 0 1px var(--agua),0 0 18px rgba(34,208,240,.22)}
+.tcard.sel.el,.tcard#tc-el-casa.sel,.tcard#tc-el-alum.sel{border-color:var(--elec)!important;box-shadow:0 0 0 1.5px var(--elec)}
+.tcard.sel.ag,.tcard#tc-ag.sel,.tcard#tc-ca.sel,.tcard#tc-pres.sel,.tcard#tc-calidad.sel{border-color:var(--agua)!important;box-shadow:0 0 0 1.5px var(--agua)}
 .tcard.sel::before{opacity:1}
 .tcard-icon{font-size:34px;margin-bottom:8px;line-height:1}.tcard-name{font-family:var(--f-brand);font-size:15px;font-weight:900;letter-spacing:.2px;text-transform:none}
 .tcard.el .tcard-name{color:var(--elec)}.tcard.ag .tcard-name{color:var(--agua)}
