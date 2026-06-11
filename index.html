@@ -47,12 +47,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
+  // Detecta si corre como app NATIVA (Capacitor) — para ocultar prompts de "instalar"
+  window.isNativeApp = function(){
+    return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  };
   // Detect PWA standalone mode immediately and apply class — fixes iOS layout
   (function(){
-    var isPWA = window.navigator.standalone ||
+    var isPWA = window.isNativeApp() ||
+                window.navigator.standalone ||
                 (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
                 document.referrer.includes('android-app://');
     if(isPWA) document.documentElement.classList.add('pwa-standalone');
+    if(window.isNativeApp()) document.documentElement.classList.add('native-app');
   })();
 
   // Hide onboarding immediately if: (a) arriving via deep link, or
@@ -8483,7 +8489,7 @@ function initObButtons() {
 // ── PWA ONBOARDING INVITE ──
 function initPWAInviteOB(){
   const card = document.getElementById('pwa-invite');
-  const isPWA = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  const isPWA = (window.isNativeApp && window.isNativeApp()) || window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
   if (isPWA) {
     // Already running as PWA — skip all install prompts
@@ -8599,7 +8605,7 @@ function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();deferr
 // Notifications
 let notifGranted = typeof Notification !== 'undefined' && Notification.permission === 'granted';
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
-function isIOSPWA(){return isIOS()&&window.navigator.standalone===true;}
+function isIOSPWA(){return (isIOS()&&window.navigator.standalone===true)||(window.isNativeApp&&window.isNativeApp());}
 function requestNotifications(){
   if(typeof Notification==='undefined'){toast('Tu navegador no soporta notificaciones aún','e');return;}
   if(Notification.permission==='granted'){notifGranted=true;toast('Las notificaciones ya están activas ✓','s');return;}
