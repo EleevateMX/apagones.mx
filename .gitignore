@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+package-lock.json
+
+# Carpeta generada por copy-web.js (la fuente de verdad es la raíz)
+www/
+
+# Capacitor / iOS (artefactos regenerables)
+ios/App/Pods/
+ios/App/App/public/
+ios/App/build/
+ios/DerivedData/
+*.xcuserstate
+
+# Logs y secretos
+*.log
+.env
+.env.local
