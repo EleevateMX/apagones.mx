@@ -2,7 +2,11 @@
   "appId": "mx.apagonesmid.app",
   "appName": "ApagonesMID",
   "webDir": "www",
+  "backgroundColor": "#0c0608",
   "ios": {
-    "contentInset": "always"
+    "contentInset": "never",
+    "backgroundColor": "#0c0608",
+    "scrollEnabled": true,
+    "limitsNavigationsToAppBoundDomains": false
   }
 }

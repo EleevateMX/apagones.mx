@@ -44,6 +44,18 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2026 Namore S.A. de C.V.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ApagonesMID usa tu ubicación para mostrarte los reportes de apagones y fugas cerca de ti y ubicar tu reporte en el mapa.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>ApagonesMID usa la cámara para que puedas tomar una foto de tu reporte (apagón o fuga de agua).</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ApagonesMID accede a tus fotos para que puedas adjuntar una imagen a tu reporte.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>ApagonesMID guarda imágenes en tu galería cuando descargas o compartes un reporte.</string>
 </dict>
 </plist>
