@@ -88,7 +88,7 @@
   --brand-lt:#7D0A27;       /* Guinda mid (gm) */
   --brand-dk:#5C0120;       /* Guinda dark (gd) */
   --brand-br:#9B1035;       /* Guinda bright (gb) — accents */
-  --brand-gl:rgba(101,8,31,.45);
+  --brand-gl:rgba(101,8,31,.28);
   --brand-sub:rgba(101,8,31,.15);
 
   /* Teal family (Water / Agua / Secondary) */
@@ -179,7 +179,11 @@ html.light #search-bar{background:rgba(244,240,242,.97)}
 html.light #search-results{background:rgba(255,255,255,.98)}
 html.light .ob-card{background:#fff}
 html.light .ob-cta{box-shadow:0 4px 20px rgba(101,8,31,.3)}
-html.light *{--brand-gl:rgba(101,8,31,.3)}
+html.light *{--brand-gl:rgba(101,8,31,.16)}
+/* ── Accesibilidad: respetar "Reducir movimiento" del sistema ── */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.06ms!important;scroll-behavior:auto!important}
+}
 
 /* Smooth theme transition */
 /* Prevent text size auto-adjustment on iOS rotation */
@@ -595,7 +599,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 html.pwa-standalone #topbar{background:#0C0608}
 .logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
 .logo-mark{width:34px;height:34px;border-radius:9px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 14px var(--brand-gl);animation:lglow 3.5s ease-in-out infinite}
-@keyframes lglow{0%,100%{box-shadow:0 2px 14px var(--brand-gl)}50%{box-shadow:0 2px 22px rgba(101,8,31,.65)}}
+@keyframes lglow{0%,100%{box-shadow:0 2px 12px var(--brand-gl)}50%{box-shadow:0 2px 16px rgba(101,8,31,.36)}}
 /* Wordmark per brand manual: Nunito 800 + 400 — never separate, never UPPERCASE */
 .wordmark{font-family:var(--f-brand);font-size:17px;line-height:1;letter-spacing:-.3px;white-space:nowrap;display:inline-flex;align-items:baseline;gap:0}
 .wordmark .wm-bold{font-weight:800;color:var(--tx)}
@@ -1052,7 +1056,8 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 .mm-handle{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0}
 .mm-live{display:flex;align-items:center;gap:8px;padding:12px 20px 10px;border-bottom:1px solid var(--bdr)}
 .mm-actions{padding:8px 12px 12px}
-.mm-btn{width:100%;display:flex;align-items:center;gap:14px;background:none;border:none;padding:12px 8px;cursor:pointer;text-align:left;border-radius:12px;transition:background .15s}
+.mm-btn{width:100%;display:flex;align-items:center;gap:14px;background:none;border:none;padding:12px 8px;cursor:pointer;text-align:left;border-radius:12px;transition:background .15s,transform .12s}
+.mm-btn:active{background:var(--card);transform:scale(.985)}
 .mm-btn:hover{background:var(--card)}
 .mm-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .mm-btn-name{font-family:var(--f);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:2px}
@@ -1170,7 +1175,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   border-radius:22px;
   padding:104px 0 0 0;  /* top space for mascot, sides handled by inner */
   margin-top:30px;
-  box-shadow:0 24px 70px rgba(101,8,31,.55),0 0 0 1px rgba(155,16,53,.2),inset 0 1px 0 rgba(255,255,255,.04);
+  box-shadow:0 14px 40px rgba(101,8,31,.3),0 0 0 1px rgba(155,16,53,.2),inset 0 1px 0 rgba(255,255,255,.04);
   transform:scale(.85) translateY(40px);
   opacity:0;
   transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
@@ -1423,7 +1428,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   border:1.5px solid var(--brand-lt);
   border-radius:20px;
   padding:22px 20px 18px;
-  box-shadow:0 24px 70px rgba(101,8,31,.55),0 0 0 1px rgba(155,16,53,.18);
+  box-shadow:0 14px 40px rgba(101,8,31,.3),0 0 0 1px rgba(155,16,53,.18);
   max-height:calc(100vh - 32px);
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
