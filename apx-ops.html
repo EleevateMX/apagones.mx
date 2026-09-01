@@ -371,6 +371,10 @@
         <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
         Histórico
       </div>
+      <div class="nav-item" data-panel="metricas" onclick="goPanel('metricas',this)">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="9" rx="1.5"/><path d="M2 13.5h12"/><path d="M5 9l2-2 2 1.5 2-3"/></svg>
+        Métricas PWA
+      </div>
       <div class="nav-section">Gestión</div>
       <div class="nav-item" data-panel="sched" onclick="goPanel('sched',this)">
         <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
@@ -641,9 +645,56 @@
 
           <div class="danger-zone">
             <div class="danger-title">⚠️ Acciones peligrosas</div>
+            <button class="danger-btn" style="background:rgba(245,183,49,.08);border:1px solid rgba(245,183,49,.25);color:#F5B731" onclick="resolverViejos()">Resolver apagones viejos (+48h) del mapa</button>
             <button class="danger-btn" style="background:rgba(255,61,61,.08);border:1px solid rgba(255,61,61,.2);color:#FF9090" onclick="clearOldHist()">Limpiar histórico antiguo</button>
             <button class="danger-btn" style="background:rgba(255,61,61,.15);border:1px solid rgba(255,61,61,.4);color:#FF5050;font-weight:800" onclick="doReset()">RESET TOTAL — borrar todos los reportes</button>
           </div>
+        </div>
+      </div>
+
+      <!-- ── MÉTRICAS PWA vs NAVEGADOR ── -->
+      <div class="panel" id="panel-metricas">
+        <div class="sec-hd"><div class="sec-title">📲 Acceso a la app — PWA vs Navegador</div></div>
+        <p style="color:var(--mut);font-size:13px;margin:0 0 18px;max-width:640px;line-height:1.5">
+          Cómo accede la gente a ApagonesMID. <strong>PWA</strong> = instalada en pantalla de inicio (como app nativa). <strong>Navegador</strong> = Safari, Chrome u otro. Los datos se actualizan al abrir esta pestaña.
+        </p>
+
+        <!-- KPIs de reportes por origen -->
+        <div style="font-size:12px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Reportes según origen</div>
+        <div class="kpi-grid" style="margin-bottom:24px">
+          <div class="kpi"><div class="kpi-n" style="color:#1FD18A" id="mx-rep-pwa">—</div><div class="kpi-l">📲 Desde PWA</div><div class="kpi-s" id="mx-rep-pwa-pct">—</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:#22D0F0" id="mx-rep-nav">—</div><div class="kpi-l">🌐 Desde navegador</div><div class="kpi-s" id="mx-rep-nav-pct">—</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:var(--ink)" id="mx-rep-total">—</div><div class="kpi-l">Total reportes</div><div class="kpi-s">con dato de origen</div></div>
+        </div>
+
+        <!-- Barra visual de proporción de reportes -->
+        <div style="background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-bottom:24px">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:12px">Proporción de reportes</div>
+          <div style="display:flex;height:30px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.04)">
+            <div id="mx-bar-pwa" style="background:linear-gradient(90deg,#1FD18A,#15A86C);width:0%;transition:width .6s;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#04140C;min-width:0"></div>
+            <div id="mx-bar-nav" style="background:linear-gradient(90deg,#22D0F0,#1AA3BD);width:0%;transition:width .6s;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#041014;min-width:0"></div>
+          </div>
+          <div style="display:flex;gap:18px;margin-top:10px;font-size:11px;color:var(--mut)">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#1FD18A"></span>PWA instalada</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#22D0F0"></span>Navegador</span>
+          </div>
+        </div>
+
+        <!-- KPIs de sesiones (visitas) -->
+        <div style="font-size:12px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Sesiones / visitas (últimos 30 días)</div>
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi"><div class="kpi-n" style="color:#1FD18A" id="mx-ses-pwa">—</div><div class="kpi-l">📲 Aperturas PWA</div><div class="kpi-s" id="mx-ses-pwa-pct">—</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:#22D0F0" id="mx-ses-nav">—</div><div class="kpi-l">🌐 Aperturas navegador</div><div class="kpi-s" id="mx-ses-nav-pct">—</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:var(--ink)" id="mx-ses-total">—</div><div class="kpi-l">Total aperturas</div><div class="kpi-s">1 por día/dispositivo</div></div>
+        </div>
+        <p style="color:var(--mut);font-size:11px;margin:6px 2px 0;line-height:1.5" id="mx-note">
+          Nota: cada dispositivo cuenta máximo 1 vez por día para no inflar los números. Esto da una estimación realista de usuarios activos.
+        </p>
+
+        <div id="mx-empty" style="display:none;text-align:center;padding:40px 20px;color:var(--mut)">
+          <div style="font-size:30px;margin-bottom:10px">📊</div>
+          <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px">Sin datos todavía</div>
+          <div style="font-size:12px;max-width:360px;margin:0 auto;line-height:1.5">Asegúrate de haber ejecutado <code style="background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px">pwa-tracking.sql</code> en Supabase. Los datos aparecerán conforme la gente use la app.</div>
         </div>
       </div>
 
@@ -666,6 +717,10 @@
       <button class="mn-item" data-panel="ultima-hora" onclick="goPanel('ultima-hora',this)">
         <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2a5 5 0 0 0-5 5v3l-1.5 2h13L13 10V7a5 5 0 0 0-5-5z"/><path d="M6.5 14a1.5 1.5 0 0 0 3 0"/></svg>
         Noticias
+      </button>
+      <button class="mn-item" data-panel="metricas" onclick="goPanel('metricas',this)">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="9" rx="1.5"/><path d="M2 13.5h12"/><path d="M5 9l2-2 2 1.5 2-3"/></svg>
+        Métricas
       </button>
       <button class="mn-item" data-panel="sched" onclick="goPanel('sched',this)">
         <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
@@ -739,6 +794,7 @@ function goPanel(name, el){
   if(name==='sched') loadSched();
   if(name==='audit') renderAuditList();
   if(name==='ultima-hora') loadUHPanel();
+  if(name==='metricas') loadMetricas();
   // Al cambiar de panel, re-renderizar reportes/agua con estado actual de _superMode
   if(name==='reports'){ renderReportsPanel(); }
   if(name==='agua')   { renderAguaPanel(); }
@@ -1104,6 +1160,63 @@ async function loadTrends(){
 }
 
 // ══════ HISTÓRICO ══════════════════════════════════
+
+// ── MÉTRICAS PWA vs NAVEGADOR ───────────────────────────
+async function loadMetricas(){
+  try{
+    let DB; try{ DB = db; }catch(_){ DB = window.db; } if(!DB) DB = window.db;
+    if(!DB){ console.warn('db no disponible aún'); return; }
+    // 1) Reportes por origen
+    const { data: reps, error: e1 } = await DB.from('reports').select('origen');
+    let repPwa=0, repNav=0;
+    (reps||[]).forEach(r=>{
+      if(r.origen==='pwa') repPwa++;
+      else repNav++;  // null o 'navegador' cuenta como navegador
+    });
+    const repTotal = repPwa + repNav;
+
+    document.getElementById('mx-rep-pwa').textContent = repPwa;
+    document.getElementById('mx-rep-nav').textContent = repNav;
+    document.getElementById('mx-rep-total').textContent = repTotal;
+    const pPwa = repTotal ? Math.round(repPwa/repTotal*100) : 0;
+    const pNav = repTotal ? 100 - pPwa : 0;
+    document.getElementById('mx-rep-pwa-pct').textContent = pPwa + '% del total';
+    document.getElementById('mx-rep-nav-pct').textContent = pNav + '% del total';
+
+    // Barra visual
+    document.getElementById('mx-bar-pwa').style.width = pPwa + '%';
+    document.getElementById('mx-bar-nav').style.width = pNav + '%';
+    document.getElementById('mx-bar-pwa').textContent = pPwa>=12 ? pPwa+'%' : '';
+    document.getElementById('mx-bar-nav').textContent = pNav>=12 ? pNav+'%' : '';
+
+    // 2) Sesiones (últimos 30 días)
+    const hace30 = Date.now() - 30*24*60*60*1000;
+    let sesPwa=0, sesNav=0, sinTabla=false;
+    try{
+      const { data: ses, error: e2 } = await DB.from('sesiones')
+        .select('origen,created_at')
+        .gte('created_at', hace30);
+      if(e2) sinTabla = true;
+      (ses||[]).forEach(s=>{ if(s.origen==='pwa') sesPwa++; else sesNav++; });
+    }catch(_){ sinTabla = true; }
+
+    const sesTotal = sesPwa + sesNav;
+    document.getElementById('mx-ses-pwa').textContent = sesPwa;
+    document.getElementById('mx-ses-nav').textContent = sesNav;
+    document.getElementById('mx-ses-total').textContent = sesTotal;
+    const spPwa = sesTotal ? Math.round(sesPwa/sesTotal*100) : 0;
+    document.getElementById('mx-ses-pwa-pct').textContent = (sesTotal?spPwa:0) + '% del total';
+    document.getElementById('mx-ses-nav-pct').textContent = (sesTotal?100-spPwa:0) + '% del total';
+
+    // Estado vacío
+    document.getElementById('mx-empty').style.display = (repTotal===0 && sesTotal===0) ? 'block' : 'none';
+  }catch(e){
+    console.warn('loadMetricas error:', e);
+    const empty = document.getElementById('mx-empty');
+    if(empty) empty.style.display = 'block';
+  }
+}
+
 async function loadHistorico(){
   const wrap=document.getElementById('hist-content');
   wrap.innerHTML='<div class="loading"><div class="spinner"></div>Cargando histórico…</div>';
@@ -1580,6 +1693,46 @@ function saveSettings(){
   lsSet('apx_hist_months',       document.getElementById('set-hist').value);
   auditLog('Ajustes actualizados','');
   toast('💾 Ajustes guardados','s');
+}
+
+
+// ── RESOLVER REPORTES VIEJOS (limpieza del mapa) ────────
+async function resolverViejos(){
+  if(!confirm('Esto marcará como RESUELTOS los apagones de más de 48h y las incidencias de agua de más de 7 días. Desaparecerán del mapa público y pasarán al histórico. ¿Continuar?')) return;
+  try{
+    const ahora = Date.now();
+    const cutApagon = ahora - 48*60*60*1000;
+    const cutAgua   = ahora - 7*24*60*60*1000;
+
+    // Traer los reportes activos
+    const { data: activos, error } = await db.from('reports').select('*').eq('resolved', false);
+    if(error){ toast('Error: '+error.message,'e'); return; }
+
+    const ELEC = ['apagon','alumbrado'];
+    const viejos = (activos||[]).filter(r=>{
+      const ts = r.timestamp || 0;
+      if(ELEC.includes(r.type)) return ts < cutApagon;
+      return ts < cutAgua;  // agua y otros
+    });
+
+    if(!viejos.length){ toast('No hay reportes viejos que resolver','i'); return; }
+
+    let ok = 0;
+    for(const r of viejos){
+      try{
+        // Marcar como resuelto (pasa al histórico según tu lógica existente)
+        await db.from('reports').update({ resolved: true }).eq('id', r.id);
+        ok++;
+      }catch(e){}
+    }
+    auditLog('Resolver viejos', `${ok} reportes marcados resueltos`);
+    toast(`✅ ${ok} reportes viejos resueltos y quitados del mapa`,'s');
+    // Recargar el panel
+    try{ if(typeof loadReports==='function') await loadReports(); }catch(e){}
+    try{ if(typeof renderReportsPanel==='function') renderReportsPanel(); }catch(e){}
+  }catch(e){
+    toast('Error: '+e.message,'e');
+  }
 }
 
 async function clearOldHist(){

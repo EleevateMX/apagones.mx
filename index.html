@@ -47,18 +47,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
-  // Detecta si corre como app NATIVA (Capacitor) — para ocultar prompts de "instalar"
-  window.isNativeApp = function(){
-    return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-  };
   // Detect PWA standalone mode immediately and apply class — fixes iOS layout
   (function(){
-    var isPWA = window.isNativeApp() ||
-                window.navigator.standalone ||
+    var isPWA = window.navigator.standalone ||
                 (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
                 document.referrer.includes('android-app://');
     if(isPWA) document.documentElement.classList.add('pwa-standalone');
-    if(window.isNativeApp()) document.documentElement.classList.add('native-app');
   })();
 
   // Hide onboarding immediately if: (a) arriving via deep link, or
@@ -88,7 +82,7 @@
   --brand-lt:#7D0A27;       /* Guinda mid (gm) */
   --brand-dk:#5C0120;       /* Guinda dark (gd) */
   --brand-br:#9B1035;       /* Guinda bright (gb) — accents */
-  --brand-gl:rgba(101,8,31,.28);
+  --brand-gl:rgba(101,8,31,.45);
   --brand-sub:rgba(101,8,31,.15);
 
   /* Teal family (Water / Agua / Secondary) */
@@ -158,20 +152,11 @@ html.light #contact-sheet{background:#0D0610!important}
 html.light #contact-modal .ct-cat-card{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.12)}
 html.light #admin-login .login-sheet{background:linear-gradient(160deg,#100810,#0C060A)!important}
 html.light .sheet{background:#fff;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-/* ── Reporte en modo claro: superficies con tinte guinda (no blanco plano) ── */
-html.light #modal-bg .sheet{background:linear-gradient(180deg,#FFFFFF 0%,#FBF0F3 100%)}
-html.light #modal-bg .tcard,
-html.light #modal-bg .loc-btn,
-html.light #modal-bg .fld input,
-html.light #modal-bg .photo-drop,
-html.light #modal-bg .sev-btn{background:rgba(101,8,31,.045);border-color:rgba(101,8,31,.16)}
-html.light #modal-bg .loc-btn.active,
-html.light #modal-bg .sev-btn.active{background:var(--brand-sub);border-color:var(--brand);color:var(--brand)}
 html.light .admin-sheet{background:linear-gradient(180deg,#100810 0%,#0C060A 100%)}
 html.light .ob-screen{background:var(--bg)}
 html.light #onboarding{background:var(--bg)}
 html.skip-ob #onboarding{display:none !important}
-html.light .leaflet-tile{filter:var(--map-filter)}
+html.light .leaflet-tile:not(.map-tiles-osm-dark){filter:var(--map-filter)}
 html.light .logo-mark{box-shadow:0 2px 14px rgba(101,8,31,.3)}
 html.light #ticker{background:rgba(244,240,242,.92);border-color:var(--bdr)}
 html.light .toast{background:#fff}
@@ -179,11 +164,7 @@ html.light #search-bar{background:rgba(244,240,242,.97)}
 html.light #search-results{background:rgba(255,255,255,.98)}
 html.light .ob-card{background:#fff}
 html.light .ob-cta{box-shadow:0 4px 20px rgba(101,8,31,.3)}
-html.light *{--brand-gl:rgba(101,8,31,.16)}
-/* ── Accesibilidad: respetar "Reducir movimiento" del sistema ── */
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.06ms!important;scroll-behavior:auto!important}
-}
+html.light *{--brand-gl:rgba(101,8,31,.3)}
 
 /* Smooth theme transition */
 /* Prevent text size auto-adjustment on iOS rotation */
@@ -599,7 +580,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 html.pwa-standalone #topbar{background:#0C0608}
 .logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
 .logo-mark{width:34px;height:34px;border-radius:9px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 14px var(--brand-gl);animation:lglow 3.5s ease-in-out infinite}
-@keyframes lglow{0%,100%{box-shadow:0 2px 12px var(--brand-gl)}50%{box-shadow:0 2px 16px rgba(101,8,31,.36)}}
+@keyframes lglow{0%,100%{box-shadow:0 2px 14px var(--brand-gl)}50%{box-shadow:0 2px 22px rgba(101,8,31,.65)}}
 /* Wordmark per brand manual: Nunito 800 + 400 — never separate, never UPPERCASE */
 .wordmark{font-family:var(--f-brand);font-size:17px;line-height:1;letter-spacing:-.3px;white-space:nowrap;display:inline-flex;align-items:baseline;gap:0}
 .wordmark .wm-bold{font-weight:800;color:var(--tx)}
@@ -728,8 +709,8 @@ html.pwa-standalone #topbar{background:#0C0608}
 .tcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
 .tcard.el::before{background:radial-gradient(circle at 50% 0%,rgba(245,183,49,.18),transparent 70%)}
 .tcard.ag::before{background:radial-gradient(circle at 50% 0%,rgba(34,208,240,.18),transparent 70%)}
-.tcard.sel.el,.tcard#tc-el-casa.sel,.tcard#tc-el-alum.sel{border-color:var(--elec)!important;box-shadow:0 0 0 1.5px var(--elec)}
-.tcard.sel.ag,.tcard#tc-ag.sel,.tcard#tc-ca.sel,.tcard#tc-pres.sel,.tcard#tc-calidad.sel{border-color:var(--agua)!important;box-shadow:0 0 0 1.5px var(--agua)}
+.tcard.sel.el,.tcard#tc-el-casa.sel,.tcard#tc-el-alum.sel{border-color:var(--elec)!important;box-shadow:0 0 0 1px var(--elec),0 0 18px rgba(245,183,49,.25)}
+.tcard.sel.ag,.tcard#tc-ag.sel,.tcard#tc-ca.sel,.tcard#tc-pres.sel,.tcard#tc-calidad.sel{border-color:var(--agua)!important;box-shadow:0 0 0 1px var(--agua),0 0 18px rgba(34,208,240,.22)}
 .tcard.sel::before{opacity:1}
 .tcard-icon{font-size:34px;margin-bottom:8px;line-height:1}.tcard-name{font-family:var(--f-brand);font-size:15px;font-weight:900;letter-spacing:.2px;text-transform:none}
 .tcard.el .tcard-name{color:var(--elec)}.tcard.ag .tcard-name{color:var(--agua)}
@@ -1056,8 +1037,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
 .mm-handle{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0}
 .mm-live{display:flex;align-items:center;gap:8px;padding:12px 20px 10px;border-bottom:1px solid var(--bdr)}
 .mm-actions{padding:8px 12px 12px}
-.mm-btn{width:100%;display:flex;align-items:center;gap:14px;background:none;border:none;padding:12px 8px;cursor:pointer;text-align:left;border-radius:12px;transition:background .15s,transform .12s}
-.mm-btn:active{background:var(--card);transform:scale(.985)}
+.mm-btn{width:100%;display:flex;align-items:center;gap:14px;background:none;border:none;padding:12px 8px;cursor:pointer;text-align:left;border-radius:12px;transition:background .15s}
 .mm-btn:hover{background:var(--card)}
 .mm-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .mm-btn-name{font-family:var(--f);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:2px}
@@ -1175,7 +1155,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   border-radius:22px;
   padding:104px 0 0 0;  /* top space for mascot, sides handled by inner */
   margin-top:30px;
-  box-shadow:0 14px 40px rgba(101,8,31,.3),0 0 0 1px rgba(155,16,53,.2),inset 0 1px 0 rgba(255,255,255,.04);
+  box-shadow:0 24px 70px rgba(101,8,31,.55),0 0 0 1px rgba(155,16,53,.2),inset 0 1px 0 rgba(255,255,255,.04);
   transform:scale(.85) translateY(40px);
   opacity:0;
   transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
@@ -1428,7 +1408,7 @@ html.light .tips-tab.active{color:var(--brand);border-color:var(--brand)}
   border:1.5px solid var(--brand-lt);
   border-radius:20px;
   padding:22px 20px 18px;
-  box-shadow:0 14px 40px rgba(101,8,31,.3),0 0 0 1px rgba(155,16,53,.18);
+  box-shadow:0 24px 70px rgba(101,8,31,.55),0 0 0 1px rgba(155,16,53,.18);
   max-height:calc(100vh - 32px);
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
@@ -2070,6 +2050,15 @@ html.pwa-standalone.light body::before{background:#F4F0F2}
   html.pwa-standalone .leaflet-bottom{bottom:calc(62px + var(--sab))!important}
 }
 
+
+/* OpenStreetMap oscurecido para estética ApagonesMID (modo oscuro) */
+.map-tiles-osm-dark{
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92) saturate(0.75);
+}
+/* En modo claro, mostrar OSM normal (sin invertir) */
+html.light .map-tiles-osm-dark{
+  filter: brightness(1.02) contrast(0.96) saturate(0.9);
+}
 </style>
 </head>
 <body>
@@ -2747,12 +2736,12 @@ html.pwa-standalone.light body::before{background:#F4F0F2}
     </div>
     <!-- Slide 1: Instagram (más peso — aparece 2x en rotación) -->
     <div class="promo-slide active" id="ps-ig">
-      <a href="https://www.instagram.com/apagonesmid?igsh=ZXdxcjJuMWsyYmR6&utm_source=qr" target="_blank" rel="noopener">
+      <a href="https://www.instagram.com/apagonesmid.mx" target="_blank" rel="noopener">
         <div class="promo-icon" style="background:linear-gradient(135deg,#405de6,#5851db,#833ab4,#c13584,#e1306c,#fd1d1d,#f56040,#f77737,#fcaf45,#ffdc80);flex-shrink:0">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </div>
         <div class="promo-text">
-          <div class="promo-label">@apagonesmid — Síguenos en Instagram</div>
+          <div class="promo-label">@apagonesmid.mx — Síguenos en Instagram</div>
           <div class="promo-sub">Reportes en tiempo real · Mérida, Yucatán</div>
         </div>
         <div class="promo-cta" style="background:linear-gradient(135deg,rgba(193,53,132,.25),rgba(253,29,29,.2));color:#fd8080;border:1px solid rgba(193,53,132,.4)">Seguir</div>
@@ -2773,7 +2762,7 @@ html.pwa-standalone.light body::before{background:#F4F0F2}
     </div>
     <!-- Slide 3: Instagram otra vez (doble frecuencia = más peso) -->
     <div class="promo-slide" id="ps-ig2">
-      <a href="https://www.instagram.com/apagonesmid?igsh=ZXdxcjJuMWsyYmR6&utm_source=qr" target="_blank" rel="noopener">
+      <a href="https://www.instagram.com/apagonesmid.mx" target="_blank" rel="noopener">
         <div class="promo-icon" style="background:linear-gradient(135deg,#405de6,#833ab4,#e1306c,#fd1d1d,#fcaf45);flex-shrink:0">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </div>
@@ -3759,11 +3748,19 @@ async function loadReports() {
           r.report_number = r.report_number.replace(/^\[[a-z_]+\]\s*/, '');
         }
       }
-      // NO filtrar por tiempo — los reportes se mantienen hasta que:
-      //   a) El admin los resuelve manualmente
-      //   b) 3 votos de vecinos (RESOLVE_THRESHOLD)
-      // Solo filtrar tipos inválidos
-      return ELEC_TYPES.includes(r.type) || AGUA_TYPES.includes(r.type);
+      // Filtrar tipos inválidos
+      if(!(ELEC_TYPES.includes(r.type) || AGUA_TYPES.includes(r.type))) return false;
+      // Auto-ocultar reportes muy antiguos del mapa público (se ven mal):
+      //   - Apagones/alumbrado: se ocultan tras 48h (suelen resolverse rápido)
+      //   - Agua (fugas, cortes): se mantienen 7 días (son más persistentes)
+      // Nota: NO se borran de la BD, solo se ocultan del mapa. El admin los
+      // sigue viendo en el histórico y puede resolverlos o limpiarlos.
+      const edad = Date.now() - (r.timestamp || 0);
+      const MAX_APAGON = 48 * 60 * 60 * 1000;   // 48 horas
+      const MAX_AGUA   = 7 * 24 * 60 * 60 * 1000; // 7 días
+      if(ELEC_TYPES.includes(r.type) && edad > MAX_APAGON) return false;
+      if(AGUA_TYPES.includes(r.type) && edad > MAX_AGUA) return false;
+      return true;
     });
   } catch(e){console.warn('loadReports:',e.message);}
   return cachedReports;
@@ -3934,10 +3931,19 @@ function initMap(){
   map.on('popupopen', ()=>document.body.classList.add('popup-open'));
   map.on('popupclose', ()=>document.body.classList.remove('popup-open'));
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-    attribution:'&copy; CARTO',subdomains:'abcd',maxZoom:19,
-    className: 'map-tiles-bright'
-  }).addTo(map);
+  // Tiles base: OpenStreetMap (gratis, sin API key). El estilo oscuro se
+  // aplica por CSS (filtro) para conservar la estética de ApagonesMID.
+  // Si un servidor de tiles falla, Leaflet reintenta con los subdominios.
+  const _tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; OpenStreetMap',
+    subdomains:'abc',
+    maxZoom:19,
+    className: 'map-tiles-osm-dark',
+    crossOrigin:true
+  });
+  // Fallback: si OSM falla en algún tile, no rompe el mapa
+  _tileLayer.on('tileerror', function(){ /* silencioso: OSM reintenta solo */ });
+  _tileLayer.addTo(map);
   glowPane=map.createPane('glow');
   glowPane.style.zIndex=399;
   glowPane.style.filter='blur(14px)';
@@ -5392,6 +5398,13 @@ async function submitReport(){
   try{ rep.photo_flags = flow.photoFlags||''; }catch(e){}
   try{ rep.heat_alert = typeof currentTemp!=='undefined' && currentTemp>=HEAT_THRESHOLD; }catch(e){}
   try{ rep.report_number = document.getElementById('f-report-num')?.value.trim()||''; }catch(e){}
+  // Origen: cómo accede el usuario (PWA instalada vs navegador)
+  try{
+    const esPWA = window.matchMedia('(display-mode: standalone)').matches
+               || window.matchMedia('(display-mode: minimal-ui)').matches
+               || window.navigator.standalone === true;
+    rep.origen = esPWA ? 'pwa' : 'navegador';
+  }catch(e){ try{ rep.origen='navegador'; }catch(_){}}
 
   try{
     const saved = await saveReport(rep);
@@ -8503,7 +8516,7 @@ function initObButtons() {
 // ── PWA ONBOARDING INVITE ──
 function initPWAInviteOB(){
   const card = document.getElementById('pwa-invite');
-  const isPWA = (window.isNativeApp && window.isNativeApp()) || window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  const isPWA = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
   if (isPWA) {
     // Already running as PWA — skip all install prompts
@@ -8611,32 +8624,15 @@ function initPWA(){
 }
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('install-btn').style.display='block';const mib=document.getElementById('mm-install-btn');if(mib)mib.style.display='flex';setTimeout(()=>{document.getElementById('install-banner').style.display='flex';},5000);});
   window.addEventListener('appinstalled',()=>{document.getElementById('install-btn').style.display='none';document.getElementById('install-banner').style.display='none';toast('App instalada ✓','s');});
-  const _params=new URLSearchParams(location.search);
-  const a=_params.get('action');
-  if(a==='apagon'||a==='agua')setTimeout(()=>{startFlowWithType(a);if(_params.get('gps')==='1')setTimeout(()=>{try{useGPS();}catch(e){}},500);},1200);
-}
-
-// Deep link desde el widget / atajo (esquema apagonesmid://report?type=apagon&gps=1)
-function handleDeepLink(url){
-  try{
-    const u=new URL(url);
-    const type=(u.searchParams.get('type')||'apagon');
-    const gps=u.searchParams.get('gps')==='1';
-    if(type==='apagon'||type==='agua'){
-      startFlowWithType(type);
-      if(gps)setTimeout(()=>{try{useGPS();}catch(e){}},500);
-    }
-  }catch(e){console.warn('deep link inválido',e);}
-}
-if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App){
-  window.Capacitor.Plugins.App.addListener('appUrlOpen',d=>{ if(d&&d.url)handleDeepLink(d.url); });
+  const a=new URLSearchParams(location.search).get('action');
+  if(a==='apagon'||a==='agua')setTimeout(()=>startFlowWithType(a),1200);
 }
 function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('install-banner').style.display='none';});}
 
 // Notifications
 let notifGranted = typeof Notification !== 'undefined' && Notification.permission === 'granted';
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
-function isIOSPWA(){return (isIOS()&&window.navigator.standalone===true)||(window.isNativeApp&&window.isNativeApp());}
+function isIOSPWA(){return isIOS()&&window.navigator.standalone===true;}
 function requestNotifications(){
   if(typeof Notification==='undefined'){toast('Tu navegador no soporta notificaciones aún','e');return;}
   if(Notification.permission==='granted'){notifGranted=true;toast('Las notificaciones ya están activas ✓','s');return;}
@@ -8775,7 +8771,30 @@ window.addEventListener('DOMContentLoaded',async()=>{
     console.warn('UH init error:',e);
     // Botón UH está en HTML — no requiere fallback JS
   }
+  // Registrar sesión (PWA vs navegador) — una vez al día por dispositivo
+  try{ registrarSesion(); }catch(e){}
 });
+
+// ── REGISTRO DE SESIONES (PWA vs navegador) ───────────
+async function registrarSesion(){
+  try{
+    // Solo 1 registro por día por dispositivo (evita inflar números)
+    const hoy = new Date().toISOString().slice(0,10);
+    const ultima = localStorage.getItem('apx_sesion_dia');
+    if(ultima === hoy) return;
+
+    const esPWA = window.matchMedia('(display-mode: standalone)').matches
+               || window.matchMedia('(display-mode: minimal-ui)').matches
+               || window.navigator.standalone === true;
+
+    await db.from('sesiones').insert([{
+      origen: esPWA ? 'pwa' : 'navegador',
+      ua: (navigator.userAgent||'').slice(0,200),
+      created_at: Date.now()
+    }]);
+    localStorage.setItem('apx_sesion_dia', hoy);
+  }catch(e){ /* silencioso: si no existe la tabla, no rompe nada */ }
+}
 
 
 // ── PROMO BAR ──────────────────────────────────────────────
